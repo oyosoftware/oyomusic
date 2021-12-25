@@ -1,0 +1,133 @@
+<!--  oyomusic 2.0
+  tested with jQuery 3.4.0
+  http://www.oyoweb.nl
+
+  © 2015-2021 oYoSoftware
+  MIT License
+
+  oyomusic is a library for showing your own musical content-->
+
+<html>
+
+    <head>
+
+        <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
+        <script src="plugins/oyoresizer/oyoresizer.js"></script>
+
+        <style>
+            * {
+                box-sizing          : border-box;
+            }
+            body {
+                font-family         : Arial, Verdana, Helvetica, sans-serif;
+                font-size           : 12pt;
+                font-weight         : bold;
+                margin              : 0px;
+                padding             : 10px;
+            }
+            ::-webkit-scrollbar {
+                height              : 10px;
+                width               : 10px;
+            }
+            ::-webkit-scrollbar-thumb {
+                background          : white;
+                border              : 2px solid black;
+                border-radius       : 4px;
+            }
+            ::-webkit-scrollbar-thumb:vertical {
+                border-right        : 1px solid black;
+            }
+            ::-webkit-scrollbar-thumb:horizontal {
+                border-bottom       : 1px solid black;
+            }
+            a {
+                width               : 0px;
+                white-space         : nowrap;
+                text-decoration     : none;
+                display             : block;
+            }
+            a:hover {
+                text-decoration     : underline;
+            }
+        </style>
+
+        <script>
+
+            $(document).ready(function () {
+
+                var parameters = location.search.substring(1).split("&");
+                var letter = decodeURIComponent(parameters[0].split("=")[1]);
+
+                var title = "Artist List " + letter;
+                $(document).prop("title", title);
+
+                var artistIndexFrame = parent.frames["artistindex"];
+
+                url = "scripts/getArtists.php";
+                $.ajax({
+                    url: url,
+                    data: {letter: letter},
+                    dataType: "jsonp",
+                    jsonpCallback: "getArtists",
+                    success: function (artists) {
+                        for (i = 0; i < artists.length; i++) {
+                            var id = artists[i].id;
+                            var name = artists[i].name;
+
+                            var a = document.createElement("a");
+                            var href = "albumlist.html?artistid=" + id + "&isboxset=0" + "&boxsetid=0" + "&pageno=1";
+                            $(a).attr("href", href);
+                            $(a).attr("target", "albums");
+                            $(a).html(name);
+
+                            var visited = window.localStorage.getItem(href);
+                            if (visited === 'visited') {
+                                $(a).css("color", "green");
+                            } else {
+                                $(a).css("color", "blue");
+                            }
+                            $(document.body).append(a);
+                        }
+
+                        $("a").click(function (event) {
+                            window.localStorage.setItem($(event.target).attr("href"), "visited");
+                            $(event.target).css("color", "green");
+                        });
+
+                        var firstartist = $("a").eq(0);
+                        var firstartisthref = $("a").attr("href");
+                        var visited = window.localStorage.getItem(firstartisthref);
+
+                        if (visited === 'visited') {
+                            $(firstartist).css("color", "green");
+                        } else {
+                            $(firstartist).css("color", "blue");
+                        }
+
+                        if (artistIndexFrame) {
+                            parent.frames["albums"].location.href = $("a").attr("href");
+                        } else {
+                            $("a").attr("target", "_self");
+                        }
+                    }
+                });
+
+                $(window).on("resize", resize);
+
+                function resize() {
+                    $(parent.window).trigger("resize");
+                }
+
+                var resizer = new oyoresizer(parent.document.getElementsByName("artists"));
+                resizer.setSize(200, 500);
+                resizer.resizeMargin = 10;
+
+            });
+        </script>
+
+    </head>
+
+    <body>
+    </body>
+
+</html>

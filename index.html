@@ -1,0 +1,132 @@
+<!--  oyomusic 2.0
+  tested with jQuery 3.4.0
+  http://www.oyoweb.nl
+
+  © 2015-2021 oYoSoftware
+  MIT License
+
+  oyomusic is a library for showing your own musical content-->
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
+
+        <style>
+            * {
+                box-sizing          : border-box;
+            }
+            body {
+                font-family         : Arial, Verdana, Helvetica, sans-serif;
+                font-size           : 10pt;
+                margin              : 0px;
+                padding             : 0px;
+                border              : 1px solid black;
+                overflow            : hidden;
+                height              : 100%;
+            }
+            ::-webkit-scrollbar {
+                height              : 10px;
+                width               : 10px;
+            }
+            ::-webkit-scrollbar-thumb {
+                background          : white;
+                border              : 2px solid black;
+                border-radius       : 4px;
+            }
+            ::-webkit-scrollbar-thumb:vertical {
+                border-right        : 1px solid black;
+            }
+            ::-webkit-scrollbar-thumb:horizontal {
+                border-bottom       : 1px solid black;
+            }
+            iframe {
+                position            : fixed;
+                border              : 1px solid black;
+                margin              : 0px;
+            }
+            #artistindex {
+                width               : 100%;
+                height              : 120px;
+                top                 : 1px;
+            }
+            #artists {
+                width               : 200px;
+                height              : calc(100% - 122px);
+                top                 : 121px;
+                left                : 1px;
+            }
+            #albums {
+                width               : 100%;
+                height              : calc(100% - 122px);
+                top                 : 121px;
+            }
+            .oyowrapper1 {
+                top                 : 121px;
+            }
+        </style>
+    </head>
+    <body>
+
+        <script>
+
+            $(document).ready(function () {
+
+                window.onresize = function () {
+                    width = $(window).outerWidth();
+                    height = $(window).outerHeight();
+                    $(document.body).outerHeight(height);
+                    $("#albums").css("left", $("#artists").outerWidth() + 1);
+                    $("#albums").outerWidth(width - $("#artists").outerWidth() - 2);
+                };
+
+                $(window).trigger("resize");
+
+                url = "scripts/getSettings.php";
+                $.ajax({
+                    url: url,
+                    dataType: "jsonp",
+                    jsonpCallback: "getSettings",
+                    success: function (settings) {
+                        var pagetitle = settings.pagetitle
+                        $(document).prop("title", pagetitle);
+                    }
+                });
+
+                $.rotate = function () {
+                    var platforms = ["iPhone", "iPad", "Android"];
+                    var platformfound = false;
+                    for (i = 0; i < platforms.length; i++)
+                    {
+                        if (navigator.appVersion.indexOf(platforms[i]) !== -1)
+                        {
+                            platformfound = true;
+                            break;
+                        }
+                    }
+                    if (!platformfound)
+                    {
+                        $({deg: 90}).animate({deg: 0},
+                                {
+                                    duration: 2000,
+                                    step: function (now) {
+                                        $("html").css("transform", "rotate(" + now + "deg)");
+                                    }
+                                }
+                        );
+                    }
+                };
+
+                $.rotate();
+
+            });
+
+        </script>
+
+        <iframe name="artistindex"  id="artistindex" src="artistindex.html">artistindex</iframe>
+        <iframe name="artists"      id="artists">                           artists    </iframe>
+        <iframe name="albums"       id="albums">                            albums     </iframe>
+
+    </body>
+</html>

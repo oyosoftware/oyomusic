@@ -1,0 +1,798 @@
+<!--  oyomusic 2.0
+  tested with jQuery 3.4.0
+  http://www.oyoweb.nl
+
+  © 2015-2021 oYoSoftware
+  MIT License
+
+  oyomusic is a library for showing your own musical content-->
+
+<html>
+
+    <head>
+
+        <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
+        <script src="plugins/oyoplayer/oyoplayer.js"></script>
+        <link rel="stylesheet" href="plugins/oyoplayer/oyoplayer.css">
+
+        <style>
+            * {
+                box-sizing          : border-box;
+            }
+            body {
+                font-family         : Arial, Verdana, Helvetica, sans-serif;
+                font-size           : 13.33px;
+                margin              : 0px;
+                padding             : 8px;
+                padding-right       : 0px;
+            }
+            ::-webkit-scrollbar {
+                height              : 10px;
+                width               : 10px;
+            }
+            ::-webkit-scrollbar-thumb {
+                background          : white;
+                border              : 2px solid black;
+                border-radius       : 4px;
+            }
+            ::-webkit-scrollbar-thumb:vertical {
+                border-right        : 1px solid black;
+            }
+            ::-webkit-scrollbar-thumb:horizontal {
+                border-bottom       : 1px solid black;
+            }
+            a:link {
+                text-decoration     : none;
+            }
+            a:visited {
+                text-decoration     : none;
+            }
+            a:hover {
+                text-decoration     : underline;
+            }
+            table {
+                border-spacing      : 0px;
+            }
+            td {
+                padding             : 3px 5px 3px 5px;
+            }
+            .back {
+                font-size           : 13.33px;
+                height              : 25px;
+                vertical-align      : top;
+            }
+            .wrapper {
+                padding-right       : 8px;
+                width               : 100%;
+            }
+            .header {
+                border              : 1px solid black;
+                width               : 100%;
+                min-width           : 254px;
+                border-spacing      : 1px;
+            }
+            .headertitle {
+                background-color    : #B3CEB3;
+                color               : black;
+                font-weight         : bold;
+                font-size           : 18.66px;
+                padding             : 8px;
+            }
+            .maindiv {
+                white-space         : nowrap;
+            }
+            .albumdiv {
+                padding             : 1px;
+                display             : table-cell;
+                vertical-align      : top;
+            }
+            .albumimage {
+                border              : 1px solid black;
+                padding             : 1px;
+            }
+            .image {
+                width               : 250px;
+            }
+            .albumimagemirror {
+                height              : 25px;
+                height              : 63.5px;
+                overflow            : hidden;
+                border              : 1px solid white;
+                padding             : 1px;
+                border-top          : 0px solid white;
+                padding-top         : 0px;
+            }
+            .albumtable {
+                border              : 1px solid black;
+                font-size           : 13.33px;
+            }
+            .fieldname {
+                vertical-align      : middle;
+                background-color    : #B3CEB3;
+                border              : 0px solid white;
+                border-width        : 0px 1px 1px 0px;
+                font-weight         : bold;
+                padding             : 3px 5px 3px 5px;
+                white-space         : nowrap;
+            }
+            .fieldvalue {
+                vertical-align      : top;
+                background-color    : lightgray;
+                border              : 0px solid white;
+                border-width        : 0px 1px 1px 0px;
+                padding             : 3px 5px 3px 5px;
+            }
+            .tracksdiv {
+                padding             : 1px;
+                display             : table-cell;
+                vertical-align      : top;
+                padding-left        : 20px
+            }
+            .tracktable {
+                border              : 1px solid black;
+                font-size           : 13.33px;
+                padding             : 1px 1px 0px 1px;
+            }
+            .albumdisctitle {
+                background-color    : #618FC9;
+                border              : 1px solid black;
+                border-right-color  : #618FC9;
+                color               : black;
+                font-weight         : bold;
+                padding             : 6px;
+            }
+            .albumdiscplayingtime {
+                background-color    : #618FC9;
+                border              : 1px solid black;
+                border-left-color   : #618FC9;
+                text-align          : right;
+                color               : black;
+                font-weight         : bold;
+                padding             : 6px;
+            }
+            .track {
+                font-weight         : bold;
+                text-align          : right;
+                white-space         : nowrap;
+            }
+            .img {
+                display             : none;
+                padding-top         : 5px;
+                padding-left        : 10px;
+                vertical-align      : top;
+            }
+            .playingtime {
+                text-align          : right;
+                border-right-width  : 0px;
+            }
+            .boxsetalbums {
+                width               : 100%;
+                border              : 0px solid black;
+            }
+            .links {
+                text-align          : center;
+            }
+            .download {
+                display             : none;
+                border-width        : 0px;
+                background-color    : transparent;
+                padding             : 0px;
+                outline             : none;
+            }
+            .downloadimg {
+                width               : 100px;
+            }
+            .downloading {
+                display             : none;
+            }
+            .title {
+                position            : relative;
+            }
+            .hint {
+                visibility          : hidden;
+                background-color    : lightgray;
+                color               : black;
+                border-radius       : 5px;
+                padding             : 1px 3px;
+                position            : absolute;
+                z-index             : 1;
+                bottom              : 115%;
+                left                : 0px;
+                margin-left         : -30px;
+                opacity             : 0;
+                transition          : opacity 0.3s;
+                border              : 1px solid black;
+                font-size           : 13.33px;
+                font-weight         : normal;
+                white-space         : nowrap;
+                height              : 19px;
+            }
+            .hintafter1 {
+                position            : absolute;
+                top                 : 100%;
+                left                : 50%;
+                margin-left         : -5px;
+                border-width        : 5px;
+                border-style        : solid;
+                border-color        : black transparent transparent transparent;
+            }
+            .hintafter2 {
+                position            : absolute;
+                top                 : 100%;
+                left                : 50%;
+                margin-left         : -4px;
+                border-width        : 4px;
+                border-style        : solid;
+                border-color        : lightgray transparent transparent transparent;
+            }
+            a:hover .hint {
+                visibility          : visible;
+                opacity             : 1;
+            }
+        </style>
+
+        <script>
+
+            $(document).ready(function () {
+                var parameters = location.search.substring(1).split("&");
+                var albumid = parameters[0].split("=")[1];
+                var parameter = parameters[1].split("=")[0];
+                if (parameter == "pageno") {
+                    var pageno = parseInt(parameters[1].split("=")[1]);
+                } else {
+                    parameters.shift();
+                    var albumsearch = parameters.join("&");
+                }
+
+                var songs = [];
+                var tags = [];
+                var playeralbum = "";
+                window.delay = 0;
+                window.now = 0;
+
+                albumsFrame = parent.parent.frames["albums"];
+
+                artistindexFrame = parent.frames["artistindex"] || parent.parent.frames["artistindex"];
+                try {
+                    audioPlayer = artistindexFrame.audioPlayer;
+                } catch (error) {
+                    audioPlayer = new oyoPlayer("player");
+                    $(".player").append(audioPlayer);
+                }
+                audio = audioPlayer.audio;
+                audioPlayer.setNotification("Push Play to start");
+
+                $(audio).on("playing", playing);
+                $(audio).on("pause", paused);
+                $(audio).on("ended", ended);
+                $(audio).on("error", error);
+
+                function startPlayer(event) {
+                    if (artistindexFrame && artistindexFrame.playeralbum != undefined && playeralbum != artistindexFrame.playeralbum) {
+                        audioPlayer.clearPlaylist();
+                        for (i = 1; i < songs.length; i++) {
+                            audioPlayer.addToPlaylist(songs[i], tags[i]);
+                        }
+                    }
+                    if (artistindexFrame) {
+                        artistindexFrame.playeralbum = playeralbum;
+                    }
+
+                    var index = event.data.index;
+                    audioPlayer.playPause(index);
+                }
+
+                function playing() {
+                    var src = "images/play.gif";
+                    $(".speaker").attr("src", src);
+                    var track = audioPlayer.getCurrentTrack();
+                    var song = audioPlayer.getCurrentSong();
+                    $(".title").css("font-weight", "normal");
+                    if (songs[track] == song) {
+                        var speakerid = "#speaker" + track;
+                        var src = "images/playing.gif";
+                        $(speakerid).attr("src", src);
+                        var titleid = "#title" + track;
+                        $(titleid).css("font-weight", "bold");
+                    }
+                }
+
+                function paused() {
+                    var src = "images/play.gif";
+                    $(".speaker").attr("src", src);
+                }
+
+                function ended() {
+                    var src = "images/play.gif";
+                    $(".speaker").attr("src", src);
+                    $(".title").css("font-weight", "normal");
+                }
+
+                function error() {
+                    $(".title").css("font-weight", "normal");
+                }
+
+                function resizeBoxFrame() {
+                    $("body").css("overflow-y", "hidden");
+                    var boxsetalbumsFrame = parent.frames["boxsetalbums"];
+                    if (boxsetalbumsFrame) {
+                        var scrolltop = $(parent.document.body).scrollTop();
+                        $(".boxsetalbums", window.parent.document).height(0);
+                        var height = boxsetalbumsFrame.document.body.scrollHeight;
+                        $(".boxsetalbums", window.parent.document).height(height);
+                        $(parent.document.body).scrollTop(scrolltop);
+                    }
+                }
+
+                $(".download").on("click", function () {
+                    $(".downloading").css("display", "inline");
+                    url = "scripts/downloadAlbum.php";
+                    $.ajax({
+                        url: url,
+                        cache: false,
+                        data: {albumid: albumid},
+                        xhrFields: {responseType: "blob"},
+                        success: function (response, status, xhr) {
+                            var url = URL.createObjectURL(response);
+                            var regex = new RegExp('filename="(.*)"');
+                            var filename = regex.exec(xhr.getResponseHeader("Content-Disposition"))[1];
+                            var link = document.createElement("a");
+                            link.href = url;
+                            link.download = filename;
+                            link.click();
+                            $(".downloading").css("display", "none");
+                        }
+                    });
+                })
+
+                url = "scripts/getSession.php";
+                $.ajax({
+                    url: url,
+                    dataType: "jsonp",
+                    jsonpCallback: "getSession",
+                    success: function (session) {
+                        var username = session.username;
+                        var expire = 1000 * session.expire;
+                        now = Date.now();
+                        if (username != "") {
+                            if (albumsFrame) {
+                                albumsFrame.delay = now - albumsFrame.now;
+                            }
+                            url = "scripts/hasFiles.php";
+                            $.ajax({
+                                url: url,
+                                data: {albumid: albumid},
+                                success: function (hasfiles) {
+                                    if (hasfiles) {
+                                        $(".download").css("display", "inline");
+                                        setTimeout(timer, expire);
+                                        function timer() {
+                                            if (delay > 0) {
+                                                setTimeout(timer, delay);
+                                                delay = 0;
+                                            } else {
+                                                $(".download").css("display", "none");
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+
+                url = "scripts/getAlbum.php";
+                $.ajax({
+                    url: url,
+                    data: {albumid: albumid},
+                    dataType: "jsonp",
+                    jsonpCallback: "getAlbum",
+                    success: function (album) {
+                        var artistid = album.artistid;
+                        var released = album.released;
+                        var albumtitle = album.title;
+                        var disccount = album.disccount;
+                        var format = album.format;
+                        var playingtime = album.playingtime;
+                        var genre = album.genre;
+                        var folder = album.folder;
+                        var imagefilename = encodeURIComponent(album.imagefilename);
+                        var isboxset = album.isboxset;
+                        var boxsetid = album.boxsetid;
+
+                        if (isboxset == true) {
+                            $(".oyoplayer").css("display", "none");
+                        }
+
+                        if (pageno > 0) {
+                            if (boxsetid == -1) {
+                                var href = "albumlist.html?artistid=" + artistid + "&isboxset=0" + "&boxsetid=0" + "&pageno=" + pageno;
+                            } else {
+                                var href = "albumlist.html?artistid=" + artistid + "&isboxset=1" + "&boxsetid=" + boxsetid + "&pageno=" + pageno;
+                            }
+                        } else {
+                            var href = "albumsearch?" + albumsearch;
+                        }
+
+                        $(".backlink").prop("href", href);
+
+                        url = "scripts/getSettings.php";
+                        $.ajax({
+                            url: url,
+                            dataType: "jsonp",
+                            jsonpCallback: "getSettings",
+                            success: function (settings) {
+                                var imagepath = settings.imagepath;
+                                var src = imagepath + "/" + imagefilename;
+                                $(".image").attr("src", src);
+
+                                $(".image").on("load", function () {
+                                    var width = $(".image").width();
+                                    var height = $(".image").height();
+                                    var canvas = document.createElement("canvas");
+                                    var ctx = canvas.getContext("2d");
+                                    $(canvas).attr("width", width);
+                                    $(canvas).attr("height", height);
+                                    $(canvas).css("transform", "scaleY(-1)");
+                                    $(".albumimagemirror").append(canvas);
+                                    var image = $(".image")[0];
+                                    $(image).width(width);
+                                    ctx.drawImage(image, 0, 0, width, height);
+                                    var grd = ctx.createLinearGradient(width / 2, 3 * height / 4, width / 2, height);
+                                    grd.addColorStop(0, "rgba(255, 255, 255, 1)");
+                                    grd.addColorStop(1, "rgba(255, 255, 255, 0.5)");
+                                    ctx.fillStyle = grd;
+                                    ctx.fillRect(0, 0, width, height);
+                                    if (boxsetid !== -1) {
+                                        resizeBoxFrame();
+                                    }
+                                });
+                            }
+                        });
+
+                        url = "scripts/getArtist.php";
+                        $.ajax({
+                            url: url,
+                            data: {artistid: artistid},
+                            dataType: "jsonp",
+                            jsonpCallback: "getArtist",
+                            success: function (artist) {
+                                var name = artist.name;
+                                playeralbum = name + released + albumtitle;
+
+                                var headertitle = name + " - " + albumtitle;
+                                $(document).prop("title", headertitle);
+                                $(".headertitle").html(headertitle);
+
+                                if (isboxset == true) {
+                                    $(".tracksdiv").css("display", "none");
+                                }
+
+                                if (isboxset == false) {
+                                    $(".boxsetalbums").css("display", "none");
+                                } else {
+                                    var src = "albumlist.html?artistid=" + artistid + "&isboxset=" + isboxset + "&boxsetid=" + albumid + "&pageno=1";
+                                    $(".boxsetalbums").attr("src", src);
+                                }
+
+                                if (boxsetid == -1) {
+                                    var amazon = "http://www.amazon.co.uk/s/ref=nb_ss_gw/?url=search-alias%3Dmusic&field-keywords=" + encodeURIComponent(name) + "+" + encodeURIComponent(albumtitle) + "&tag=ca0cc-20/ca0cc-20";
+                                    $(".amazon").prop("href", amazon);
+                                    var allmusic = "http://www.allmusic.com/search/album/" + encodeURIComponent(albumtitle);
+                                    $(".allmusic").prop("href", allmusic);
+                                } else {
+                                    $(".links").css("display", "none");
+                                }
+
+                                $(".released").html(released);
+                                $(".disccount").html(disccount);
+                                $(".format").html(format);
+                                $(".genre").html(genre);
+                                $(".albumplayingtime").html(playingtime);
+
+                                if (isboxset == false) {
+
+                                    url = "scripts/getDiscs.php";
+                                    $.ajax({
+                                        url: url,
+                                        data: {albumid: albumid},
+                                        dataType: "jsonp",
+                                        jsonpCallback: "getDiscs",
+                                        success: function (discs) {
+
+                                            url = "scripts/getTracks.php";
+                                            $.ajax({
+                                                url: url,
+                                                data: {albumid: albumid},
+                                                dataType: "jsonp",
+                                                jsonpCallback: "getTracks",
+                                                success: function (tracks) {
+                                                    var prevdiscno = 0;
+                                                    if (!audioPlayer.state.playing) {
+                                                        audioPlayer.clearPlaylist();
+                                                    }
+
+                                                    var filesExist = false;
+                                                    var difAlbumArtist = false;
+                                                    var difTrackArtist = false;
+                                                    var firstTrackName = tracks[0].name;
+
+                                                    for (i = 0; i < tracks.length; i++) {
+                                                        var discno = tracks[i].discno;
+                                                        var track = tracks[i].track;
+                                                        var title = tracks[i].title;
+                                                        var name2 = tracks[i].name;
+                                                        var playingtime = tracks[i].playingtime;
+                                                        var filename = tracks[i].filename;
+                                                        var fileexists = tracks[i].fileexists;
+
+                                                        songs[i + 1] = folder + "/" + filename;
+                                                        tags[i + 1] = name2 + " - " + title + " (" + albumtitle + ")";
+                                                        if (!audioPlayer.state.playing) {
+                                                            audioPlayer.addToPlaylist(songs[i + 1], tags[i + 1]);
+                                                        }
+
+                                                        if (disccount > 1 && discno !== prevdiscno) {
+                                                            var row = document.createElement("tr");
+                                                            $(".tracktable").append(row);
+                                                            var cell = document.createElement("td");
+                                                            $(cell).attr("class", "albumdisctitle");
+                                                            var disctitle = discs[discno - 1].title;
+                                                            $(cell).html(disctitle);
+                                                            $(row).append(cell);
+                                                            var cell = document.createElement("td");
+                                                            $(cell).attr("class", "albumdiscplayingtime");
+                                                            var discplayingtime = discs[discno - 1].playingtime;
+                                                            $(cell).html(discplayingtime);
+                                                            $(row).append(cell);
+                                                        }
+
+                                                        var row = document.createElement("tr");
+                                                        $(".tracktable").append(row);
+
+                                                        var cell = document.createElement("td");
+                                                        $(cell).attr("class", "fieldvalue track");
+                                                        $(cell).html(track + ".");
+                                                        $(row).append(cell);
+
+                                                        var cell = document.createElement("td");
+                                                        $(cell).attr("class", "fieldvalue img");
+                                                        $(row).append(cell);
+
+                                                        var image = new Image();
+                                                        $(image).css("display", "none");
+                                                        $(image).attr("class", "speaker");
+                                                        $(image).attr("id", "speaker" + (i + 1));
+                                                        var src = "images/play.gif";
+                                                        $(image).attr("src", src);
+                                                        $(image).on("click", {index: i + 1}, startPlayer);
+                                                        $(cell).append(image);
+
+                                                        if (audioPlayer.state.playing) {
+                                                            var song = audioPlayer.getCurrentSong();
+                                                            if (songs[i + 1] == song) {
+                                                                var src = "images/playing.gif";
+                                                                $(image).attr("src", src);
+                                                            }
+                                                        }
+
+                                                        if (fileexists) {
+                                                            $(image).css("display", "inline");
+                                                        }
+
+                                                        if (fileexists) {
+                                                            filesExist = true;
+                                                        }
+
+                                                        var cell = document.createElement("td");
+                                                        $(cell).attr("class", "fieldvalue title");
+                                                        $(cell).attr("id", "title" + (i + 1));
+                                                        $(row).append(cell);
+                                                        if (audioPlayer.state.playing) {
+                                                            var song = audioPlayer.getCurrentSong();
+                                                            if (songs[i + 1] == song) {
+                                                                $(cell).css("font-weight", "bold");
+                                                            }
+                                                        }
+                                                        var a = document.createElement("a");
+                                                        var href = "scripts/lyrics.php?artist=" + encodeURIComponent(name2) + "&song=" + encodeURIComponent(title);
+                                                        $(a).prop("href", href);
+                                                        $(a).html(title);
+                                                        var visited = window.localStorage.getItem(href);
+                                                        if (visited === 'visited') {
+                                                            $(a).css("color", "green");
+                                                        } else {
+                                                            $(a).css("color", "blue");
+                                                        }
+                                                        $(cell).append(a);
+
+                                                        var div1 = document.createElement("div");
+                                                        $(div1).attr("class", "hint");
+                                                        $(div1).html("Song Lyrics " + title);
+                                                        $(a).append(div1);
+                                                        var div2 = document.createElement("div");
+                                                        $(div2).attr("class", "hintafter1");
+                                                        $(div1).append(div2);
+                                                        var div2 = document.createElement("div");
+                                                        $(div2).attr("class", "hintafter2");
+                                                        $(div1).append(div2);
+
+                                                        var cell = document.createElement("td");
+                                                        $(cell).attr("class", "fieldvalue name");
+                                                        $(cell).css("display", "none");
+                                                        $(cell).html(name2);
+                                                        $(row).append(cell);
+
+                                                        if (name !== name2) {
+                                                            difAlbumArtist = true;
+                                                        }
+                                                        if (name2 !== firstTrackName) {
+                                                            difTrackArtist = true;
+                                                        }
+
+                                                        var cell = document.createElement("td");
+                                                        $(cell).attr("class", "fieldvalue playingtime");
+                                                        $(cell).html(playingtime);
+                                                        $(row).append(cell);
+
+                                                        prevdiscno = discno;
+                                                    }
+
+                                                    var colspan = 2;
+
+                                                    if (filesExist) {
+                                                        $(".img").css("display", "table-cell");
+                                                        colspan += 1;
+                                                    }
+
+                                                    if (difAlbumArtist && difTrackArtist) {
+                                                        $(".name").css("display", "table-cell");
+                                                        colspan += 1;
+                                                    }
+
+                                                    $(".albumdisctitle").attr("colspan", colspan);
+
+                                                    if (difAlbumArtist && !difTrackArtist) {
+                                                        headertitle = firstTrackName + " - " + albumtitle;
+                                                        $(document).prop("title", headertitle);
+                                                        $(".headertitle").html(headertitle);
+                                                    }
+
+                                                    if (!audioPlayer.state.playing) {
+                                                        audioPlayer.setSourceIndex(1);
+                                                    }
+
+                                                    $("a").on("click", function (event) {
+                                                        var href = $(event.target).attr("href");
+                                                        window.localStorage.setItem(href, "visited");
+                                                    });
+
+                                                    if (boxsetid != -1) {
+                                                        resizeBoxFrame();
+                                                    }
+
+                                                }
+                                            }); // end of getTracks
+
+                                        }
+                                    }); // end of getDiscs
+
+                                } // end of if not boxset
+
+                            }
+                        }); // end of getArtist
+
+                    }
+                }); // end of getAlbum
+
+                $(".image").on("click", function () {
+                    var boxsetalbumsFrame = parent.frames["boxsetalbums"];
+                    if ($(this).width() == 250) {
+                        $(".image").animate({"width": "500px"}, 1000);
+                        $(".albumimagemirror").animate({"height": "127px"}, 1000);
+                        $("canvas").animate({"width": "500px"}, 1000);
+                        $(".albumtable").animate({"top": "-50px"}, 1000, function () {
+                            if (boxsetalbumsFrame) {
+                                resizeBoxFrame();
+                            }
+                        });
+                    } else {
+                        $(".image").animate({"width": "250px"}, 1000);
+                        $(".albumimagemirror").animate({"height": "63.5px"}, 1000);
+                        $("canvas").animate({"width": "250px"}, 1000);
+                        $(".albumtable").animate({"top": "-25px"}, 1000, function () {
+                            if (boxsetalbumsFrame) {
+                                resizeBoxFrame();
+                            }
+                        });
+                    }
+                });
+
+            });
+
+        </script>
+
+    </head>
+
+    <body>
+
+        <div class="player"></div>
+        <div class="back"><a class="backlink">Back</a></div>
+
+        <!-- Heading -->
+        <div class="wrapper">
+            <div class="header">
+                <div class="headertitle"></div>
+            </div>
+        </div>
+
+        <br/>
+
+        <div class="wrapper">
+
+            <div class="maindiv">
+
+                <div  class="albumdiv">
+
+                    <!-- Cover -->
+                    <div class="albumimage">
+                        <img class="image"/>
+                    </div>
+                    <div class="albumimagemirror"></div>
+
+                    <!-- Albumdetails -->
+                    <table class="albumtable">
+                        <tr>
+                            <td class="fieldname">Released</td>
+                            <td class="fieldvalue released"></td>
+                        </tr>
+                        <tr>
+                            <td class="fieldname">Count</td>
+                            <td class="fieldvalue disccount"></td>
+                        </tr>
+                        <tr>
+                            <td class="fieldname">Format</td>
+                            <td class="fieldvalue format"></td>
+                        </tr>
+                        <tr>
+                            <td class="fieldname">Genre</td>
+                            <td class="fieldvalue genre"></td>
+                        </tr>
+                        <tr>
+                            <td class="fieldname">Playing Time</td>
+                            <td class="fieldvalue albumplayingtime"></td>
+                        </tr>
+                    </table>
+
+                    <br/>
+
+                    <button class="download" type="button">
+                        <img class="downloadimg" alt="downloading" src="images/download.png"/>
+                    </button>
+                    <img class="downloading" alt="downloading" src="images/spinner.gif"/>
+
+                    <br/>
+
+                </div>
+
+                <div  class="tracksdiv">
+                    <table class="tracktable"></table>
+                </div>
+
+            </div>
+        </div>
+
+        <iframe name="boxsetalbums" class="boxsetalbums"></iframe>
+
+        <div class="links">
+            <br/>
+            <br/>
+            <a class="amazon" target="_blank"><img alt="amazon" src="images/amazon.gif" style="border-width:0px"/></a>
+            <br/>
+            <br/>
+            <a class="allmusic" target="_blank">Search All Music Guide</a>
+        </div>
+
+    </body>
+
+</html>

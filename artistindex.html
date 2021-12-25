@@ -1,0 +1,358 @@
+<!--  oyomusic 2.0
+  tested with jQuery 3.4.0
+  http://www.oyoweb.nl
+
+  © 2015-2021 oYoSoftware
+  MIT License
+
+  oyomusic is a library for showing your own musical content-->
+
+<html>
+    <head>
+        <title>Artist Index</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
+        <script src="plugins/oyoplayer/oyoplayer.js"></script>
+        <link rel="stylesheet" href="plugins/oyoplayer/oyoplayer.css">
+
+        <style>
+            * {
+                box-sizing          : border-box;
+            }
+            body {
+                font-family         : Arial, Verdana, Helvetica, sans-serif;
+                font-size           : 14pt;
+                font-weight         : bold;
+                margin              : 0px;
+                padding             : 8px;
+                padding-bottom      : 0px;
+            }
+            ::-webkit-scrollbar {
+                height              : 10px;
+                width               : 10px;
+            }
+            ::-webkit-scrollbar-thumb {
+                background          : white;
+                border              : 2px solid black;
+                border-radius       : 4px;
+            }
+            ::-webkit-scrollbar-thumb:vertical {
+                border-right        : 1px solid black;
+            }
+            ::-webkit-scrollbar-thumb:horizontal {
+                border-bottom       : 1px solid black;
+            }
+            a:link {
+                text-decoration     : none;
+            }
+            a:visited {
+                text-decoration     : none;
+            }
+            a:hover {
+                text-decoration     : underline;
+            }
+            .wrapper {
+                width               : 100%;
+                white-space         : nowrap;
+            }
+            .player {
+                display             : inline-block;
+                height              : 90px;
+                min-width           : 500px;
+                max-width           : 500px;
+            }
+            .oyoplayer {
+                position            : relative;
+                top                 : 22px;
+            }
+            img {
+                height              : 100%;
+                border-radius       : 8px;
+                box-shadow          : 8px 8px 16px black;
+                margin-bottom       : 8px;
+            }
+            .titlerecord {
+                display             : inline-block;
+                width               : calc(100% - 808px);
+                vertical-align      : top;
+                padding-left        : 16px;
+                padding-right       : 16px;
+            }
+            .title {
+                font-size           : 20pt;
+                font-weight         : bold;
+                text-align          : center;
+                white-space         : nowrap;
+            }
+            .record {
+                font-size           : 14pt;
+                font-weight         : bold;
+                text-align          : center;
+                white-space         : nowrap;
+            }
+            .maindiv {
+                width               : 100%;
+                background-color    : white;
+            }
+            .form {
+                width               : 100%;
+                padding             : 8px;
+                padding-left        : 8px;
+                margin              : 0px;
+                white-space         : nowrap;
+            }
+            .form * {
+                vertical-align      : middle;
+            }
+            .search {
+                width               : 50%;
+                height              : 20px;
+                min-width           : 200px;
+                margin-right        : 8px;
+                border              : 1px solid grey;
+                box-shadow          : 4px 4px 8px rgba(0, 0, 0, 0.5);
+            }
+            .search[data-changed="changed"] {
+                font-weight         : bold;
+            }
+            select {
+                margin-right        : 8px;
+                color               : grey;
+                height              : 20px;
+                box-shadow          : 4px 4px 8px rgba(0, 0, 0, 0.5);
+            }
+            select[data-changed="changed"] {
+                font-weight         : bold;
+                color               : black;
+            }
+            select option {
+                font-weight         : bold;
+                color               : black;
+            }
+            .country {
+                width               : 127px;
+            }
+            .year {
+                width               : 92px;
+            }
+            .genre {
+                width               : 137px;
+            }
+            .submit {
+                width               : 80px;
+                height              : 20px;
+                margin-left         : 32px;
+                font-size           : 10pt;
+                font-weight         : bold;
+                box-shadow          : 4px 4px 8px rgba(0, 0, 0, 0.5);
+            }
+            .version {
+                display             : inline-block;
+                font-size           : 8pt;
+                font-weight         : bold;
+                text-align          : right;
+                vertical-align      : top;
+                min-width           : 300px;
+                white-space         : nowrap;
+            }
+            a {
+                position            : relative;
+            }
+            @font-face {
+                font-family         : 'Glyphicons Halflings';
+                src                 : url('images/glyphicons-halflings-regular.ttf');
+            }
+            .glyphicon {
+                position            : relative;
+                top                 : -2px;
+                font-family         : 'Glyphicons Halflings';
+            }
+        </style>
+
+        <script>
+
+            $(document).ready(function () {
+
+                audioPlayer = new oyoPlayer("player");
+                $(".player").append(audioPlayer);
+                document.body.scrollLeft = 0;
+
+                var url = "scripts/getSettings.php";
+                $.ajax({
+                    url: url,
+                    dataType: "jsonp",
+                    jsonpCallback: "getSettings",
+                    success: function (settings) {
+                        var headertitle = settings.headertitle;
+                        $(".title").html(headertitle);
+                    }
+                });
+
+                var url = "scripts/getLetters.php";
+                $.ajax({
+                    url: url,
+                    dataType: "jsonp",
+                    jsonpCallback: "getLetters",
+                    success: function (letters) {
+                        for (var i = 0; i < letters.length; i++) {
+                            var letter = letters[i].letter;
+                            var uriletter = encodeURIComponent(letter);
+
+                            var a = document.createElement("a");
+                            var href = "artistlist.html?letter=" + uriletter;
+                            $(a).attr("href", href);
+                            $(a).attr("target", "artists");
+                            $(a).html(letter);
+
+                            var visited = window.localStorage.getItem(href);
+                            if (visited === 'visited') {
+                                $(a).css("color", "green");
+                            } else {
+                                $(a).css("color", "blue");
+                            }
+                            $(".record").append(a);
+                            $(".record").append(" ");
+                        }
+
+                        $(".record > a").click(function (event) {
+                            window.localStorage.setItem($(event.target).attr("href"), "visited");
+                            $(event.target).css("color", "green");
+                        });
+                        parent.frames['artists'].location.href = $("a").attr("href");
+                    }
+                });
+
+                $(".search").on("keyup", function (event) {
+                    if (event.target.value != "") {
+                        $(".search").attr("data-changed", "changed");
+                    } else {
+                        $(".search").attr("data-changed", "");
+                    }
+                });
+
+                var url = "scripts/getCountries.php";
+                $.ajax({
+                    url: url,
+                    dataType: "jsonp",
+                    jsonpCallback: "getCountries",
+                    success: function (countries) {
+                        for (var i = 0; i < countries.length; i++) {
+                            var option = document.createElement("option");
+                            $(option).val(countries[i].country);
+                            $(option).html(countries[i].country);
+                            $(".country").append(option);
+                        }
+
+                        $(".country").on("change", function () {
+                            $(".country").attr("data-changed", "changed");
+                        });
+                        $(".country").on("focus", function () {
+                            $(".country").val("");
+                            $(".country").attr("data-changed", "");
+                        });
+                    }
+                });
+
+                var url = "scripts/getYears.php";
+                $.ajax({
+                    url: url,
+                    dataType: "jsonp",
+                    jsonpCallback: "getYears",
+                    success: function (years) {
+                        for (var i = 0; i < years.length; i++) {
+                            var option = document.createElement("option");
+                            $(option).html(years[i].year);
+                            $(".year").append(option);
+                        }
+                        $(".year").on("change", function () {
+                            $(".year").attr("data-changed", "changed");
+                        });
+                        $(".year").on("focus", function () {
+                            $(".year").val("");
+                            $(".year").attr("data-changed", "");
+                        });
+                    }
+                });
+
+                var url = "scripts/getGenres.php";
+                $.ajax({
+                    url: url,
+                    dataType: "jsonp",
+                    jsonpCallback: "getGenres",
+                    success: function (genres) {
+                        for (var i = 0; i < genres.length; i++) {
+                            var option = document.createElement("option");
+                            $(option).html(genres[i].genre);
+                            $(".genre").append(option);
+                        }
+                        $(".genre").on("change", function () {
+                            $(".genre").attr("data-changed", "changed");
+                        });
+                        $(".genre").on("focus", function () {
+                            $(".genre").val("");
+                            $(".genre").attr("data-changed", "");
+                        });
+                    }
+                });
+
+                $(".link").on("click", function () {
+                    var search = encodeURIComponent($(".search").val());
+                    var country = "", year = "", genre = "";
+                    if ($(".country").val())
+                        country = encodeURIComponent($(".country").val());
+                    if ($(".year").val())
+                        year = encodeURIComponent($(".year").val());
+                    if ($(".genre").val())
+                        genre = encodeURIComponent($(".genre").val());
+                    var href = "albumsearch.html?search=" + search + "&country=" + country + "&year=" + year + "&genre=" + genre + "&pageno=1";
+                    $(this).attr("href", href);
+                    $(".search").focus();
+                });
+
+                $("input").on("keydown", function (event) {
+                    if (event.keyCode == 13) {
+                        event.preventDefault();
+                        return false;
+                    }
+                });
+
+                $("input").on("keyup", function (event) {
+                    if (event.keyCode == 13) {
+                        $(".submit").click();
+                    }
+                });
+
+            });
+
+        </script>
+
+    </head>
+
+    <body>
+
+        <div class="wrapper">
+            <div class="player"></div>
+            <div class="titlerecord">
+                <div>
+                    <div class="title"></div>
+                    <div class="record"></div>
+                    <div class='maindiv'>
+                        <form class="form">
+                            <input class="search" type="search" autofocus="autofocus" placeholder="Search Artist, Title or Boxset" title="All words in Artist or in Title/Boxset"/>
+                            <select class="country"><option value="" disabled selected hidden>Select Country</option></select>
+                            <select class="year"><option value="" disabled selected hidden>Select Year</option></select>
+                            <select class="genre"><option value="" disabled selected hidden>Select Genre</option></select>
+                            <a class="link" target="albums">
+                                <button class="submit" type="button"><span class="glyphicon glyphicon-music">&#xe002</span> Search</button>
+                            </a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="version">&#169; 2020 oYoMusic 2.0</div>
+        </div>
+
+    </body>
+
+</html>
