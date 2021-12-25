@@ -1,0 +1,95 @@
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+        <script src="oyoresizer.js"></script>
+        <style>
+            * {
+                box-sizing      : border-box;
+            }
+            body {
+                margin              : 0px;
+                padding             : 0px;
+            }
+            ::-webkit-scrollbar {
+                height              : 10px;
+                width               : 10px;
+            }
+            ::-webkit-scrollbar-thumb {
+                background          : white;
+                border              : 2px solid black;
+                border-radius       : 4px;
+            }
+            ::-webkit-scrollbar-thumb:vertical {
+                border-right        : 1px solid black;
+            }
+            ::-webkit-scrollbar-thumb:horizontal {
+                border-bottom       : 1px solid black;
+            }
+            .resizable {
+                height:	250px;
+                border:	10px solid black;
+                overflow-x: hidden;
+                overflow-y: auto;
+                margin: 10px;
+                padding-left: 4px;
+                padding-right: 16px;
+            }
+            #resizable1 {
+                width: 100px;
+                margin-left: 50px;
+            }
+            #resizable2 {
+                width: 150px;
+                height: 100px;
+                border-left: 10px solid red;
+                border-right: 30px solid red;
+            }
+            .divchild {
+                border: 1px solid red;
+                margin-left: 50px;
+                overflow: hidden;
+            }
+            .oyowrapper1  {
+                border: 10px solid red;
+            }
+        </style>
+        <script>
+            $(document).ready(function () {
+
+                var frameResizer = new oyoresizer(parent.document.getElementById("frameresizer"), 450, 960);
+                frameResizer.resizeMargin = 10;
+
+                var parentdiv = $("#resizable1");
+                for (i = 0; i < 30; i++) {
+                    var div = document.createElement("div");
+                    $(div).html("Ipsem solorem.");
+                    $(parentdiv).append(div);
+                }
+
+                var resizables = new oyoresizer(".resizable");
+                resizables.setSize(200, 800);
+                resizables.resizeMargin = 10;
+
+                var resizable1 = new oyoresizer("#resizable1");
+                resizable1.setSize(350, 700);
+                resizable1.resizeMargin = 10;
+
+                var resizable2 = new oyoresizer("#resizable2");
+                resizable2.setSize(200, 800);
+                resizable2.resizeMargin = 10;
+            });
+        </script>
+    </head>
+    <body>
+        <div id="resizable1" class="resizable">
+            <div class="divchild"><div>Ipsem solorem dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</div></div>
+        </div>
+
+        <div id="resizable2" class="resizable">
+            <div class="divchild">Ipsem solorem.</div>
+        </div>
+    </body>
+</html>
