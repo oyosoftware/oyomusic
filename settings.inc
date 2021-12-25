@@ -1,5 +1,4 @@
 <?php
-
 $server = "localhost";
 $username = "username";
 $password = "password";
@@ -9,11 +8,9 @@ $headertitle = "My Music Collection";
 $recordspage = 10;
 $searchrecordspage = 100;
 $pagerange = 9;
-$audiosource = "//MediaServer/Shared/Music";
+$audiosource = "/music";
 $imagepath = "images/albums";
 $imagepaththumbs = "images/albums/thumbs";
 $imagepathartists = "images/artists";
 $joomlapath = "/joomla";
-$discogsAPIkey = "";
-$youtubeAPIkey = "";
 ?>
