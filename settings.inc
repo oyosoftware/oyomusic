@@ -1,8 +1,8 @@
 <?php
 
 $server = "localhost";
-$username = "root";
-$password = "syntax";
+$username = "username";
+$password = "password";
 $database = "music";
 $pagetitle = "oYoMusic: Music Collection Software";
 $headertitle = "My Music Collection";
