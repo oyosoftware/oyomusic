@@ -30,6 +30,10 @@
   <li>Embedded audio player.</li>
   <li>Support for local files.</li
 </ul>
+<h2>Third party plugins</h2>
+<ul>
+  <li>getID3 https://github.com/JamesHeinrich/getID3</li>
+</ul>
 <h2>Contact</h2>
 <ul>
 <li>oyosoftware <a href="mailto:software@oyoweb.nl">software@oyoweb.nl</a></li>
