@@ -10,18 +10,31 @@ require_once('../helpers/functions.php');
 
 $log = fopen("output.log", "w");
 
-$symaudiosource = "/#t";
-if (file_exists($symaudiosource)) {
-    rmdir($symaudiosource);
-}
-symlink($audiosource, $symaudiosource);
-
 $link = mysqli_connect($server, $username, $password, $database);
 $sql = "use " . $database;
 if (!mysqli_query($link, $sql))
     die("Database doesn't exist.");
 
 mysqli_set_charset($link, "utf8");
+
+if (file_exists($audiosource)) {
+    $target = $audiosource;
+} else {
+    $target = $_SERVER["DOCUMENT_ROOT"] . $audiosource;
+}
+
+$sql = "select * from albums where id=$albumid";
+$result = mysqli_query($link, $sql);
+$row = mysqli_fetch_assoc($result);
+$folder = $row["Folder"];
+$target = $target . $folder;
+
+$symaudiosource = "tracks";
+if (file_exists($symaudiosource)) {
+    rmdir($symaudiosource);
+    unlink($symaudiosource);
+}
+symlink($target, $symaudiosource);
 
 $sql = "select * from tracks where albumid=$albumid order by albumid, discno, track";
 $result = mysqli_query($link, $sql);
@@ -43,12 +56,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 
     $time = formattime($row["PlayingTime"]);
 
-    $albumid = $row["AlbumId"];
-    $sql = "select * from albums where id='$albumid'";
-    $result2 = mysqli_query($link, $sql);
-    $row2 = mysqli_fetch_assoc($result2);
-
-    $file = $symaudiosource . $row2["Folder"] . '/' . $row["FileName"];
+    $file = $symaudiosource . '/' . $row["FileName"];
     $linkinfo = linkinfo($file);
     fwrite($log, $file . " " . $linkinfo . "\r\n");
 
@@ -78,4 +86,5 @@ fclose($log);
 mysqli_close($link);
 
 rmdir($symaudiosource);
+unlink($symaudiosource);
 ?>
