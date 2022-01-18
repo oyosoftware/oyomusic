@@ -26,7 +26,7 @@ $row = mysqli_fetch_assoc($result);
 $folder = $row["Folder"];
 $target = $target . $folder;
 
-$symaudiosource = "album";
+$symaudiosource = "files";
 if (file_exists($symaudiosource)) {
     rmdir($symaudiosource);
     unlink($symaudiosource);
