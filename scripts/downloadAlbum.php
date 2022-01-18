@@ -61,26 +61,12 @@ $sympos = mb_strlen($folder);
 $sql = "select * from albums where id=$albumid or boxsetid=$albumid order by boxsetindex";
 $result = mysqli_query($link, $sql);
 
-$counter = 0;
 while ($row = mysqli_fetch_assoc($result)) {
-    $counter++;
     $id = $row["Id"];
     $folder = $row["Folder"];
 
     $zipfolder = mb_substr($folder, $pos + 1) . "/";
     $folder = mb_substr($folder, $sympos);
-
-    if ($counter == 1) {
-        $filename = "../album.html";
-        $zipfilename = "album.html";
-        $zip->addFile($filename, $zipfolder . $zipfilename);
-        $filename = "../plugins/oyoplayer/oyoplayer.js";
-        $zipfilename = "oyoplayer.js";
-        $zip->addFile($filename, $zipfolder . $zipfilename);
-        $filename = "../plugins/oyoplayer/oyoplayer.css";
-        $zipfilename = "oyoplayer.css";
-        $zip->addFile($filename, $zipfolder . $zipfilename);
-    }
 
     $imagefilename = $symaudiosource . $folder . "/" . "Folder.jpg";
     $zipfilename = "Folder.jpg";
@@ -122,27 +108,6 @@ fclose($log);
 
 rmdir($symaudiosource);
 unlink($symaudiosource);
-
-function makeJSON() {
-    $tempfile = tempnam("../tmp", "");
-    $jsonfile = fopen($tempfile, "w");
-    $sql = "select * from artists inner join albums on artists.id=artistid where albums.id=$albumid";
-    $result = mysqli_query($link, $sql);
-    $row = mysqli_fetch_assoc($result);
-
-    $name = $row["Name"];
-
-    $released = $row["Released"];
-    $title = $row["Title"];
-    $disccount = $row["DiscCount"];
-    $formatid = $row["FormatId"];
-    $playingtime = $row["PlayingTime"];
-    $genreid = $row["GenreId"];
-    $imagefilename = $row["ImageFileName"];
-    $isboxset = $row["IsBoxset"];
-    $boxsetid = $row["BoxstId"];
-    $boxsetindex = $row["BoxsetIndex"];
-}
 
 mysqli_close($link);
 ?>
