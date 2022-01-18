@@ -8,9 +8,9 @@ $headertitle = "My Music Collection";
 $recordspage = 10;
 $searchrecordspage = 100;
 $pagerange = 9;
-$audiosource = "/music";
-$imagepath = "images/albums";
-$imagepaththumbs = "images/albums/thumbs";
-$imagepathartists = "images/artists";
+$audiosource = "/music/audio";
+$imagepath = "/music/images/albums";
+$imagepaththumbs = "/music/images/albums/thumbs";
+$imagepathartists = "/music/images/artists";
 $joomlapath = "/joomla";
 ?>
