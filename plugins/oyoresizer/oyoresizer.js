@@ -18,7 +18,7 @@ function oyoresizer(selectors, minX, maxX) {
 
     var element;
     $(selectors).each(function (index, target) {
-        if (!window.frameElement && target.tagName === "IFRAME") {
+        if (window.frameElement !== target && target.tagName === "IFRAME") {
             var hasOverlay = $(target).parent().find(":first-child").eq(0).hasClass("oyooverlay");
             var className;
             if (!hasOverlay) {
