@@ -29,12 +29,20 @@ $row = mysqli_fetch_assoc($result);
 $folder = $row["Folder"];
 $target = $target . $folder;
 
-$symaudiosource = "album";
-if (file_exists($symaudiosource)) {
-    rmdir($symaudiosource);
-    unlink($symaudiosource);
+$symlink = "#t";
+for ($i = 0; $i < 4; $i++) {
+    $random = rand(0, 15);
+    if ($random < 10) {
+        $symlink .= $random;
+    } else {
+        $symlink .= chr(96 + $random - 9);
+    }
 }
-symlink($target, $symaudiosource);
+if (file_exists($symlink)) {
+    rmdir($symlink);
+    unlink($symlink);
+}
+symlink($target, $symlink);
 
 $sql = "select * from tracks where albumid=$albumid order by albumid, discno, track";
 $result = mysqli_query($link, $sql);
@@ -56,14 +64,14 @@ while ($row = mysqli_fetch_assoc($result)) {
 
     $time = formattime($row["PlayingTime"]);
 
-    $file = $symaudiosource . '/' . $row["FileName"];
+    $file = $symlink . '/' . $row["FileName"];
     $linkinfo = linkinfo($file);
     fwrite($log, $file . " " . $linkinfo . "\r\n");
 
     if ($linkinfo <> -1) {
-        $fileexists = 'true,';
+        $fileexists = 'true';
     } else {
-        $fileexists = 'false,';
+        $fileexists = 'false';
     }
 
     $data .= '{'
@@ -85,6 +93,6 @@ fclose($log);
 
 mysqli_close($link);
 
-rmdir($symaudiosource);
-unlink($symaudiosource);
+rmdir($symlink);
+unlink($symlink);
 ?>

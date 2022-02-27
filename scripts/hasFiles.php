@@ -26,19 +26,27 @@ $row = mysqli_fetch_assoc($result);
 $folder = $row["Folder"];
 $target = $target . $folder;
 
-$symaudiosource = "files";
-if (file_exists($symaudiosource)) {
-    rmdir($symaudiosource);
-    unlink($symaudiosource);
+$symlink = "#f";
+for ($i = 0; $i < 4; $i++) {
+    $random = rand(0, 15);
+    if ($random < 10) {
+        $symlink .= $random;
+    } else {
+        $symlink .= chr(96 + $random - 9);
+    }
 }
-symlink($target, $symaudiosource);
+if (file_exists($symlink)) {
+    rmdir($symlink);
+    unlink($symlink);
+}
+symlink($target, $symlink);
 
 $sql = "select * from albums inner join tracks on id=albumid where id=$albumid or boxsetid=$albumid";
 $result = mysqli_query($link, $sql);
 
 $filesexist = false;
 while ($row = mysqli_fetch_assoc($result)) {
-    $file = $symaudiosource . '/' . $row["FileName"];
+    $file = $symlink . '/' . $row["FileName"];
     $linkinfo = linkinfo($file);
 
     if ($linkinfo <> -1) {
@@ -48,7 +56,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 
     $folder = $row["Folder"];
     $pos = mb_strrpos($folder, "/");
-    $file = $symaudiosource . mb_substr($folder, $pos) . '/' . $row["FileName"];
+    $file = $symlink . mb_substr($folder, $pos) . '/' . $row["FileName"];
     $linkinfo = linkinfo($file);
 
     if ($linkinfo <> -1) {
@@ -61,6 +69,6 @@ echo $filesexist;
 
 mysqli_close($link);
 
-rmdir($symaudiosource);
-unlink($symaudiosource);
+rmdir($symlink);
+unlink($symlink);
 ?>
