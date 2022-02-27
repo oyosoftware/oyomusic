@@ -25,13 +25,15 @@
             ::-webkit-scrollbar-thumb:horizontal {
                 border-bottom       : 1px solid black;
             }
-            .albums {
+            #albums {
                 width               : 100%;
-                height              : calc(100% - 46px);
+                height              : calc(100% - 58px);
                 border              : 2px solid black;
             }
         </style>
+    </head>
 
+    <body>
         <script>
             $(document).ready(function () {
                 var artistid = 93;
@@ -48,10 +50,7 @@
                 navigator.setPage(2);
             });
         </script>
-    </head>
-
-    <body>
         <div class="container"></div>
-        <iframe class="albums" name="albums"></iframe>
+        <iframe id="albums" name="albums"></iframe>
     </body>
 </html>
