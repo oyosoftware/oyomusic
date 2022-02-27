@@ -10,6 +10,7 @@
 <html>
     <head>
         <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
+        <script src="plugins/oyonavigator/oyonavigator.js"></script>
 
         <style>
             * {
@@ -318,328 +319,218 @@
                             url: url,
                             data: {search: psearch, country: pcountry, year: pyear, genre: pgenre},
                             success: function (records) {
+                                var results = records + " results ";
+                                if (psearch != "" || pcountry != "" || pyear != "" || pgenre != "") {
+                                    results += "for: ";
+                                }
+                                if (psearch != "") {
+                                    results += psearch + " ";
+                                }
+                                if (pcountry != "") {
+                                    results = results + "Country: " + pcountry + " ";
+                                }
+                                if (pyear != "") {
+                                    results += "Year: " + pyear + " ";
+                                }
+                                if (pgenre != "") {
+                                    results += "Genre: " + pgenre + " ";
+                                }
+                                $(".results").html(results);
 
-                                url = "scripts/getSearch.php";
-                                $.ajax({
-                                    url: url,
-                                    dataType: "jsonp",
-                                    jsonpCallback: "getSearch",
-                                    data: {search: psearch, country: pcountry, year: pyear, genre: pgenre, pageno: pageno},
-                                    success: function (lines) {
-
-                                        var results = records + " results ";
-                                        if (psearch != "" || pcountry != "" || pyear != "" || pgenre != "") {
-                                            results += "for: ";
-                                        }
-                                        if (psearch != "") {
-                                            results += psearch + " ";
-                                        }
-                                        if (pcountry != "") {
-                                            results = results + "Country: " + pcountry + " ";
-                                        }
-                                        if (pyear != "") {
-                                            results += "Year: " + pyear + " ";
-                                        }
-                                        if (pgenre != "") {
-                                            results += "Genre: " + pgenre + " ";
-                                        }
-                                        $(".results").html(results);
-
-                                        addPageLinks(records, searchrecordspage, pagerange);
-
-                                        for (i = 0; i < lines.length; i++) {
-
-                                            if (i == 0) {
-                                                $(".wrapper1").css("display", "inline-block");
-                                                $(".wrapper2").css("display", "inline-block");
-                                            }
-
-                                            var artistid = lines[i].artistid;
-                                            var albumid = lines[i].albumid;
-                                            var name = lines[i].name;
-                                            var country = lines[i].country;
-                                            var released = lines[i].released;
-                                            var title = lines[i].title;
-                                            var disccount = lines[i].disccount;
-                                            var format = lines[i].format;
-                                            var playingtime = lines[i].playingtime;
-                                            var genre = lines[i].genre;
-                                            var imagefilename = encodeURIComponent(lines[i].imagefilename);
-
-                                            var row = document.createElement("tr");
-                                            $(".table2").append(row);
-
-                                            var cell = document.createElement("td");
-                                            $(cell).attr("class", "fieldvalue cover");
-                                            $(row).append(cell);
-                                            var a = document.createElement("a");
-                                            var href = "album.html?albumid=" + albumid + location.search.replace("?", "&");
-                                            $(a).attr("href", href);
-                                            $(cell).append(a);
-                                            var image = document.createElement("img");
-                                            $(image).attr("class", "image");
-                                            var src = imagepaththumbs + "/" + imagefilename;
-                                            $(image).attr("src", src);
-                                            $(a).append(image);
-
-                                            var div1 = document.createElement("div");
-                                            $(div1).attr("class", "hint");
-                                            $(div1).html("Album Details " + title);
-                                            $(a).append(div1);
-                                            var div2 = document.createElement("div");
-                                            $(div2).attr("class", "hintafter1");
-                                            $(div1).append(div2);
-                                            var div2 = document.createElement("div");
-                                            $(div2).attr("class", "hintafter2");
-                                            $(div1).append(div2);
-
-                                            var cell = document.createElement("td");
-                                            $(cell).attr("class", "fieldvalue country");
-                                            $(row).append(cell);
-                                            var a = document.createElement("a");
-                                            var href = "albumsearch.html?search=" + psearch + "&country=" + country + "&year=" + pyear + "&genre=" + pgenre + "&pageno=1";
-                                            $(a).attr("href", href);
-                                            var datalink = "albumsearch.html?country=" + country;
-                                            $(a).attr("data-link", datalink);
-                                            $(a).html(country);
-                                            var visited = window.localStorage.getItem(datalink);
-                                            if (visited === 'visited') {
-                                                $(a).css("color", "green");
-                                            } else {
-                                                $(a).css("color", "blue");
-                                            }
-                                            $(cell).append(a);
-
-                                            var cell = document.createElement("td");
-                                            $(cell).attr("class", "fieldvalue artist");
-                                            $(row).append(cell);
-                                            var a = document.createElement("a");
-                                            var href = "albumlist.html?artistid=" + artistid + "&isboxset=0&boxsetid=0&pageno=1";
-                                            $(a).attr("href", href);
-                                            var datalink = href;
-                                            $(a).attr("data-link", datalink);
-                                            $(a).html(name);
-                                            var visited = window.localStorage.getItem(datalink);
-                                            if (visited === 'visited') {
-                                                $(a).css("color", "green");
-                                            } else {
-                                                $(a).css("color", "blue");
-                                            }
-                                            $(cell).append(a);
-
-                                            var cell = document.createElement("td");
-                                            $(cell).attr("class", "fieldvalue title");
-                                            $(row).append(cell);
-                                            var a = document.createElement("a");
-                                            var href = "album.html?albumid=" + albumid + location.search.replace("?", "&");
-                                            $(a).attr("href", href);
-                                            var datalink = href;
-                                            $(a).attr("data-link", datalink);
-                                            $(a).html(title);
-                                            var visited = window.localStorage.getItem(href);
-                                            if (visited === 'visited') {
-                                                $(a).css("color", "green");
-                                            } else {
-                                                $(a).css("color", "blue");
-                                            }
-                                            $(cell).append(a);
-
-                                            var div1 = document.createElement("div");
-                                            $(div1).attr("class", "hint");
-                                            $(div1).html("Album Details " + title);
-                                            $(a).append(div1);
-                                            var div2 = document.createElement("div");
-                                            $(div2).attr("class", "hintafter1");
-                                            $(div1).append(div2);
-                                            var div2 = document.createElement("div");
-                                            $(div2).attr("class", "hintafter2");
-                                            $(div1).append(div2);
-
-                                            var cell = document.createElement("td");
-                                            $(cell).attr("class", "fieldvalue released");
-                                            $(row).append(cell);
-                                            var a = document.createElement("a");
-                                            var href = "albumsearch.html?search=" + psearch + "&country=" + pcountry + "&year=" + released + "&genre=" + pgenre + "&pageno=1";
-                                            $(a).attr("href", href);
-                                            var datalink = "albumsearch.html?year=" + released;
-                                            $(a).attr("data-link", datalink);
-                                            $(a).html(released);
-                                            var visited = window.localStorage.getItem(datalink);
-                                            if (visited === 'visited') {
-                                                $(a).css("color", "green");
-                                            } else {
-                                                $(a).css("color", "blue");
-                                            }
-                                            $(cell).append(a);
-
-                                            var cell = document.createElement("td");
-                                            $(cell).attr("class", "fieldvalue count");
-                                            $(cell).html(disccount);
-                                            $(row).append(cell);
-
-                                            var cell = document.createElement("td");
-                                            $(cell).attr("class", "fieldvalue format");
-                                            $(cell).html(format);
-                                            $(row).append(cell);
-
-                                            var cell = document.createElement("td");
-                                            $(cell).attr("class", "fieldvalue genre");
-                                            $(row).append(cell);
-                                            var a = document.createElement("a");
-                                            var href = "albumsearch.html?search=" + psearch + "&country=" + pcountry + "&year=" + pyear + "&genre=" + genre + "&pageno=1";
-                                            $(a).attr("href", href);
-                                            var datalink = "albumsearch.html?genre=" + genre;
-                                            $(a).attr("data-link", datalink);
-                                            $(a).html(genre);
-                                            var visited = window.localStorage.getItem(datalink);
-                                            if (visited === 'visited') {
-                                                $(a).css("color", "green");
-                                            } else {
-                                                $(a).css("color", "blue");
-                                            }
-                                            $(cell).append(a);
-
-                                            var cell = document.createElement("td");
-                                            $(cell).attr("class", "fieldvalue playingtime");
-                                            $(cell).html(playingtime);
-                                            $(row).append(cell);
-
-                                        } // end for loop
-
-                                        setTimeout(function () {
-                                            resizeHeader();
-                                        }, 100);
-
-                                        $("a").click(function (event) {
-                                            var datalink = $(event.target).attr("data-link");
-                                            window.localStorage.setItem(datalink, "visited");
-                                        });
-
-                                    } // end success
-                                });
+                                if (records > searchrecordspage) {
+                                    var baseUrl = "albumsearch.html?search=" + psearch + "&country=" + pcountry + "&year=" + pyear + "&genre=" + pgenre;
+                                    var navigator = new oyoNavigator(records, searchrecordspage, pagerange, baseUrl);
+                                    $(".header").append(navigator);
+                                    navigator.setPage(pageno);
+                                    $(".wrapper1").css("top", parseInt($(".wrapper1").css("top")) + 23);
+                                    $(".wrapper2").css("top", parseInt($(".wrapper2").css("top")) + 23);
+                                }
+                                var div = document.createElement("div");
+                                $(div).attr("class", "break");
+                                $(".header").append(div);
                             }
                         });
 
+                        addRecords(imagepaththumbs);
                     }
                 });
 
-                function addPageLinks(records, recordspage, pagerange) {
-                    var totalpages = Math.floor((records - 1) / recordspage) + 1;
-                    if (totalpages === 1) {
-                        return;
-                    }
+                function addRecords(imagepaththumbs) {
+                    url = "scripts/getSearch.php";
+                    $.ajax({
+                        url: url,
+                        dataType: "jsonp",
+                        jsonpCallback: "getSearch",
+                        data: {search: psearch, country: pcountry, year: pyear, genre: pgenre, pageno: pageno},
+                        success: function (lines) {
+                            for (i = 0; i < lines.length; i++) {
+                                var artistid = lines[i].artistid;
+                                var albumid = lines[i].albumid;
+                                var name = lines[i].name;
+                                var country = lines[i].country;
+                                var released = lines[i].released;
+                                var title = lines[i].title;
+                                var disccount = lines[i].disccount;
+                                var format = lines[i].format;
+                                var playingtime = lines[i].playingtime;
+                                var genre = lines[i].genre;
+                                var imagefilename = encodeURIComponent(lines[i].imagefilename);
 
-                    $(".wrapper1").css("top", parseInt($(".wrapper1").css("top")) + 23);
-                    $(".wrapper2").css("top", parseInt($(".wrapper2").css("top")) + 23);
+                                var row = document.createElement("tr");
+                                $(".table2").append(row);
 
-                    var href = "";
+                                var cell = document.createElement("td");
+                                $(cell).attr("class", "fieldvalue cover");
+                                $(row).append(cell);
+                                var a = document.createElement("a");
+                                var href = "album.html?albumid=" + albumid + location.search.replace("?", "&");
+                                $(a).attr("href", href);
+                                $(cell).append(a);
+                                var image = document.createElement("img");
+                                $(image).attr("class", "image");
+                                var src = imagepaththumbs + "/" + imagefilename;
+                                $(image).attr("src", src);
+                                $(a).append(image);
 
-                    var img = document.createElement("img");
-                    if (pageno === 1) {
-                        $(img).prop("src", "images/db_first_d.gif");
-                        $(".navigator").append(img);
-                    } else {
-                        var a = document.createElement("a");
-                        href = "albumsearch.html?search=" + psearch + "&country=" + pcountry + "&year=" + pyear + "&genre=" + pgenre + "&pageno=1";
-                        $(a).prop("href", href);
-                        $(".navigator").append(a);
-                        $(img).prop("src", "images/db_first.gif");
-                        $(a).append(img);
-                    }
-                    $(img).attr("class", "pagebutton");
-                    $(".navigator").append(" ");
+                                var div1 = document.createElement("div");
+                                $(div1).attr("class", "hint");
+                                $(div1).html("Album Details " + title);
+                                $(a).append(div1);
+                                var div2 = document.createElement("div");
+                                $(div2).attr("class", "hintafter1");
+                                $(div1).append(div2);
+                                var div2 = document.createElement("div");
+                                $(div2).attr("class", "hintafter2");
+                                $(div1).append(div2);
 
-                    var img = document.createElement("img");
-                    if (pageno === 1) {
-                        $(img).prop("src", "images/db_previous_d.gif");
-                        $(".navigator").append(img);
-                    } else {
-                        var a = document.createElement("a");
-                        var prevpageno = pageno - 1;
-                        href = "albumsearch.html?search=" + psearch + "&country=" + pcountry + "&year=" + pyear + "&genre=" + pgenre + "&pageno=" + prevpageno;
-                        $(a).prop("href", href);
-                        $(".navigator").append(a);
-                        $(img).prop("src", "images/db_previous.gif");
-                        $(a).append(img);
-                    }
-                    $(img).attr("class", "pagebutton");
-                    $(".navigator").append(" ");
+                                var cell = document.createElement("td");
+                                $(cell).attr("class", "fieldvalue country");
+                                $(row).append(cell);
+                                var a = document.createElement("a");
+                                var href = "albumsearch.html?search=" + psearch + "&country=" + country + "&year=" + pyear + "&genre=" + pgenre + "&pageno=1";
+                                $(a).attr("href", href);
+                                var datalink = "albumsearch.html?country=" + country;
+                                $(a).attr("data-link", datalink);
+                                $(a).html(country);
+                                var visited = window.localStorage.getItem(datalink);
+                                if (visited === 'visited') {
+                                    $(a).css("color", "green");
+                                } else {
+                                    $(a).css("color", "blue");
+                                }
+                                $(cell).append(a);
 
-                    if (pagerange > 0) {
-                        var firstpage = 0;
-                        var lastpage = 0;
+                                var cell = document.createElement("td");
+                                $(cell).attr("class", "fieldvalue artist");
+                                $(row).append(cell);
+                                var a = document.createElement("a");
+                                var href = "albumlist.html?artistid=" + artistid + "&isboxset=0&boxsetid=0&pageno=1";
+                                $(a).attr("href", href);
+                                var datalink = href;
+                                $(a).attr("data-link", datalink);
+                                $(a).html(name);
+                                var visited = window.localStorage.getItem(datalink);
+                                if (visited === 'visited') {
+                                    $(a).css("color", "green");
+                                } else {
+                                    $(a).css("color", "blue");
+                                }
+                                $(cell).append(a);
 
-                        switch (true) {
-                            case (pagerange < totalpages && (pageno + 0.5 * pagerange) > totalpages) :
-                                firstpage = totalpages - pagerange + 1;
-                                break;
-                            case (pagerange < totalpages && (pageno - 0.5 * pagerange) > 0) :
-                                firstpage = pageno - Math.round(0.5 * pagerange) + 1;
-                                break;
-                            default:
-                                firstpage = 1;
+                                var cell = document.createElement("td");
+                                $(cell).attr("class", "fieldvalue title");
+                                $(row).append(cell);
+                                var a = document.createElement("a");
+                                var href = "album.html?albumid=" + albumid + location.search.replace("?", "&");
+                                $(a).attr("href", href);
+                                var datalink = href;
+                                $(a).attr("data-link", datalink);
+                                $(a).html(title);
+                                var visited = window.localStorage.getItem(href);
+                                if (visited === 'visited') {
+                                    $(a).css("color", "green");
+                                } else {
+                                    $(a).css("color", "blue");
+                                }
+                                $(cell).append(a);
+
+                                var div1 = document.createElement("div");
+                                $(div1).attr("class", "hint");
+                                $(div1).html("Album Details " + title);
+                                $(a).append(div1);
+                                var div2 = document.createElement("div");
+                                $(div2).attr("class", "hintafter1");
+                                $(div1).append(div2);
+                                var div2 = document.createElement("div");
+                                $(div2).attr("class", "hintafter2");
+                                $(div1).append(div2);
+
+                                var cell = document.createElement("td");
+                                $(cell).attr("class", "fieldvalue released");
+                                $(row).append(cell);
+                                var a = document.createElement("a");
+                                var href = "albumsearch.html?search=" + psearch + "&country=" + pcountry + "&year=" + released + "&genre=" + pgenre + "&pageno=1";
+                                $(a).attr("href", href);
+                                var datalink = "albumsearch.html?year=" + released;
+                                $(a).attr("data-link", datalink);
+                                $(a).html(released);
+                                var visited = window.localStorage.getItem(datalink);
+                                if (visited === 'visited') {
+                                    $(a).css("color", "green");
+                                } else {
+                                    $(a).css("color", "blue");
+                                }
+                                $(cell).append(a);
+
+                                var cell = document.createElement("td");
+                                $(cell).attr("class", "fieldvalue count");
+                                $(cell).html(disccount);
+                                $(row).append(cell);
+
+                                var cell = document.createElement("td");
+                                $(cell).attr("class", "fieldvalue format");
+                                $(cell).html(format);
+                                $(row).append(cell);
+
+                                var cell = document.createElement("td");
+                                $(cell).attr("class", "fieldvalue genre");
+                                $(row).append(cell);
+                                var a = document.createElement("a");
+                                var href = "albumsearch.html?search=" + psearch + "&country=" + pcountry + "&year=" + pyear + "&genre=" + genre + "&pageno=1";
+                                $(a).attr("href", href);
+                                var datalink = "albumsearch.html?genre=" + genre;
+                                $(a).attr("data-link", datalink);
+                                $(a).html(genre);
+                                var visited = window.localStorage.getItem(datalink);
+                                if (visited === 'visited') {
+                                    $(a).css("color", "green");
+                                } else {
+                                    $(a).css("color", "blue");
+                                }
+                                $(cell).append(a);
+
+                                var cell = document.createElement("td");
+                                $(cell).attr("class", "fieldvalue playingtime");
+                                $(cell).html(playingtime);
+                                $(row).append(cell);
+
+                            } // end for loop
+
+                            $(".wrapper1").css("display", "inline-block");
+                            $(".wrapper2").css("display", "inline-block");
+
+                            setTimeout(function () {
+                                resizeHeader();
+                            }, 100);
+
+                            $("a").click(function (event) {
+                                var datalink = $(event.target).attr("data-link");
+                                window.localStorage.setItem(datalink, "visited");
+                            });
+
                         }
+                    }); // end of getSearch
 
-                        switch (true) {
-                            case ((pageno + 0.5 * pagerange) > totalpages || (pagerange + 1) > totalpages) :
-                                lastpage = totalpages;
-                                break;
-                            case (firstpage === 1) :
-                                lastpage = pagerange;
-                                break;
-                            default:
-                                lastpage = pageno + Math.floor(0.5 * pagerange);
-                        }
-                    }
-
-                    for (var page = firstpage; page <= lastpage; page++) {
-
-                        if (page === pageno) {
-                            var b = document.createElement("b");
-                            $(b).attr("class", "currentpage");
-                            $(b).html(page);
-                            $(".navigator").append(b);
-                        } else {
-                            var a = document.createElement("a");
-                            $(a).attr("class", "pagenumber");
-                            href = "albumsearch.html?search=" + psearch + "&country=" + pcountry + "&year=" + pyear + "&genre=" + pgenre + "&pageno=" + page;
-                            $(a).prop("href", href);
-                            $(a).html(page);
-                            $(".navigator").append(a);
-                        }
-
-                        $(".navigator").append(" ");
-                    }
-
-                    var img = document.createElement("img");
-                    if (pageno === totalpages) {
-                        $(img).prop("src", "images/db_next_d.gif");
-                        $(".navigator").append(img);
-                    } else {
-                        var a = document.createElement("a");
-                        var nextpageno = pageno + 1;
-                        href = "albumsearch.html?search=" + psearch + "&country=" + pcountry + "&year=" + pyear + "&genre=" + pgenre + "&pageno=" + nextpageno;
-                        $(a).prop("href", href);
-                        $(".navigator").append(a);
-                        $(img).prop("src", "images/db_next.gif");
-                        $(a).append(img);
-                    }
-                    $(img).attr("class", "pagebutton");
-                    $(".navigator").append(" ");
-
-                    var img = document.createElement("img");
-                    if (pageno === totalpages) {
-                        $(img).prop("src", "images/db_last_d.gif");
-                        $(".navigator").append(img);
-                    } else {
-                        var a = document.createElement("a");
-                        href = "albumsearch.html?search=" + psearch + "&country=" + pcountry + "&year=" + pyear + "&genre=" + pgenre + "&pageno=" + totalpages;
-                        $(a).prop("href", href);
-                        $(".navigator").append(a);
-                        $(img).prop("src", "images/db_last.gif");
-                        $(a).append(img);
-                    }
-                    $(img).attr("class", "pagebutton");
                 }
 
             });
@@ -647,8 +538,6 @@
 
         <div class="header">
             <div class="results"></div>
-            <div class="navigator"></div>
-            <div class="break"></div>
         </div>
 
         <div class="wrapper1">
