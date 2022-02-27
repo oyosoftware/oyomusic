@@ -7,10 +7,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $pageno = $_GET['pageno'];
     if (isset($_GET['ovrrecordspage'])) {
         $ovrrecordspage = $_GET['ovrrecordspage'];
+    } else {
+        $ovrrecordspage = 0;
     }
 }
 
-error_reporting(22519);
+error_reporting(E_ERROR);
 require_once('../settings.inc');
 require_once('../helpers/functions.php');
 
