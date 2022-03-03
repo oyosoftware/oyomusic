@@ -24,28 +24,16 @@
                 margin              : 0px;
                 padding             : 8px;
                 padding-right       : 0px;
+                padding-top         : 0px;
             }
             ::-webkit-scrollbar {
-                height              : 10px;
                 width               : 10px;
+                height              : 10px;
             }
             ::-webkit-scrollbar-thumb {
                 background          : white;
                 border              : 2px solid black;
-                border-radius       : 4px;
-            }
-            ::-webkit-scrollbar-thumb:vertical {
-                border-right        : 1px solid black;
-            }
-            ::-webkit-scrollbar-thumb:horizontal {
-                border-bottom       : 1px solid black;
-            }
-            table {
-                font-size           : 10pt;
-                border-collapse     : collapse;
-            }
-            td {
-                padding             : 3px 5px 3px 5px;
+                border-radius       : 5px;
             }
             a:link {
                 text-decoration     : none;
@@ -83,24 +71,13 @@
             }
             .break {
                 width               : 100%;
-                height              : 12px;
-            }
-            .pagebutton {
-                vertical-align      : middle;
-            }
-            .pagenumber {
-                font-weight         : bold;
-                vertical-align      : middle;
-            }
-            .currentpage {
-                font-size           : 15pt;
-                vertical-align      : middle;
+                height              : 8px;
             }
             .wrapper1 {
                 display             : none;
                 padding-right       : 8px;
                 position            : fixed;
-                top                 : 44px;
+                top                 : 43px;
                 background-color    : white;
                 z-index             : 1;
             }
@@ -108,22 +85,27 @@
                 display             : none;
                 padding-right       : 8px;
                 position            : relative;
-                top                 : 42px;
+                top                 : 45px;
             }
             .linewrapper {
                 display             : inline-block;
                 border              : 1px solid black;
                 padding             : 1px;
-                border-bottom-width : 0px;
+            }
+            table {
+                font-size           : 10pt;
+                border-collapse     : collapse;
             }
             .tableheader1 {
-                height              : 26px;
                 background          : #527FC3;
                 color               : white;
                 visibility          : hidden;
             }
             .tableheader2 {
                 visibility          : hidden;
+            }
+            th, td {
+                padding             : 3px 5px 3px 5px;
             }
             .fieldname {
                 border              : 1px solid black;
@@ -140,7 +122,6 @@
                 padding             : 1px;
             }
             .image {
-                border-width        : 0px;
                 vertical-align      : middle;
             }
             .title {
@@ -196,10 +177,9 @@
                 $("body").css("overflow-y", "hidden");
                 var boxsetalbumsFrame = parent.frames["boxsetalbums"];
                 if (boxsetalbumsFrame) {
-                    //console.log(new Date().getTime());
                     var scrolltop = $(parent.document.body).scrollTop();
                     $(".boxsetalbums", window.parent.document).height(0);
-                    var height = boxsetalbumsFrame.document.body.scrollHeight;
+                    var height = boxsetalbumsFrame.document.body.scrollHeight + 10;
                     $(".boxsetalbums", window.parent.document).height(height);
                     $(parent.document.body).scrollTop(scrolltop);
                 }
@@ -210,7 +190,12 @@
             });
 
             $(window).on("scroll", function () {
-                $(".wrapper1").css("left", -1 * $(window).scrollLeft() + 8);
+                var boxsetalbumsFrame = parent.frames["boxsetalbums"];
+                if (!boxsetalbumsFrame) {
+                    $(".wrapper1").css("left", -1 * $(window).scrollLeft() + 8);
+                } else {
+                    $(".wrapper1").css("left", -1 * $(window).scrollLeft());
+                }
             });
 
             $(document).ready(function () {
@@ -229,12 +214,11 @@
                     $(".backlink").prop("href", href);
                 }
 
-                if (isboxset == true) {
-                    //$("body").css("overflow-y", "hidden");
+                if (isboxset) {
                     $(".nameheader").css("display", "none");
                     $("body, wrapper2").css("padding", "0px");
                     $(".wrapper1").css("top", parseInt($(".wrapper1").css("top")) - 27);
-                    $(".wrapper2").css("top", parseInt($(".wrapper2").css("top")) - 19);
+                    $(".wrapper2").css("top", parseInt($(".wrapper2").css("top")) - 27);
                 }
 
                 url = "scripts/getArtist.php";
@@ -261,7 +245,7 @@
                                     var id = artists[i].id;
                                     var name2 = artists[i].name;
                                     var albumcount2 = artists[i].albumcount;
-                                    if (i == 0) {
+                                    if (i === 0) {
                                         $(".name").html($(".name").html() + " - ");
                                     }
                                     if (albumcount2 > 0) {
@@ -287,7 +271,7 @@
                                     }
                                 }
 
-                                $(".namelink").click(function (event) {
+                                $(".namelink").on("click", function () {
                                     var href = $(event.target).attr("href");
                                     window.localStorage.setItem(href, "visited");
                                 });
@@ -305,7 +289,7 @@
                                 var pagerange = settings.pagerange;
                                 var imagepaththumbs = settings.imagepaththumbs;
 
-                                if (isboxset == false) {
+                                if (!isboxset) {
                                     if (albumcount > recordspage) {
                                         var baseUrl = "albumlist.html?artistid=" + artistid + "&isboxset=0" + "&boxsetid=0";
                                         var navigator = new oyoNavigator(albumcount, recordspage, pagerange, baseUrl);
@@ -338,7 +322,6 @@
                                     });
                                 }
 
-                                ;
                                 addRecords(imagepaththumbs);
                             }
                         });
@@ -356,11 +339,6 @@
                         jsonpCallback: "getAlbums",
                         success: function (albums) {
                             for (i = 0; i < albums.length; i++) {
-                                if (i == 0) {
-                                    $(".wrapper1").css("display", "inline-block");
-                                    $(".wrapper2").css("display", "inline-block");
-                                }
-
                                 var albumid = albums[i].albumid;
                                 var released = albums[i].released;
                                 var title = albums[i].title;
@@ -371,7 +349,7 @@
                                 var imagefilename = encodeURIComponent(albums[i].imagefilename);
 
                                 var row = document.createElement("tr");
-                                $(".table2").append(row);
+                                $("tbody").append(row);
 
                                 var cell = document.createElement("td");
                                 $(cell).attr("class", "fieldvalue cover");
@@ -386,9 +364,8 @@
                                 $(image).attr("src", src);
                                 $(a).append(image);
 
-                                if (isboxset == true) {
-                                    $(".image").eq(i).on("load", function () {
-                                        console.log("load");
+                                if (isboxset) {
+                                    $(image).on("load", function () {
                                         resizeBoxFrame();
                                     });
                                 }
@@ -433,18 +410,21 @@
                                 $(cell).html(playingtime);
                                 $(row).append(cell);
 
-                            } // end for loop
+                            } // end albums loop
+
+                            $(".wrapper1").css("display", "inline-block");
+                            $(".wrapper2").css("display", "inline-block");
 
                             setTimeout(function () {
                                 resizeHeader();
                             }, 100);
 
-                            $("a").click(function (event) {
-                                var href = $(event.currentTarget).attr("href");
+                            $("a").on("click", function () {
+                                var href = $(event.target).attr("href");
                                 window.localStorage.setItem(href, "visited");
                             });
 
-                            if (isboxset == true) {
+                            if (isboxset) {
                                 resizeBoxFrame();
                             }
 
@@ -471,15 +451,17 @@
         <div class="wrapper1">
             <div class="linewrapper">
                 <table class="table1">
-                    <tr class="tableheader1">
-                        <td class="fieldname hcover">Cover</td>
-                        <td class="fieldname htitle">Title</td>
-                        <td class="fieldname hreleased">Released</td>
-                        <td class="fieldname hcount">Count</td>
-                        <td class="fieldname hformat">Format</td>
-                        <td class="fieldname hgenre">Genre</td>
-                        <td class="fieldname hplayingtime">Playing Time</td>
-                    </tr>
+                    <thead>
+                        <tr class="tableheader1">
+                            <th class="fieldname hcover">Cover</th>
+                            <th class="fieldname htitle">Title</th>
+                            <th class="fieldname hreleased">Released</th>
+                            <th class="fieldname hcount">Count</th>
+                            <th class="fieldname hformat">Format</th>
+                            <th class="fieldname hgenre">Genre</th>
+                            <th class="fieldname hplayingtime">Playing Time</th>
+                        </tr>
+                    </thead>
                 </table>
             </div>
         </div>
@@ -487,15 +469,18 @@
         <div class="wrapper2">
             <div class="linewrapper">
                 <table class="table2">
-                    <tr class="tableheader2">
-                        <td class="fieldname hcover">Cover</td>
-                        <td class="fieldname htitle">Title</td>
-                        <td class="fieldname hreleased">Released</td>
-                        <td class="fieldname hcount">Count</td>
-                        <td class="fieldname hformat">Format</td>
-                        <td class="fieldname hgenre">Genre</td>
-                        <td class="fieldname hplayingtime">Playing Time</td>
-                    </tr>
+                    <thead>
+                        <tr class="tableheader2">
+                            <th class="fieldname hcover">Cover</th>
+                            <th class="fieldname htitle">Title</th>
+                            <th class="fieldname hreleased">Released</th>
+                            <th class="fieldname hcount">Count</th>
+                            <th class="fieldname hformat">Format</th>
+                            <th class="fieldname hgenre">Genre</th>
+                            <th class="fieldname hplayingtime">Playing Time</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
                 </table>
             </div>
         </div>

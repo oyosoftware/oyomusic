@@ -22,6 +22,7 @@
                 margin              : 0px;
                 padding             : 8px;
                 padding-right       : 0px;
+                padding-top         : 0px;
             }
             ::-webkit-scrollbar {
                 height              : 10px;
@@ -30,20 +31,7 @@
             ::-webkit-scrollbar-thumb {
                 background          : white;
                 border              : 2px solid black;
-                border-radius       : 4px;
-            }
-            ::-webkit-scrollbar-thumb:vertical {
-                border-right        : 1px solid black;
-            }
-            ::-webkit-scrollbar-thumb:horizontal {
-                border-bottom       : 1px solid black;
-            }
-            table {
-                font-size           : 10pt;
-                border-collapse     : collapse;
-            }
-            td {
-                padding             : 3px 5px 3px 5px;
+                border-radius       : 5px;
             }
             a:link {
                 text-decoration     : none;
@@ -69,30 +57,15 @@
                 font-weight         : bold;
                 white-space         : nowrap;
             }
-            .navigator {
-                height              : 23px;
-                text-align          : center;
-            }
             .break {
                 width               : 100%;
-                height              : 12px;
-            }
-            .pagebutton {
-                vertical-align      : middle;
-            }
-            .pagenumber {
-                font-weight         : bold;
-                vertical-align      : middle;
-            }
-            .currentpage {
-                font-size           : 15pt;
-                vertical-align      : middle;
+                height              : 8px;
             }
             .wrapper1 {
                 display             : none;
                 padding-right       : 8px;
                 position            : fixed;
-                top                 : 44px;
+                top                 : 43px;
                 background-color    : white;
                 z-index             : 1;
             }
@@ -100,21 +73,27 @@
                 display             : none;
                 padding-right       : 8px;
                 position            : relative;
-                top                 : 42px;
+                top                 : 45px;
             }
             .linewrapper {
                 display             : inline-block;
                 border              : 1px solid black;
                 padding             : 1px;
-                border-bottom-width : 0px;
+            }
+            table {
+                font-size           : 10pt;
+                border-collapse     : collapse;
             }
             .tableheader1 {
-                height              : 26px;
                 background          : #527FC3;
                 color               : white;
+                visibility          : hidden;
             }
             .tableheader2 {
                 visibility          : hidden;
+            }
+            th, td {
+                padding             : 3px 5px 3px 5px;
             }
             .fieldname {
                 border              : 1px solid black;
@@ -176,56 +155,6 @@
                 text-align          : right;
                 white-space         : nowrap;
             }
-            .hint {
-                visibility          : hidden;
-                background-color    : lightgray;
-                color               : black;
-                border-radius       : 5px;
-                padding             : 1px 3px;
-                position            : absolute;
-                z-index             : 1;
-                bottom              : 90%;
-                left                : 21px;
-                margin-left         : -30px;
-                opacity             : 0;
-                transition          : opacity 0.3s;
-                border              : 1px solid black;
-                font-size           : 13.33px;
-                font-weight         : normal;
-                white-space         : nowrap;
-                height              : 19px;
-            }
-            .title .hint {
-                bottom              : 75%;
-            }
-            .hintafter1 {
-                position            : absolute;
-                top                 : 100%;
-                left                : 32px;
-                margin-left         : -5px;
-                border-width        : 5px;
-                border-style        : solid;
-                border-color        : black transparent transparent transparent;
-            }
-            .title .hintafter1 {
-                left                : 17px;
-            }
-            .hintafter2 {
-                position            : absolute;
-                top                 : 100%;
-                left                : 32px;
-                margin-left         : -4px;
-                border-width        : 4px;
-                border-style        : solid;
-                border-color        : lightgray transparent transparent transparent;
-            }
-            .title .hintafter2 {
-                left                : 17px;
-            }
-            a:hover .hint {
-                visibility          : visible;
-                opacity             : 1;
-            }
         </style>
     </head>
     <body>
@@ -241,6 +170,7 @@
                 $(".hformat:first").width($(".hformat:last").width());
                 $(".hgenre:first").width($(".hgenre:last").width());
                 $(".hplayingtime:first").width($(".hplayingtime:last").width());
+                $(".tableheader1").css("visibility", "visible");
             }
 
             $(window).resize(function () {
@@ -263,24 +193,24 @@
                     var parameter = parameters[i].split("=")[0];
                     var value = parameters[i].split("=")[1];
                     switch (true) {
-                        case parameter == "search" :
-                            if (value != "")
+                        case parameter === "search" :
+                            if (value !== "")
                                 psearch = decodeURIComponent(parameters[i].split("=")[1]);
                             break;
-                        case parameter == "country" :
-                            if (value != "")
+                        case parameter === "country" :
+                            if (value !== "")
                                 pcountry = decodeURIComponent(parameters[i].split("=")[1]);
                             break;
-                        case parameter == "year" :
-                            if (value != "")
+                        case parameter === "year" :
+                            if (value !== "")
                                 pyear = parameters[i].split("=")[1];
                             break;
-                        case parameter == "genre" :
-                            if (value != "")
+                        case parameter === "genre" :
+                            if (value !== "")
                                 pgenre = decodeURIComponent(parameters[i].split("=")[1]);
                             break;
-                        case parameter == "pageno" :
-                            if (value != "")
+                        case parameter === "pageno" :
+                            if (value !== "")
                                 pageno = parseInt(parameters[i].split("=")[1]);
                             break;
                     }
@@ -290,15 +220,15 @@
                 if (artistindexFrame) {
                     $(".search", artistindexFrame.document).val(psearch);
                     $(".search", artistindexFrame.document).focus();
-                    if (pcountry != "") {
+                    if (pcountry !== "") {
                         $(".country", artistindexFrame.document).val(pcountry);
                         $(".country", artistindexFrame.document).attr("data-changed", "changed");
                     }
-                    if (pyear != "") {
+                    if (pyear !== "") {
                         $(".year", artistindexFrame.document).val(pyear);
                         $(".year", artistindexFrame.document).attr("data-changed", "changed");
                     }
-                    if (pgenre != "") {
+                    if (pgenre !== "") {
                         $(".genre", artistindexFrame.document).val(pgenre);
                         $(".genre", artistindexFrame.document).attr("data-changed", "changed");
                     }
@@ -320,19 +250,19 @@
                             data: {search: psearch, country: pcountry, year: pyear, genre: pgenre},
                             success: function (records) {
                                 var results = records + " results ";
-                                if (psearch != "" || pcountry != "" || pyear != "" || pgenre != "") {
+                                if (psearch !== "" || pcountry !== "" || pyear !== "" || pgenre !== "") {
                                     results += "for: ";
                                 }
-                                if (psearch != "") {
+                                if (psearch !== "") {
                                     results += psearch + " ";
                                 }
-                                if (pcountry != "") {
+                                if (pcountry !== "") {
                                     results = results + "Country: " + pcountry + " ";
                                 }
-                                if (pyear != "") {
+                                if (pyear !== "") {
                                     results += "Year: " + pyear + " ";
                                 }
-                                if (pgenre != "") {
+                                if (pgenre !== "") {
                                     results += "Genre: " + pgenre + " ";
                                 }
                                 $(".results").html(results);
@@ -392,17 +322,6 @@
                                 $(image).attr("src", src);
                                 $(a).append(image);
 
-                                var div1 = document.createElement("div");
-                                $(div1).attr("class", "hint");
-                                $(div1).html("Album Details " + title);
-                                $(a).append(div1);
-                                var div2 = document.createElement("div");
-                                $(div2).attr("class", "hintafter1");
-                                $(div1).append(div2);
-                                var div2 = document.createElement("div");
-                                $(div2).attr("class", "hintafter2");
-                                $(div1).append(div2);
-
                                 var cell = document.createElement("td");
                                 $(cell).attr("class", "fieldvalue country");
                                 $(row).append(cell);
@@ -453,17 +372,6 @@
                                     $(a).css("color", "blue");
                                 }
                                 $(cell).append(a);
-
-                                var div1 = document.createElement("div");
-                                $(div1).attr("class", "hint");
-                                $(div1).html("Album Details " + title);
-                                $(a).append(div1);
-                                var div2 = document.createElement("div");
-                                $(div2).attr("class", "hintafter1");
-                                $(div1).append(div2);
-                                var div2 = document.createElement("div");
-                                $(div2).attr("class", "hintafter2");
-                                $(div1).append(div2);
 
                                 var cell = document.createElement("td");
                                 $(cell).attr("class", "fieldvalue released");
@@ -543,17 +451,19 @@
         <div class="wrapper1">
             <div class="linewrapper">
                 <table class="table1">
-                    <tr class="tableheader1">
-                        <td class="fieldname hcover">Cover</td>
-                        <td class="fieldname hcountry">Country</td>
-                        <td class="fieldname hartist">Artist</td>
-                        <td class="fieldname htitle">Title</td>
-                        <td class="fieldname hreleased">Released</td>
-                        <td class="fieldname hcount">Count</td>
-                        <td class="fieldname hformat">Format</td>
-                        <td class="fieldname hgenre">Genre</td>
-                        <td class="fieldname hplayingtime">Playing Time</td>
-                    </tr>
+                    <thead>
+                        <tr class="tableheader1">
+                            <th class="fieldname hcover">Cover</th>
+                            <th class="fieldname hcountry">Country</th>
+                            <th class="fieldname hartist">Artist</th>
+                            <th class="fieldname htitle">Title</th>
+                            <th class="fieldname hreleased">Released</th>
+                            <th class="fieldname hcount">Count</th>
+                            <th class="fieldname hformat">Format</th>
+                            <th class="fieldname hgenre">Genre</th>
+                            <th class="fieldname hplayingtime">Playing Time</th>
+                        </tr>
+                    </thead>
                 </table>
             </div>
         </div>
@@ -561,17 +471,20 @@
         <div class="wrapper2">
             <div class="linewrapper">
                 <table class="table2">
-                    <tr class="tableheader2">
-                        <td class="fieldname hcover">Cover</td>
-                        <td class="fieldname hcountry">Country</td>
-                        <td class="fieldname hartist">Artist</td>
-                        <td class="fieldname htitle">Title</td>
-                        <td class="fieldname hreleased">Released</td>
-                        <td class="fieldname hcount">Count</td>
-                        <td class="fieldname hformat">Format</td>
-                        <td class="fieldname hgenre">Genre</td>
-                        <td class="fieldname hplayingtime">Playing Time</td>
-                    </tr>
+                    <thead>
+                        <tr class="tableheader2">
+                            <th class="fieldname hcover">Cover</th>
+                            <th class="fieldname hcountry">Country</th>
+                            <th class="fieldname hartist">Artist</th>
+                            <th class="fieldname htitle">Title</th>
+                            <th class="fieldname hreleased">Released</th>
+                            <th class="fieldname hcount">Count</th>
+                            <th class="fieldname hformat">Format</th>
+                            <th class="fieldname hgenre">Genre</th>
+                            <th class="fieldname hplayingtime">Playing Time</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
                 </table>
             </div>
         </div>
