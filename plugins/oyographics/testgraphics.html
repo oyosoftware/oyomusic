@@ -1,0 +1,38 @@
+<html>
+
+    <head>
+
+        <title>Test Graphics</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
+        <script src="oyographics.js"></script>
+
+        <style>
+            .oyographic {
+                margin: 8px;
+                vertical-align: middle;
+                display: block;
+                margin: auto;
+            }
+        </style>
+
+    </head>
+
+    <body>
+
+        <script>
+            $(document).ready(function () {
+
+                var speaker = new oyoSpeaker();
+                $("body").append(speaker);
+                speaker.scale(16);
+
+                var note = new oyoNote();
+                $("body").append(note);
+                note.scale(16);
+
+            });
+        </script>
+    </body>
+</html>
