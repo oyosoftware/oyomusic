@@ -1,20 +1,23 @@
-<!--  oyomusic 2.0
+<!--  oyomusic 2.1
   tested with jQuery 3.4.0
   http://www.oyoweb.nl
 
-  © 2015-2021 oYoSoftware
+  © 2015-2022 oYoSoftware
   MIT License
 
   oyomusic is a library for showing your own musical content-->
 
 <html>
+
     <head>
+
         <title>Artist Index</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
         <script src="plugins/oyoplayer/oyoplayer.js"></script>
         <link rel="stylesheet" href="plugins/oyoplayer/oyoplayer.css">
+        <script src="plugins/oyographics/oyographics.js"></script>
 
         <style>
             * {
@@ -32,16 +35,13 @@
                 height              : 10px;
                 width               : 10px;
             }
+            ::-webkit-scrollbar-corner {
+                background-color    : transparent;
+            }
             ::-webkit-scrollbar-thumb {
                 background          : white;
                 border              : 2px solid black;
-                border-radius       : 4px;
-            }
-            ::-webkit-scrollbar-thumb:vertical {
-                border-right        : 1px solid black;
-            }
-            ::-webkit-scrollbar-thumb:horizontal {
-                border-bottom       : 1px solid black;
+                border-radius       : 5px;
             }
             a:link {
                 text-decoration     : none;
@@ -139,6 +139,11 @@
             .genre {
                 width               : 137px;
             }
+            a {
+                position            : relative;
+            }
+            .link {
+            }
             .submit {
                 width               : 80px;
                 height              : 20px;
@@ -156,22 +161,13 @@
                 min-width           : 300px;
                 white-space         : nowrap;
             }
-            a {
-                position            : relative;
-            }
-            @font-face {
-                font-family         : 'Glyphicons Halflings';
-                src                 : url('images/glyphicons-halflings-regular.ttf');
-            }
-            .glyphicon {
-                position            : relative;
-                top                 : -2px;
-                font-family         : 'Glyphicons Halflings';
-            }
         </style>
 
-        <script>
+    </head>
 
+    <body>
+
+        <script>
             $(document).ready(function () {
 
                 audioPlayer = new oyoPlayer("player");
@@ -222,6 +218,13 @@
                         parent.frames['artists'].location.href = $("a").attr("href");
                     }
                 });
+
+                var note = new oyoNote();
+                note.changeFillColor("black");
+                $(note).css("position", "relative");
+                $(note).css("top", "-2px");
+                $(note).css("left", "-2px");
+                $(".submit").prepend(note);
 
                 $(".search").on("keyup", function (event) {
                     if (event.target.value != "") {
@@ -324,12 +327,7 @@
                 });
 
             });
-
         </script>
-
-    </head>
-
-    <body>
 
         <div class="wrapper">
             <div class="player"></div>
@@ -343,14 +341,14 @@
                             <select class="country"><option value="" disabled selected hidden>Select Country</option></select>
                             <select class="year"><option value="" disabled selected hidden>Select Year</option></select>
                             <select class="genre"><option value="" disabled selected hidden>Select Genre</option></select>
-                            <a class="link" target="albums">
-                                <button class="submit" type="button"><span class="glyphicon glyphicon-music">&#xe002</span> Search</button>
+                            <a class="link" href="#" target="albums">
+                                <button class="submit" type="button">Search</button>
                             </a>
                         </form>
                     </div>
                 </div>
             </div>
-            <div class="version">&#169; 2020 oYoMusic 2.0</div>
+            <div class="version">&#169; 2022 oYoMusic 2.1</div>
         </div>
 
     </body>

@@ -1,16 +1,20 @@
-<!--  oyomusic 2.0
+<!--  oyomusic 2.1
   tested with jQuery 3.4.0
   http://www.oyoweb.nl
 
-  © 2015-2021 oYoSoftware
+  © 2015-2022 oYoSoftware
   MIT License
 
   oyomusic is a library for showing your own musical content-->
 
 <html>
+
     <head>
+
+        <title>Album Search</title>
         <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
         <script src="plugins/oyonavigator/oyonavigator.js"></script>
+        <script src="plugins/oyotableheader/oyotableheader.js"></script>
 
         <style>
             * {
@@ -27,6 +31,9 @@
             ::-webkit-scrollbar {
                 height              : 10px;
                 width               : 10px;
+            }
+            ::-webkit-scrollbar-corner {
+                background-color    : transparent;
             }
             ::-webkit-scrollbar-thumb {
                 background          : white;
@@ -61,35 +68,36 @@
                 width               : 100%;
                 height              : 8px;
             }
-            .wrapper1 {
+            .headerwrapper {
                 display             : none;
                 padding-right       : 8px;
                 position            : fixed;
-                top                 : 43px;
+                top                 : 44px;
                 background-color    : white;
                 z-index             : 1;
             }
-            .wrapper2 {
-                display             : none;
-                padding-right       : 8px;
-                position            : relative;
-                top                 : 45px;
+            .linewrapperbox {
+                border-bottom       : solid black;
+                padding-bottom      : 1px;
             }
             .linewrapper {
                 display             : inline-block;
-                border              : 1px solid black;
+                border              : solid black;
                 padding             : 1px;
+            }
+            .tablewrapper {
+                display             : none;
+                padding-right       : 8px;
+                position            : relative;
+                top                 : 46px;
             }
             table {
                 font-size           : 10pt;
                 border-collapse     : collapse;
             }
-            .tableheader1 {
-                background          : #527FC3;
-                color               : white;
-                visibility          : hidden;
+            .albumstable {
             }
-            .tableheader2 {
+            .albumstableheader {
                 visibility          : hidden;
             }
             th, td {
@@ -113,13 +121,19 @@
                 border-width        : 0px;
                 vertical-align      : middle;
             }
+            .hcountry {
+            }
             .country {
                 width               : 8%;
                 white-space         : nowrap;
             }
+            .hartist {
+            }
             .artist {
                 width               : 20%;
                 white-space         : nowrap;
+            }
+            .htitle {
             }
             .title {
                 position            : relative;
@@ -140,8 +154,12 @@
                 width               : 4%;
                 text-align          : right;
             }
+            .hformat {
+            }
             .format {
                 width               : 4%;
+            }
+            .hgenre {
             }
             .genre {
                 width               : 16%;
@@ -156,38 +174,19 @@
                 white-space         : nowrap;
             }
         </style>
+
     </head>
+
     <body>
+
         <script>
-
-            function resizeHeader() {
-                $("table:first").width($("table:last").width());
-                $(".hcountry:first").width($(".hcountry:last").width());
-                $(".hartist:first").width($(".hartist:last").width());
-                $(".htitle:first").width($(".htitle:last").width());
-                $(".hreleased:first").width($(".hreleased:last").width());
-                $(".hcount:first").width($(".hcount:last").width());
-                $(".hformat:first").width($(".hformat:last").width());
-                $(".hgenre:first").width($(".hgenre:last").width());
-                $(".hplayingtime:first").width($(".hplayingtime:last").width());
-                $(".tableheader1").css("visibility", "visible");
-            }
-
-            $(window).resize(function () {
-                resizeHeader();
-            });
-
-            $(window).on("scroll", function () {
-                $(".wrapper1").css("left", -1 * $(window).scrollLeft() + 8);
-            });
-
             $(document).ready(function () {
-
                 var psearch = "";
                 var pcountry = "";
                 var pyear = "";
                 var pgenre = "";
                 var pageno = 0;
+
                 var parameters = location.search.substring(1).split("&");
                 for (i = 0; i < parameters.length; i++) {
                     var parameter = parameters[i].split("=")[0];
@@ -234,6 +233,18 @@
                     }
                 }
 
+                $(window).resize(function () {
+                    tableHeader.resize();
+                });
+
+                $(window).on("scroll", function () {
+                    $(".headerwrapper").css("left", -1 * $(window).scrollLeft() + 8);
+                });
+
+                var tableHeader = new oyoTableHeader(".albumstable");
+                tableHeader.changeBorder("header");
+                $(".linewrapper", ".headerwrapper").append(tableHeader);
+
                 url = "scripts/getSettings.php";
                 $.ajax({
                     url: url,
@@ -266,14 +277,13 @@
                                     results += "Genre: " + pgenre + " ";
                                 }
                                 $(".results").html(results);
-
                                 if (records > searchrecordspage) {
                                     var baseUrl = "albumsearch.html?search=" + psearch + "&country=" + pcountry + "&year=" + pyear + "&genre=" + pgenre;
                                     var navigator = new oyoNavigator(records, searchrecordspage, pagerange, baseUrl);
                                     $(".header").append(navigator);
                                     navigator.setPage(pageno);
-                                    $(".wrapper1").css("top", parseInt($(".wrapper1").css("top")) + 23);
-                                    $(".wrapper2").css("top", parseInt($(".wrapper2").css("top")) + 23);
+                                    $(".headerwrapper").css("top", parseInt($(".headerwrapper").css("top")) + 23);
+                                    $(".tablewrapper").css("top", parseInt($(".tablewrapper").css("top")) + 23);
                                 }
                                 var div = document.createElement("div");
                                 $(div).attr("class", "break");
@@ -307,7 +317,7 @@
                                 var imagefilename = encodeURIComponent(lines[i].imagefilename);
 
                                 var row = document.createElement("tr");
-                                $(".table2").append(row);
+                                $("tbody").append(row);
 
                                 var cell = document.createElement("td");
                                 $(cell).attr("class", "fieldvalue cover");
@@ -422,14 +432,17 @@
                                 $(cell).html(playingtime);
                                 $(row).append(cell);
 
+                                if (i % 10 === 0) {
+                                    $(".headerwrapper").css("display", "block");
+                                    $(".linewrapperbox").css("border-bottom-width", "1px");
+                                    $(".linewrapper").css("border-width", "1px");
+                                    $(".tablewrapper").css("display", "block");
+                                    tableHeader.resize();
+                                }
+
                             } // end for loop
 
-                            $(".wrapper1").css("display", "inline-block");
-                            $(".wrapper2").css("display", "inline-block");
-
-                            setTimeout(function () {
-                                resizeHeader();
-                            }, 100);
+                            tableHeader.resize();
 
                             $("a").click(function (event) {
                                 var datalink = $(event.target).attr("data-link");
@@ -448,31 +461,18 @@
             <div class="results"></div>
         </div>
 
-        <div class="wrapper1">
-            <div class="linewrapper">
-                <table class="table1">
-                    <thead>
-                        <tr class="tableheader1">
-                            <th class="fieldname hcover">Cover</th>
-                            <th class="fieldname hcountry">Country</th>
-                            <th class="fieldname hartist">Artist</th>
-                            <th class="fieldname htitle">Title</th>
-                            <th class="fieldname hreleased">Released</th>
-                            <th class="fieldname hcount">Count</th>
-                            <th class="fieldname hformat">Format</th>
-                            <th class="fieldname hgenre">Genre</th>
-                            <th class="fieldname hplayingtime">Playing Time</th>
-                        </tr>
-                    </thead>
-                </table>
+        <div class="headerwrapper">
+            <div class="linewrapperbox">
+                <div class="linewrapper">
+                </div>
             </div>
         </div>
 
-        <div class="wrapper2">
+        <div class="tablewrapper">
             <div class="linewrapper">
-                <table class="table2">
+                <table class="albumstable">
                     <thead>
-                        <tr class="tableheader2">
+                        <tr class="albumstableheader">
                             <th class="fieldname hcover">Cover</th>
                             <th class="fieldname hcountry">Country</th>
                             <th class="fieldname hartist">Artist</th>
@@ -489,7 +489,6 @@
             </div>
         </div>
 
-
-
     </body>
+
 </html>

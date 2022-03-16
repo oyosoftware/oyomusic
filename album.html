@@ -1,8 +1,8 @@
-<!--  oyomusic 2.0
+<!--  oyomusic 2.1
   tested with jQuery 3.4.0
   http://www.oyoweb.nl
 
-  © 2015-2021 oYoSoftware
+  © 2015-2022 oYoSoftware
   MIT License
 
   oyomusic is a library for showing your own musical content-->
@@ -11,6 +11,7 @@
 
     <head>
 
+        <title>Album</title>
         <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
         <script src="plugins/oyoplayer/oyoplayer.js"></script>
         <link rel="stylesheet" href="plugins/oyoplayer/oyoplayer.css">
@@ -30,16 +31,13 @@
                 height              : 10px;
                 width               : 10px;
             }
+            ::-webkit-scrollbar-corner {
+                background-color    : transparent;
+            }
             ::-webkit-scrollbar-thumb {
                 background          : white;
                 border              : 2px solid black;
-                border-radius       : 4px;
-            }
-            ::-webkit-scrollbar-thumb:vertical {
-                border-right        : 1px solid black;
-            }
-            ::-webkit-scrollbar-thumb:horizontal {
-                border-bottom       : 1px solid black;
+                border-radius       : 54px;
             }
             a:link {
                 text-decoration     : none;
@@ -80,6 +78,8 @@
             }
             .maindiv {
                 white-space         : nowrap;
+                padding-bottom      : 8px;
+
             }
             .albumdiv {
                 padding             : 1px;
@@ -126,7 +126,7 @@
                 padding             : 1px;
                 display             : table-cell;
                 vertical-align      : top;
-                padding-left        : 20px
+                padding-left        : 20px;
             }
             .tracktable {
                 border              : 1px solid black;
@@ -168,6 +168,7 @@
             }
             .links {
                 text-align          : center;
+                padding-top         : 8px;
             }
             .download {
                 display             : none;
@@ -228,8 +229,11 @@
             }
         </style>
 
-        <script>
+    </head>
 
+    <body>
+
+        <script>
             $(document).ready(function () {
                 var parameters = location.search.substring(1).split("&");
                 var albumid = parameters[0].split("=")[1];
@@ -360,17 +364,32 @@
                     return button;
                 }
 
-                function resizeBoxFrame() {
-                    $("body").css("overflow-y", "hidden");
-                    var boxsetalbumsFrame = parent.frames["boxsetalbums"];
-                    if (boxsetalbumsFrame) {
+                var scrollHeight;
+                function resizeBoxFrame(autoresize) {
+                    if (window.name === "boxsetalbums") {
+                        if (autoresize === undefined) {
+                            autoresize = false;
+                        }
+                        $("body").css("overflow-y", "hidden");
                         var scrolltop = $(parent.document.body).scrollTop();
-                        $(".boxsetalbums", window.parent.document).height(0);
+                        if (!autoresize) {
+                            $(".boxsetalbums", window.parent.document).height(0);
+                        }
+                        var boxsetalbumsFrame = parent.frames["boxsetalbums"];
                         var height = boxsetalbumsFrame.document.body.scrollHeight;
-                        $(".boxsetalbums", window.parent.document).height(height);
-                        $(parent.document.body).scrollTop(scrolltop);
+                        if (height !== scrollHeight) {
+                            $(".boxsetalbums", window.parent.document).height(height);
+                            $(parent.document.body).scrollTop(scrolltop);
+                        }
+                        scrollHeight = height;
                     }
                 }
+
+                $(window).resize(function () {
+                    if (window.name === "boxsetalbums") {
+                        resizeBoxFrame(true);
+                    }
+                });
 
                 $(".download").on("click", function () {
                     $(".downloading").css("display", "inline");
@@ -492,7 +511,7 @@
                                     ctx.fillStyle = grd;
                                     ctx.fillRect(0, 0, width, height);
                                     if (boxsetid !== -1) {
-                                        resizeBoxFrame();
+                                        //resizeBoxFrame();
                                     }
                                 });
                             }
@@ -730,13 +749,12 @@
                 }); // end of getAlbum
 
                 $(".image").on("click", function () {
-                    var boxsetalbumsFrame = parent.frames["boxsetalbums"];
                     if ($(this).width() == 250) {
                         $(".image").animate({"width": "500px"}, 1000);
                         $(".albumimagemirror").animate({"height": "127px"}, 1000);
                         $("canvas").animate({"width": "500px"}, 1000);
                         $(".albumtable").animate({"top": "-50px"}, 1000, function () {
-                            if (boxsetalbumsFrame) {
+                            if (window.name === "boxsetalbums") {
                                 resizeBoxFrame();
                             }
                         });
@@ -745,7 +763,7 @@
                         $(".albumimagemirror").animate({"height": "63.5px"}, 1000);
                         $("canvas").animate({"width": "250px"}, 1000);
                         $(".albumtable").animate({"top": "-25px"}, 1000, function () {
-                            if (boxsetalbumsFrame) {
+                            if (window.name === "boxsetalbums") {
                                 resizeBoxFrame();
                             }
                         });
@@ -753,12 +771,7 @@
                 });
 
             });
-
         </script>
-
-    </head>
-
-    <body>
 
         <div class="player"></div>
         <div class="back"><a class="backlink">Back</a></div>
@@ -808,15 +821,6 @@
                         </tr>
                     </table>
 
-                    <br/>
-
-                    <button class="download" type="button">
-                        <img class="downloadimg" alt="downloading" src="images/download.png"/>
-                    </button>
-                    <img class="downloading" alt="downloading" src="images/spinner.gif"/>
-
-                    <br/>
-
                 </div>
 
                 <div  class="tracksdiv">
@@ -824,13 +828,17 @@
                 </div>
 
             </div>
+
+            <button class="download" type="button">
+                <img class="downloadimg" alt="downloading" src="images/download.png"/>
+            </button>
+            <img class="downloading" alt="downloading" src="images/spinner.gif"/>
+
         </div>
 
         <iframe name="boxsetalbums" class="boxsetalbums"></iframe>
 
         <div class="links">
-            <br/>
-            <br/>
             <a class="amazon" target="_blank"><img alt="amazon" src="images/amazon.gif" style="border-width:0px"/></a>
             <br/>
             <br/>

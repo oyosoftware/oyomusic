@@ -1,14 +1,17 @@
-<!--  oyomusic 2.0
+<!--  oyomusic 2.1
   tested with jQuery 3.4.0
   http://www.oyoweb.nl
 
-  © 2015-2021 oYoSoftware
+  © 2015-2022 oYoSoftware
   MIT License
 
   oyomusic is a library for showing your own musical content-->
 
 <html>
+
     <head>
+
+        <title>Index</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
@@ -30,16 +33,13 @@
                 height              : 10px;
                 width               : 10px;
             }
+            ::-webkit-scrollbar-corner {
+                background-color    : transparent;
+            }
             ::-webkit-scrollbar-thumb {
                 background          : white;
                 border              : 2px solid black;
-                border-radius       : 4px;
-            }
-            ::-webkit-scrollbar-thumb:vertical {
-                border-right        : 1px solid black;
-            }
-            ::-webkit-scrollbar-thumb:horizontal {
-                border-bottom       : 1px solid black;
+                border-radius       : 5px;
             }
             iframe {
                 position            : fixed;
@@ -66,11 +66,12 @@
                 top                 : 121px;
             }
         </style>
+
     </head>
+
     <body>
 
         <script>
-
             $(document).ready(function () {
 
                 window.onresize = function () {
@@ -89,7 +90,7 @@
                     dataType: "jsonp",
                     jsonpCallback: "getSettings",
                     success: function (settings) {
-                        var pagetitle = settings.pagetitle
+                        var pagetitle = settings.pagetitle;
                         $(document).prop("title", pagetitle);
                     }
                 });
@@ -121,12 +122,12 @@
                 $.rotate();
 
             });
-
         </script>
 
-        <iframe name="artistindex"  id="artistindex" src="artistindex.html">artistindex</iframe>
-        <iframe name="artists"      id="artists">                           artists    </iframe>
-        <iframe name="albums"       id="albums">                            albums     </iframe>
+        <iframe name="artistindex"  id="artistindex" src="artistindex.html"></iframe>
+        <iframe name="artists"      id="artists">                           </iframe>
+        <iframe name="albums"       id="albums">                            </iframe>
 
     </body>
+
 </html>

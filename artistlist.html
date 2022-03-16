@@ -1,8 +1,8 @@
-<!--  oyomusic 2.0
+<!--  oyomusic 2.1
   tested with jQuery 3.4.0
   http://www.oyoweb.nl
 
-  © 2015-2021 oYoSoftware
+  © 2015-2022 oYoSoftware
   MIT License
 
   oyomusic is a library for showing your own musical content-->
@@ -11,6 +11,7 @@
 
     <head>
 
+        <title>Artist List</title>
         <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
         <script src="plugins/oyoresizer/oyoresizer.js"></script>
 
@@ -29,16 +30,13 @@
                 height              : 10px;
                 width               : 10px;
             }
+            ::-webkit-scrollbar-corner {
+                background-color    : transparent;
+            }
             ::-webkit-scrollbar-thumb {
                 background          : white;
                 border              : 2px solid black;
-                border-radius       : 4px;
-            }
-            ::-webkit-scrollbar-thumb:vertical {
-                border-right        : 1px solid black;
-            }
-            ::-webkit-scrollbar-thumb:horizontal {
-                border-bottom       : 1px solid black;
+                border-radius       : 5px;
             }
             a {
                 width               : 0px;
@@ -51,8 +49,11 @@
             }
         </style>
 
-        <script>
+    </head>
 
+    <body>
+
+        <script>
             $(document).ready(function () {
 
                 var parameters = location.search.substring(1).split("&");
@@ -125,9 +126,6 @@
             });
         </script>
 
-    </head>
-
-    <body>
     </body>
 
 </html>
