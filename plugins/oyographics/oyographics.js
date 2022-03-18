@@ -16,24 +16,25 @@ function oyoSpeaker() {
     var defaultFillColor = "#527FC3";
 
     var graphic = document.createElementNS(svgNS, "svg");
-    $(graphic).addClass("oyographic");
+    $(graphic).addClass("oyographic oyospeaker");
     $(graphic).css("width", 15 + "px");
     $(graphic).css("height", 15 + "px");
     $(graphic).css("background-color", defaultBackgroundColor);
     $(graphic).css("fill", defaultBackgroundColor);
     var circle = document.createElementNS(svgNS, "circle");
-    $(circle).addClass("oyofill");
+    $(circle).addClass("oyofill oyodisplay-1 oyodisplay-3");
     $(circle).attr("cx", 7.5);
     $(circle).attr("cy", 7.5);
     $(circle).attr("r", 6);
     $(graphic).append(circle);
     var circle = document.createElementNS(svgNS, "circle");
+    $(circle).addClass("oyodisplay-1 oyodisplay-3");
     $(circle).attr("cx", 7.5);
     $(circle).attr("cy", 7.5);
     $(circle).attr("r", 4.8);
     $(graphic).append(circle);
     var circle = document.createElementNS(svgNS, "circle");
-    $(circle).addClass("oyofill");
+    $(circle).addClass("oyofill oyodisplay-1 oyodisplay-3");
     $(circle).attr("cx", 7.5);
     $(circle).attr("cy", 7.5);
     $(circle).attr("r", 3.6);
@@ -55,6 +56,52 @@ function oyoSpeaker() {
     $(polygon).addClass("oyofill");
     $(polygon).attr("points", "7.5,1.5 7.5,13.5 2.4,7.5");
     $(graphic).append(polygon);
+    var polygon = document.createElementNS(svgNS, "polygon");
+    $(polygon).addClass("oyofill oyodisplay-2 oyodisplay-3");
+    $(polygon).attr("points", "1.5,2.1 2.1,1.5 13.5,12.9 12.9,13.5");
+    $(graphic).append(polygon);
+    var polygon = document.createElementNS(svgNS, "polygon");
+    $(polygon).addClass("oyodisplay-2 oyodisplay-3");
+    $(polygon).attr("points", "2.1,1.5 2.7,0.9 14.1,12.3 13.5,12.9");
+    $(graphic).append(polygon);
+
+    $(".oyofill", graphic).css("fill", defaultFillColor);
+    oyoGraphicsController(graphic);
+
+    return graphic;
+}
+
+function oyoPlayPause() {
+    var svgNS = 'http://www.w3.org/2000/svg';
+
+    var defaultBackgroundColor = "white";
+    var defaultFillColor = "#527FC3";
+
+    var graphic = document.createElementNS(svgNS, "svg");
+    $(graphic).addClass("oyographic oyoplaypause");
+    $(graphic).css("width", 15 + "px");
+    $(graphic).css("height", 15 + "px");
+    $(graphic).css("background-color", defaultBackgroundColor);
+    $(graphic).css("fill", defaultBackgroundColor);
+    var polygon = document.createElementNS(svgNS, "polygon");
+    $(polygon).addClass("oyofill oyodisplay-0");
+    $(polygon).attr("points", "6,3 6,12 12,7.5");
+    $(graphic).append(polygon);
+    var rect = document.createElementNS(svgNS, "rect");
+    $(rect).addClass("oyofill oyodisplay-1");
+    $(rect).attr("x", "4.5");
+    $(rect).attr("y", "3.75");
+    $(rect).attr("width", "2.25");
+    $(rect).attr("height", "7.5");
+    $(graphic).append(rect);
+    var rect = document.createElementNS(svgNS, "rect");
+    $(rect).addClass("oyofill oyodisplay-1");
+    $(rect).attr("x", "8.25");
+    $(rect).attr("y", "3.75");
+    $(rect).attr("width", "2.25");
+    $(rect).attr("height", "7.5");
+    $(graphic).append(rect);
+
     $(".oyofill", graphic).css("fill", defaultFillColor);
     oyoGraphicsController(graphic);
 
@@ -68,7 +115,7 @@ function oyoNote() {
     var defaultFillColor = "#527FC3";
 
     var graphic = document.createElementNS(svgNS, "svg");
-    $(graphic).addClass("oyographic");
+    $(graphic).addClass("oyographic oyonote");
     $(graphic).css("width", 15 + "px");
     $(graphic).css("height", 15 + "px");
     $(graphic).css("background-color", defaultBackgroundColor);
@@ -114,21 +161,37 @@ function oyoNote() {
 }
 
 function oyoGraphicsController(element) {
+    if (element.tagName.toUpperCase() !== "SVG") {
+        return;
+    }
 
     var defaultBackgroundColor = "white";
     var defaultFillColor = "#527FC3";
 
+    element.changeState = function (state = 0) {
+        var displayElements = $("[class*=oyodisplay-]", element);
+        displayElements.each(function (index, displayElement) {
+            $(displayElement).css("display", "none");
+            var className = "oyodisplay-" + state;
+            if ($(displayElement).hasClass(className)) {
+                $(displayElement).css("display", "inline-block");
+            }
+        });
+    };
+
+    element.changeState();
+
     element.scale = function (scale = 1) {
         var width = scale * 15;
         var height = scale * 15;
-        $(element).css("width", width + "px");
-        $(element).css("height", height + "px");
+        $(element).width(width);
+        $(element).height(height);
         var elements = $(element).find("*");
         var svgCSSScale = "scale(" + scale + ")";
         $(elements).each(function (index, element) {
             var svgCSSTransform = svgCSSScale;
             var transform = $(element).attr("transform");
-            if (transform !== undefined) {
+            if (transform !== undefined && transform !== "none") {
                 var scalePos = transform.indexOf("scale");
                 if (scalePos !== -1) {
                     var scaleEndPos = transform.indexOf(")", scalePos);
