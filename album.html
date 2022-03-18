@@ -15,6 +15,7 @@
         <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
         <script src="plugins/oyoplayer/oyoplayer.js"></script>
         <link rel="stylesheet" href="plugins/oyoplayer/oyoplayer.css">
+        <script src="plugins/oyographics/oyographics.js"></script>
 
         <style>
             * {
@@ -155,7 +156,7 @@
                 text-align          : right;
                 white-space         : nowrap;
             }
-            .speaker {
+            .playpause {
                 display             : none;
             }
             .playingtime {
@@ -284,84 +285,36 @@
                 }
 
                 function playing() {
-                    $("circle").css("display", "none");
+                    $(".oyoplaypause").each(function (index, playPause) {
+                        playPause.changeState(0);
+                    });
                     var track = audioPlayer.getCurrentTrack();
                     var song = audioPlayer.getCurrentSong();
                     $(".title").css("font-weight", "normal");
                     if (songs[track] == song) {
-                        var speakerid = "#speaker" + track;
-                        var speaker = $(speakerid);
-                        $("circle", speaker).css("display", "inline");
+                        var playpauseid = "#playpause" + track;
+                        var playPause = $(playpauseid)[0];
+                        playPause.changeState(1);
                         var titleid = "#title" + track;
                         $(titleid).css("font-weight", "bold");
                     }
                 }
 
                 function paused() {
-                    $("circle").css("display", "none");
+                    $(".oyoplaypause").each(function (index, playPause) {
+                        playPause.changeState(0);
+                    });
                 }
 
                 function ended() {
-                    $("circle").css("display", "none");
+                    $(".oyoplaypause").each(function (index, playPause) {
+                        playPause.changeState(0);
+                    });
                     $(".title").css("font-weight", "normal");
                 }
 
                 function error() {
                     $(".title").css("font-weight", "normal");
-                }
-
-                function Speaker() {
-                    var defaultFillColor = "#527FC3";
-                    var svgNS = 'http://www.w3.org/2000/svg';
-                    var button = document.createElement("button");
-                    $(button).width(15);
-                    $(button).height(15);
-                    $(button).css("border", "0px");
-                    $(button).css("padding", "0px");
-                    $(button).css("background-color", "lightgray");
-                    $(button).css("outline", "none");
-                    button.content = document.createElementNS(svgNS, "svg");
-                    $(button.content).css("width", 15 + "px");
-                    $(button.content).css("height", 15 + "px");
-                    $(button.content).css("fill", "lightgray");
-                    $(button).append(button.content);
-                    var circle = document.createElementNS(svgNS, "circle");
-                    $(circle).addClass("oyofill");
-                    $(circle).attr("cx", 7.5);
-                    $(circle).attr("cy", 7.5);
-                    $(circle).attr("r", 6);
-                    $(button.content).append(circle);
-                    var circle = document.createElementNS(svgNS, "circle");
-                    $(circle).attr("cx", 7.5);
-                    $(circle).attr("cy", 7.5);
-                    $(circle).attr("r", 4.8);
-                    $(button.content).append(circle);
-                    var circle = document.createElementNS(svgNS, "circle");
-                    $(circle).addClass("oyofill");
-                    $(circle).attr("cx", 7.5);
-                    $(circle).attr("cy", 7.5);
-                    $(circle).attr("r", 3.6);
-                    $(button.content).append(circle);
-                    var rect = document.createElementNS(svgNS, "rect");
-                    $(rect).attr("x", "1.5");
-                    $(rect).attr("y", "1.5");
-                    $(rect).attr("width", "7.2");
-                    $(rect).attr("height", "12");
-                    $(button.content).append(rect);
-                    var rect = document.createElementNS(svgNS, "rect");
-                    $(rect).addClass("oyofill");
-                    $(rect).attr("x", "1.5");
-                    $(rect).attr("y", "5.1");
-                    $(rect).attr("width", "5.1");
-                    $(rect).attr("height", "5.1");
-                    $(button.content).append(rect);
-                    var polygon = document.createElementNS(svgNS, "polygon");
-                    $(polygon).addClass("oyofill");
-                    $(polygon).attr("points", "7.5,1.5 7.5,13.5 2.4,7.5");
-                    $(button.content).append(polygon);
-                    $("circle", button).css("display", "none");
-                    $(".oyofill", button.content).css("fill", defaultFillColor);
-                    return button;
                 }
 
                 var scrollHeight;
@@ -623,24 +576,26 @@
                                                         $(row).append(cell);
 
                                                         var cell = document.createElement("td");
-                                                        $(cell).attr("class", "fieldvalue speaker");
+                                                        $(cell).attr("class", "fieldvalue playpause");
                                                         $(row).append(cell);
 
-                                                        var speaker = new Speaker();
-                                                        $(speaker).css("display", "none");
-                                                        $(speaker).attr("id", "speaker" + (i + 1));
-                                                        $(speaker).on("click", {index: i + 1}, startPlayer);
-                                                        $(cell).append(speaker);
+                                                        var playPause = new oyoPlayPause();
+                                                        playPause.scale(1);
+                                                        playPause.changeBackgroundColor("lightgray");
+                                                        $(playPause).css("display", "none");
+                                                        $(playPause).attr("id", "playpause" + (i + 1));
+                                                        $(playPause).on("click", {index: i + 1}, startPlayer);
+                                                        $(cell).append(playPause);
 
                                                         if (audioPlayer.state.playing) {
                                                             var song = audioPlayer.getCurrentSong();
-                                                            if (songs[i + 1] == song) {
-                                                                $("circle", speaker).css("display", "inline");
+                                                            if (songs[i + 1] === song) {
+                                                                playPause.changeState(1);
                                                             }
                                                         }
 
                                                         if (fileexists) {
-                                                            $(speaker).css("display", "inline");
+                                                            $(playPause).css("display", "inline");
                                                         }
 
                                                         if (fileexists) {
@@ -704,7 +659,7 @@
                                                     var colspan = 2;
 
                                                     if (filesExist) {
-                                                        $(".speaker").css("display", "table-cell");
+                                                        $(".playpause").css("display", "table-cell");
                                                         colspan += 1;
                                                     }
 
