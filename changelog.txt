@@ -1,0 +1,2 @@
+16-03-2022  Added table header plugin
+17-03-2022  Added graphics plugin
