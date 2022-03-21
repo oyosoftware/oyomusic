@@ -9,7 +9,7 @@
  * oyotableheader is a tool to define a fixed table header
  */
 
-function oyoTableHeader(referenceTable, height) {
+function oyoTableHeader(refTable, height) {
 
     var defaultBackgroundColor = "#527FC3";
     var defaultTextColor = "white";
@@ -18,8 +18,8 @@ function oyoTableHeader(referenceTable, height) {
 
     var intBorderType = "cell";
     var intBorder = "1px solid black";
-    var intHeaderBorder = $("tr", referenceTable).css("border");
-    var intCellBorder = $("th", referenceTable).css("border");
+    var intHeaderBorder = $("tr", refTable).css("border");
+    var intCellBorder = $("th", refTable).css("border");
 
     var table = document.createElement("table");
     $(table).attr("class", "oyotable");
@@ -27,6 +27,7 @@ function oyoTableHeader(referenceTable, height) {
     $(table).css("color", defaultTextColor);
     if (height !== undefined) {
         $(table).height(height);
+        $(table).css("max-height", height);
     }
     var thead = document.createElement("thead");
     $(table).append(thead);
@@ -34,11 +35,15 @@ function oyoTableHeader(referenceTable, height) {
     $(tr).attr("class", "oyotableheader");
     $(thead).append(tr);
 
-    table.resize = function () {
-        $(table).width($(referenceTable).width());
-        var clone = $("thead tr", referenceTable).clone();
-        $(clone).attr("class", "oyotableheader");
+    var observer = new ResizeObserver(function () {
+        resizeTableHeader();
+    });
+    observer.observe($(refTable)[0]);
 
+    resizeTableHeader = function () {
+        $(table).width($(refTable).width());
+        var clone = $("thead tr", refTable).clone();
+        $(clone).attr("class", "oyotableheader");
         switch (true) {
             case intBorderType === "header":
                 $(clone).css("border", intBorder);
@@ -58,10 +63,10 @@ function oyoTableHeader(referenceTable, height) {
                 break;
         }
         $(clone).children().each(function (index, element) {
-            var width = parseFloat($("tr", referenceTable).children().eq(index).css("width"));
+            var cell = $("tr", refTable).children().eq(index);
+            var width = parseFloat($(cell).css("width"));
             $(element).width(width);
         });
-
         $(".oyotableheader", table).replaceWith(clone);
     };
 
