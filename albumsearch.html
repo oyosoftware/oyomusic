@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+
 <!--  oyomusic 2.1
   tested with jQuery 3.4.0
   http://www.oyoweb.nl
@@ -12,6 +14,8 @@
     <head>
 
         <title>Album Search</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
         <script src="plugins/oyonavigator/oyonavigator.js"></script>
         <script src="plugins/oyotableheader/oyotableheader.js"></script>
@@ -29,14 +33,14 @@
                 padding-top         : 0px;
             }
             ::-webkit-scrollbar {
-                height              : 10px;
                 width               : 10px;
+                height              : 10px;
             }
             ::-webkit-scrollbar-corner {
                 background-color    : transparent;
             }
             ::-webkit-scrollbar-thumb {
-                background          : white;
+                background-color    : white;
                 border              : 2px solid black;
                 border-radius       : 5px;
             }
@@ -50,11 +54,12 @@
                 text-decoration     : underline;
             }
             .header {
-                width               : 100%;
+                width               : calc(100% + 8px);
                 position            : fixed;
                 top                 : 0px;
+                left                : 0px;
                 padding-top         : 8px;
-                padding-right       : 16px;
+                padding-right       : 8px;
                 text-align          : center;
                 background-color    : white;
                 z-index             : 1;
@@ -62,11 +67,12 @@
             .results {
                 font-size           : 18pt;
                 font-weight         : bold;
+                padding             : 0px 8px;
                 white-space         : nowrap;
             }
             .break {
                 width               : 100%;
-                height              : 8px;
+                height              : 10px;
             }
             .headerwrapper {
                 display             : none;
@@ -76,20 +82,22 @@
                 background-color    : white;
                 z-index             : 1;
             }
-            .linewrapperbox {
-                border-bottom       : solid black;
-                padding-bottom      : 1px;
-            }
-            .linewrapper {
-                display             : inline-block;
-                border              : solid black;
-                padding             : 1px;
+            .headerline {
+                border              : 1.25px solid black;
+                border-bottom       : 0px;
+                padding             : 0.75px;
+                padding-bottom      : 0px;
             }
             .tablewrapper {
                 display             : none;
                 padding-right       : 8px;
-                position            : relative;
-                top                 : 46px;
+                padding-bottom      : 8px;
+                position            : absolute;
+                top                 : 44px;
+            }
+            .tableline {
+                border              : 1.25px solid black;
+                padding             : 0.75px;
             }
             table {
                 font-size           : 10pt;
@@ -233,17 +241,13 @@
                     }
                 }
 
-                $(window).resize(function () {
-                    tableHeader.resize();
-                });
-
                 $(window).on("scroll", function () {
                     $(".headerwrapper").css("left", -1 * $(window).scrollLeft() + 8);
                 });
 
                 var tableHeader = new oyoTableHeader(".albumstable");
                 tableHeader.changeBorder("header");
-                $(".linewrapper", ".headerwrapper").append(tableHeader);
+                $(".headerline", ".headerwrapper").append(tableHeader);
 
                 url = "scripts/getSettings.php";
                 $.ajax({
@@ -432,17 +436,12 @@
                                 $(cell).html(playingtime);
                                 $(row).append(cell);
 
-                                if (i % 10 === 0) {
+                                if (i === 0) {
                                     $(".headerwrapper").css("display", "block");
-                                    $(".linewrapperbox").css("border-bottom-width", "1px");
-                                    $(".linewrapper").css("border-width", "1px");
                                     $(".tablewrapper").css("display", "block");
-                                    tableHeader.resize();
                                 }
 
                             } // end for loop
-
-                            tableHeader.resize();
 
                             $("a").click(function (event) {
                                 var datalink = $(event.target).attr("data-link");
@@ -462,14 +461,12 @@
         </div>
 
         <div class="headerwrapper">
-            <div class="linewrapperbox">
-                <div class="linewrapper">
-                </div>
+            <div class="headerline">
             </div>
         </div>
 
         <div class="tablewrapper">
-            <div class="linewrapper">
+            <div class="tableline">
                 <table class="albumstable">
                     <thead>
                         <tr class="albumstableheader">
