@@ -54,15 +54,15 @@
                 text-decoration     : underline;
             }
             .header {
-                width               : calc(100% + 8px);
+                width               : 100%;
                 position            : fixed;
                 top                 : 0px;
                 left                : 0px;
-                padding-top         : 8px;
-                padding-right       : 8px;
+                padding             : 8px;
+                padding-bottom      : 0px;
                 text-align          : center;
                 background-color    : white;
-                z-index             : 1;
+                z-index             : 2;
             }
             .nameheader {
                 padding             : 0px 8px;
@@ -79,40 +79,45 @@
                 width               : 100%;
                 text-align          : center;
             }
-            .break {
-                width               : 100%;
-                height              : 10px;
+            .tableboxwrapper {
+                padding-right       : 6px;
+                padding-bottom      : 6px;
+                position            : fixed;
+                top                 : 45px;
+                left                : 6px;
             }
-            .headerwrapper {
+            .tablebox {
+                border              : 1px solid black;
+                padding             : 1px;
+            }
+            .tableboxline {
+                height              : 100%;
+                border              : 1px solid black;
+            }
+            .tableheaderwrapper {
                 display             : none;
                 padding-right       : 8px;
                 position            : fixed;
-                top                 : 44px;
+                top                 : 47px;
+                left                : 8px;
                 background-color    : white;
-                z-index             : 1;
-            }
-            .headerline {
-                border              : 1px solid black;
-                border-bottom       : 0px;
-                padding             : 1px;
-                padding-bottom      : 0px;
+                z-index             : 2;
             }
             .tablewrapper {
                 display             : none;
-                padding-right       : 8px;
+                width               : 100%;
                 padding-bottom      : 8px;
-                position            : absolute;
-                top                 : 44px;
-            }
-            .tableline {
-                border              : 1px solid black;
-                padding             : 1px;
+                position            : relative;
+                top                 : 45px;
+                left                : 0px;
+                z-index             : 1;
             }
             table {
                 font-size           : 10pt;
-                border-collapse     : collapse;
+                border-spacing      : 0px;
             }
             .albumstable {
+                padding-right       : 8px;
             }
             .albumstableheader {
                 visibility          : hidden;
@@ -121,10 +126,12 @@
                 padding             : 3px 5px 3px 5px;
             }
             .fieldname {
-                border              : 1px solid black;
+                border              : 0.5px solid black;
             }
             .fieldvalue {
-                border              : 1px solid black;
+                border              : 0.5px solid black;
+                border-bottom-width : 0px;
+                border-right-width  : 0px;
             }
             .hcover {
                 min-width           : 53px;
@@ -192,35 +199,84 @@
                 var pageno = parseInt(parameters[3].split("=")[1]);
 
                 $(window).on("scroll", function () {
-                    var boxsetalbumsFrame = parent.frames["boxsetalbums"];
-                    if (!boxsetalbumsFrame) {
-                        $(".headerwrapper").css("left", -1 * $(window).scrollLeft() + 8);
-                    } else {
-                        $(".headerwrapper").css("left", -1 * $(window).scrollLeft());
-                    }
+                    $(".tableheaderwrapper").css("left", -1 * $(window).scrollLeft() + 8);
+                    resizeTableBox();
                 });
 
                 var tableHeader = new oyoTableHeader(".albumstable");
-                tableHeader.changeBorder("header");
-                $(".headerline", ".headerwrapper").append(tableHeader);
+                tableHeader.changeBorder("table", "0.5px solid black");
+                $(".tableheaderwrapper").append(tableHeader);
 
                 if (isboxset) {
                     $(".nameheader").css("display", "none");
-                    $("body, tablewrapper").css("padding", "0px");
-                    $(".headerwrapper").css("top", parseFloat($(".headerwrapper").css("top")) - 28);
+                    $(".tableheaderwrapper").css("top", parseFloat($(".tableheaderwrapper").css("top")) - 28);
                     $(".tablewrapper").css("top", parseFloat($(".tablewrapper").css("top")) - 28);
+                    $(".tableboxwrapper").css("top", parseFloat($(".tableboxwrapper").css("top")) - 28);
                 }
 
-                function resizeBoxFrame() {
-                    $("body").css("overflow-y", "hidden");
-                    var boxsetalbumsFrame = parent.frames["boxsetalbums"];
-                    if (boxsetalbumsFrame) {
-                        var scrolltop = $(parent.document.body).scrollTop();
-                        $(".boxsetalbums", window.parent.document).height(0);
-                        var height = boxsetalbumsFrame.document.body.scrollHeight + 10;
-                        $(".boxsetalbums", window.parent.document).height(height);
-                        $(parent.document.body).scrollTop(scrolltop);
+                var tableObserver = new ResizeObserver(function () {
+                    resizeTableBox();
+                });
+                tableObserver.observe($(".tablewrapper")[0]);
+
+                function resizeTableBox() {
+                    var x1 = $(document.documentElement).scrollLeft() + 0.5;
+                    var y1 = 0;
+                    var x2 = document.documentElement.clientWidth + $(document.documentElement).scrollLeft() - 16.5;
+                    var y2 = 64;
+                    var p1 = x1 + "px " + y1 + "px, ";
+                    var p2 = x2 + "px " + y1 + "px, ";
+                    var p3 = x2 + "px " + y2 + "px, ";
+                    var p4 = x1 + "px " + y2 + "px";
+                    var clipRect = "polygon(" + p1 + p2 + p3 + p4 + ")";
+                    $(".tableheaderwrapper").css("clip-path", clipRect);
+                    var x1 = $(document.documentElement).scrollLeft() + 1;
+                    var y1 = 24 + $(document.documentElement).scrollTop();
+                    var x2 = document.documentElement.clientWidth + $(document.documentElement).scrollLeft() - 16;
+                    var y2;
+                    if (!isboxset) {
+                        if ($(".oyonavigator").length === 0) {
+                            y2 = document.documentElement.clientHeight - 45 - 10.5 + $(document.documentElement).scrollTop();
+                        } else {
+                            y2 = document.documentElement.clientHeight - 68 - 10.5 + $(document.documentElement).scrollTop();
+                        }
+                    } else {
+                        y2 = $(".tablewrapper").height();
                     }
+                    var p1 = x1 + "px " + y1 + "px, ";
+                    var p2 = x2 + "px " + y1 + "px, ";
+                    var p3 = x2 + "px " + y2 + "px, ";
+                    var p4 = x1 + "px " + y2 + "px";
+                    var clipRect = "polygon(" + p1 + p2 + p3 + p4 + ")";
+                    $(".tablewrapper").css("clip-path", clipRect);
+                    $(".tablebox").width(document.documentElement.clientWidth - 16);
+                    if (!isboxset) {
+                        if (document.documentElement.scrollHeight > document.documentElement.clientHeight) {
+                            if ($(".oyonavigator").length === 0) {
+                                $(".tablebox").height(document.documentElement.clientHeight - 45 - 12);
+                            } else {
+                                $(".tablebox").height(document.documentElement.clientHeight - 68 - 12);
+                            }
+                        } else {
+                            $(".tablebox").height($(".tablewrapper").height() - 2);
+                        }
+                    } else {
+                        $(".tablebox").height($(".tablewrapper").height() - 2);
+                    }
+                }
+
+                var boxsetalbumsFrame = parent.frames["boxsetalbums"];
+                if (boxsetalbumsFrame) {
+                    var documentObserver = new ResizeObserver(function () {
+                        $("body").css("overflow-y", "hidden");
+                        var scrolltop = $(parent.document.body).scrollTop();
+                        //$(".boxsetalbums", window.parent.document).height(0);
+                        var height = boxsetalbumsFrame.document.body.scrollHeight + 10;
+                        console.log(height);
+                        $(boxsetalbumsFrame.frameElement).height(height);
+                        $(parent.document.body).scrollTop(scrolltop);
+                    });
+                    documentObserver.observe(document.documentElement);
                 }
 
                 url = "scripts/getArtist.php";
@@ -232,7 +288,6 @@
                     success: function (artist) {
                         var name = artist.name;
                         var albumcount = artist.albumcount;
-
                         url = "scripts/getParentArtists.php";
                         $.ajax({
                             url: url,
@@ -277,10 +332,8 @@
                                     var href = $(event.target).attr("href");
                                     window.localStorage.setItem(href, "visited");
                                 });
-
                             }
                         });
-
                         url = "scripts/getSettings.php";
                         $.ajax({
                             url: url,
@@ -290,19 +343,16 @@
                                 var recordspage = settings.recordspage;
                                 var pagerange = settings.pagerange;
                                 var imagepaththumbs = settings.imagepaththumbs;
-
                                 if (!isboxset) {
                                     if (albumcount > recordspage) {
                                         var baseUrl = "albumlist.html?artistid=" + artistid + "&isboxset=0" + "&boxsetid=0";
                                         var navigator = new oyoNavigator(albumcount, recordspage, pagerange, baseUrl);
                                         $(".header").append(navigator);
                                         navigator.setPage(pageno);
-                                        $(".headerwrapper").css("top", parseFloat($(".headerwrapper").css("top")) + 23);
+                                        $(".tableheaderwrapper").css("top", parseFloat($(".tableheaderwrapper").css("top")) + 23);
                                         $(".tablewrapper").css("top", parseFloat($(".tablewrapper").css("top")) + 23);
+                                        $(".tableboxwrapper").css("top", parseFloat($(".tableboxwrapper").css("top")) + 23);
                                     }
-                                    var div = document.createElement("div");
-                                    $(div).attr("class", "break");
-                                    $(".header").append(div);
                                 } else {
                                     url = "scripts/getAlbum.php";
                                     $.ajax({
@@ -317,8 +367,9 @@
                                                 var navigator = new oyoNavigator(disccount, recordspage, pagerange, baseUrl);
                                                 $(".header").append(navigator);
                                                 navigator.setPage(pageno);
-                                                $(".headerwrapper").css("top", parseFloat($(".headerwrapper").css("top")) + 23);
+                                                $(".tableheaderwrapper").css("top", parseFloat($(".tableheaderwrapper").css("top")) + 23);
                                                 $(".tablewrapper").css("top", parseFloat($(".tablewrapper").css("top")) + 23);
+                                                $(".tableboxwrapper").css("top", parseFloat($(".tableboxwrapper").css("top")) + 23);
                                             }
                                         }
                                     });
@@ -327,10 +378,8 @@
                                 addRecords(imagepaththumbs);
                             }
                         });
-
                     }
                 });
-
                 function addRecords(imagepaththumbs) {
 
                     url = "scripts/getAlbums.php";
@@ -349,10 +398,8 @@
                                 var playingtime = albums[i].playingtime;
                                 var genre = albums[i].genre;
                                 var imagefilename = encodeURIComponent(albums[i].imagefilename);
-
                                 var row = document.createElement("tr");
                                 $("tbody").append(row);
-
                                 var cell = document.createElement("td");
                                 $(cell).attr("class", "fieldvalue cover");
                                 $(row).append(cell);
@@ -365,12 +412,6 @@
                                 var src = imagepaththumbs + "/" + imagefilename;
                                 $(image).attr("src", src);
                                 $(a).append(image);
-
-                                if (isboxset) {
-                                    $(image).on("load", function () {
-                                        resizeBoxFrame();
-                                    });
-                                }
 
                                 var cell = document.createElement("td");
                                 $(cell).attr("class", "fieldvalue title");
@@ -386,35 +427,29 @@
                                     $(a).css("color", "blue");
                                 }
                                 $(cell).append(a);
-
                                 var cell = document.createElement("td");
                                 $(cell).attr("class", "fieldvalue released");
                                 $(cell).html(released);
                                 $(row).append(cell);
-
                                 var cell = document.createElement("td");
                                 $(cell).attr("class", "fieldvalue count");
                                 $(cell).html(disccount);
                                 $(row).append(cell);
-
                                 var cell = document.createElement("td");
                                 $(cell).attr("class", "fieldvalue format");
                                 $(cell).html(format);
                                 $(row).append(cell);
-
                                 var cell = document.createElement("td");
                                 $(cell).attr("class", "fieldvalue genre");
                                 $(cell).html(genre);
                                 $(row).append(cell);
-
                                 var cell = document.createElement("td");
                                 $(cell).attr("class", "fieldvalue playingtime");
                                 $(cell).html(playingtime);
                                 $(row).append(cell);
-
                                 if (i === 0) {
-                                    $(".headerwrapper").css("display", "block");
-                                    $(".tablewrapper").css("display", "block");
+                                    $(".tableheaderwrapper").css("display", "inline-block");
+                                    $(".tablewrapper").css("display", "inline-block");
                                 }
 
                             } // end albums loop
@@ -423,10 +458,6 @@
                                 var href = $(event.target).attr("href");
                                 window.localStorage.setItem(href, "visited");
                             });
-
-                            if (isboxset) {
-                                resizeBoxFrame();
-                            }
 
                         }
                     }); // end of getAlbums
@@ -441,28 +472,30 @@
             </div>
         </div>
 
-        <div class="headerwrapper">
-            <div class="headerline">
+        <div class="tableboxwrapper">
+            <div class="tablebox">
+                <div class="tableboxline"></div>
             </div>
         </div>
 
+        <div class="tableheaderwrapper">
+        </div>
+
         <div class="tablewrapper">
-            <div class="tableline">
-                <table class="albumstable">
-                    <thead>
-                        <tr class="albumstableheader">
-                            <th class="fieldname hcover">Cover</th>
-                            <th class="fieldname htitle">Title</th>
-                            <th class="fieldname hreleased">Released</th>
-                            <th class="fieldname hcount">Count</th>
-                            <th class="fieldname hformat">Format</th>
-                            <th class="fieldname hgenre">Genre</th>
-                            <th class="fieldname hplayingtime">Playing Time</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+            <table class="albumstable">
+                <thead>
+                    <tr class="albumstableheader">
+                        <th class="fieldname hcover">Cover</th>
+                        <th class="fieldname htitle">Title</th>
+                        <th class="fieldname hreleased">Released</th>
+                        <th class="fieldname hcount">Count</th>
+                        <th class="fieldname hformat">Format</th>
+                        <th class="fieldname hgenre">Genre</th>
+                        <th class="fieldname hplayingtime">Playing Time</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
 
     </body>

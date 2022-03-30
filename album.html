@@ -88,14 +88,16 @@
             }
             .albumdiv {
                 padding             : 1px;
-                display             : table-cell;
+                display             : inline-block;
                 vertical-align      : top;
+
             }
             .albumimage {
                 border              : 1px solid black;
                 padding             : 1px;
             }
             .image {
+                display             : block;
                 width               : 250px;
             }
             .albumimagemirror {
@@ -129,7 +131,7 @@
             }
             .tracksdiv {
                 padding             : 1px;
-                display             : table-cell;
+                display             : inline-block;
                 vertical-align      : top;
                 padding-left        : 20px;
             }
@@ -168,8 +170,11 @@
                 border-right-width  : 0px;
             }
             .boxsetalbums {
-                width               : 100%;
+                width               : calc(100% + 8px);
                 border              : 0px solid black;
+                position            : relative;
+                left                : -8px;
+                margin-right        : -8px;
             }
             .links {
                 text-align          : center;
