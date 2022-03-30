@@ -248,7 +248,7 @@
                 var parameters = location.search.substring(1).split("&");
                 var albumid = parameters[0].split("=")[1];
                 var parameter = parameters[1].split("=")[0];
-                if (parameter == "pageno") {
+                if (parameter === "pageno") {
                     var pageno = parseInt(parameters[1].split("=")[1]);
                 } else {
                     parameters.shift();
@@ -326,32 +326,15 @@
                     $(".title").css("font-weight", "normal");
                 }
 
-                var scrollHeight;
-                function resizeBoxFrame(autoresize) {
-                    if (window.name === "boxsetalbums") {
-                        if (autoresize === undefined) {
-                            autoresize = false;
-                        }
+                var boxsetalbumsFrame = parent.frames["boxsetalbums"];
+                if (boxsetalbumsFrame) {
+                    var documentObserver = new ResizeObserver(function () {
                         $("body").css("overflow-y", "hidden");
-                        var scrolltop = $(parent.document.body).scrollTop();
-                        if (!autoresize) {
-                            $(".boxsetalbums", window.parent.document).height(0);
-                        }
-                        var boxsetalbumsFrame = parent.frames["boxsetalbums"];
-                        var height = boxsetalbumsFrame.document.body.scrollHeight;
-                        if (height !== scrollHeight) {
-                            $(".boxsetalbums", window.parent.document).height(height);
-                            $(parent.document.body).scrollTop(scrolltop);
-                        }
-                        scrollHeight = height;
-                    }
+                        var height = boxsetalbumsFrame.document.body.scrollHeight + 10;
+                        $(boxsetalbumsFrame.frameElement).height(height);
+                    });
+                    documentObserver.observe(document.documentElement);
                 }
-
-                $(window).resize(function () {
-                    if (window.name === "boxsetalbums") {
-                        resizeBoxFrame(true);
-                    }
-                });
 
                 $(".download").on("click", function () {
                     $(".downloading").css("display", "inline");
@@ -472,9 +455,6 @@
                                     grd.addColorStop(1, "rgba(255, 255, 255, 0.5)");
                                     ctx.fillStyle = grd;
                                     ctx.fillRect(0, 0, width, height);
-                                    if (boxsetid !== -1) {
-                                        //resizeBoxFrame();
-                                    }
                                 });
                             }
                         });
@@ -694,10 +674,6 @@
                                                         window.localStorage.setItem(href, "visited");
                                                     });
 
-                                                    if (boxsetid != -1) {
-                                                        resizeBoxFrame();
-                                                    }
-
                                                 }
                                             }); // end of getTracks
 
@@ -713,24 +689,16 @@
                 }); // end of getAlbum
 
                 $(".image").on("click", function () {
-                    if ($(this).width() == 250) {
+                    if ($(this).width() === 250) {
                         $(".image").animate({"width": "500px"}, 1000);
                         $(".albumimagemirror").animate({"height": "127px"}, 1000);
                         $("canvas").animate({"width": "500px"}, 1000);
-                        $(".albumtable").animate({"top": "-50px"}, 1000, function () {
-                            if (window.name === "boxsetalbums") {
-                                resizeBoxFrame();
-                            }
-                        });
+                        $(".albumtable").animate({"top": "-50px"}, 1000);
                     } else {
                         $(".image").animate({"width": "250px"}, 1000);
                         $(".albumimagemirror").animate({"height": "63.5px"}, 1000);
                         $("canvas").animate({"width": "250px"}, 1000);
-                        $(".albumtable").animate({"top": "-25px"}, 1000, function () {
-                            if (window.name === "boxsetalbums") {
-                                resizeBoxFrame();
-                            }
-                        });
+                        $(".albumtable").animate({"top": "-25px"}, 1000);
                     }
                 });
 
@@ -740,7 +708,6 @@
         <div class="player"></div>
         <div class="back"><a class="backlink">Back</a></div>
 
-        <!-- Heading -->
         <div class="wrapper">
             <div class="header">
                 <div class="headertitle"></div>
@@ -755,13 +722,11 @@
 
                 <div  class="albumdiv">
 
-                    <!-- Cover -->
                     <div class="albumimage">
                         <img class="image"/>
                     </div>
                     <div class="albumimagemirror"></div>
 
-                    <!-- Albumdetails -->
                     <table class="albumtable">
                         <tr>
                             <td class="fieldname">Released</td>

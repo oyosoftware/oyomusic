@@ -269,12 +269,8 @@
                 if (boxsetalbumsFrame) {
                     var documentObserver = new ResizeObserver(function () {
                         $("body").css("overflow-y", "hidden");
-                        var scrolltop = $(parent.document.body).scrollTop();
-                        //$(".boxsetalbums", window.parent.document).height(0);
                         var height = boxsetalbumsFrame.document.body.scrollHeight + 10;
-                        console.log(height);
                         $(boxsetalbumsFrame.frameElement).height(height);
-                        $(parent.document.body).scrollTop(scrolltop);
                     });
                     documentObserver.observe(document.documentElement);
                 }
