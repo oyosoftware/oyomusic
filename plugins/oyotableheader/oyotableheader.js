@@ -17,9 +17,7 @@ function oyoTableHeader(refTable, height) {
     var textColor = defaultTextColor;
 
     var intBorderType = "cell";
-    var intBorder = "1px solid black";
-    var intHeaderBorder = $("tr", refTable).css("border");
-    var intCellBorder = $("th", refTable).css("border");
+    var intBorder = "0.5px solid black";
 
     var table = document.createElement("table");
     $(table).attr("class", "oyotable");
@@ -30,10 +28,8 @@ function oyoTableHeader(refTable, height) {
         $(table).css("max-height", height);
     }
     var thead = document.createElement("thead");
+    $(thead).attr("class", "oyotableheader");
     $(table).append(thead);
-    var tr = document.createElement("tr");
-    $(tr).attr("class", "oyotableheader");
-    $(thead).append(tr);
 
     var observer = new ResizeObserver(function () {
         resizeTableHeader();
@@ -41,29 +37,43 @@ function oyoTableHeader(refTable, height) {
     observer.observe($(refTable)[0]);
 
     resizeTableHeader = function () {
-        $(table).width($(refTable).width());
-        var clone = $("thead tr", refTable).clone();
+        $(table).css("width", $(refTable).width());
+        var clone = $("thead", refTable).clone();
         $(clone).attr("class", "oyotableheader");
+
         switch (true) {
-            case intBorderType === "header":
-                $(clone).css("border", intBorder);
-                $("th", clone).css("border", "0px");
+            case intBorderType === "table":
+                $(table).css("border", intBorder);
+                $("tr", clone).css("border-width", "0px");
+                $("th", clone).css("border-width", "0px");
+                break;
+            case intBorderType === "row":
+                $(table).css("border-collapse", "collapse");
+                $(table).css("border-width", "0px");
+                $("tr", clone).css("border", intBorder);
+                $("th", clone).css("border-width", "0px");
                 break;
             case intBorderType === "cell":
-                $(clone).css("border", "0px");
+                borderSpacing = $(table).css("border-spacing");
+                if (borderSpacing === "0px 0px") {
+                    $(table).css("border-collapse", "collapse");
+                }
+                $(table).css("border-width", "0px");
+                $("tr", clone).css("border-width", "0px");
                 $("th", clone).css("border", intBorder);
                 break;
-            case intBorderType === "original":
-                $(clone).css("border", intHeaderBorder);
-                $("th", clone).css("border", intCellBorder);
-                break;
-            case intBorderType === "none":
-                $(clone).css("border", "0px");
-                $("th", clone).css("border", "0px");
+            default:
+                $(table).css("border-width", "0px");
+                $("tr", clone).css("border-width", "0px");
+                $("th", clone).css("border-width", "0px");
                 break;
         }
-        $(clone).children().each(function (index, element) {
-            var cell = $("tr", refTable).children().eq(index);
+
+        $(clone).find("tr").each(function (index, element) {
+            $(element).attr("class", "oyotableheaderrow");
+        });
+        $(clone).find("th").each(function (index, element) {
+            var cell = $("th", refTable).eq(index);
             var width = parseFloat($(cell).css("width"));
             $(element).width(width);
         });
