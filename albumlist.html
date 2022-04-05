@@ -80,11 +80,9 @@
                 text-align          : center;
             }
             .tableboxwrapper {
-                padding-right       : 6px;
-                padding-bottom      : 6px;
                 position            : fixed;
                 top                 : 45px;
-                left                : 6px;
+                left                : 8px;
             }
             .tablebox {
                 border              : 1px solid black;
@@ -96,28 +94,27 @@
             }
             .tableheaderwrapper {
                 display             : none;
-                padding-right       : 8px;
                 position            : fixed;
                 top                 : 47px;
-                left                : 8px;
+                left                : 10px;
                 background-color    : white;
                 z-index             : 2;
             }
             .tablewrapper {
                 display             : none;
-                width               : 100%;
-                padding-bottom      : 8px;
+                width               : calc(100% - 2px);
                 position            : relative;
-                top                 : 45px;
-                left                : 0px;
+                top                 : 46px;
+                left                : 2px;
                 z-index             : 1;
             }
             table {
                 font-size           : 10pt;
                 border-spacing      : 0px;
+                padding-right       : 10px;
             }
             .albumstable {
-                padding-right       : 8px;
+                padding-bottom      : 10px;
             }
             .albumstableheader {
                 visibility          : hidden;
@@ -199,7 +196,7 @@
                 var pageno = parseInt(parameters[3].split("=")[1]);
 
                 $(window).on("scroll", function () {
-                    $(".tableheaderwrapper").css("left", -1 * $(window).scrollLeft() + 8);
+                    $(".tableheaderwrapper").css("left", -1 * $(window).scrollLeft() + 10);
                     resizeTableBox();
                 });
 
@@ -220,25 +217,26 @@
                 tableObserver.observe($(".tablewrapper")[0]);
 
                 function resizeTableBox() {
-                    var x1 = $(document.documentElement).scrollLeft() + 0.5;
+                    var x1 = $(document.documentElement).scrollLeft() + 1;
                     var y1 = 0;
-                    var x2 = document.documentElement.clientWidth + $(document.documentElement).scrollLeft() - 16.5;
-                    var y2 = 64;
+                    var x2 = document.documentElement.clientWidth + $(document.documentElement).scrollLeft() - 21;
+                    var y2 = 23;
                     var p1 = x1 + "px " + y1 + "px, ";
                     var p2 = x2 + "px " + y1 + "px, ";
                     var p3 = x2 + "px " + y2 + "px, ";
                     var p4 = x1 + "px " + y2 + "px";
                     var clipRect = "polygon(" + p1 + p2 + p3 + p4 + ")";
                     $(".tableheaderwrapper").css("clip-path", clipRect);
-                    var x1 = $(document.documentElement).scrollLeft() + 1;
-                    var y1 = 24 + $(document.documentElement).scrollTop();
-                    var x2 = document.documentElement.clientWidth + $(document.documentElement).scrollLeft() - 16;
+
+                    var x1 = $(document.documentElement).scrollLeft() + 0;
+                    var y1 = 23 + $(document.documentElement).scrollTop();
+                    var x2 = document.documentElement.clientWidth + $(document.documentElement).scrollLeft() - 20;
                     var y2;
                     if (!isboxset) {
                         if ($(".oyonavigator").length === 0) {
-                            y2 = document.documentElement.clientHeight - 45 - 10.5 + $(document.documentElement).scrollTop();
+                            y2 = document.documentElement.clientHeight - 46 - 11 + $(document.documentElement).scrollTop();
                         } else {
-                            y2 = document.documentElement.clientHeight - 68 - 10.5 + $(document.documentElement).scrollTop();
+                            y2 = document.documentElement.clientHeight - 69 - 11 + $(document.documentElement).scrollTop();
                         }
                     } else {
                         y2 = $(".tablewrapper").height();
@@ -249,19 +247,20 @@
                     var p4 = x1 + "px " + y2 + "px";
                     var clipRect = "polygon(" + p1 + p2 + p3 + p4 + ")";
                     $(".tablewrapper").css("clip-path", clipRect);
-                    $(".tablebox").width(document.documentElement.clientWidth - 16);
+
+                    $(".tablebox").width(document.documentElement.clientWidth - 20);
                     if (!isboxset) {
                         if (document.documentElement.scrollHeight > document.documentElement.clientHeight) {
                             if ($(".oyonavigator").length === 0) {
-                                $(".tablebox").height(document.documentElement.clientHeight - 45 - 12);
+                                $(".tablebox").height(document.documentElement.clientHeight - 46 - 11);
                             } else {
-                                $(".tablebox").height(document.documentElement.clientHeight - 68 - 12);
+                                $(".tablebox").height(document.documentElement.clientHeight - 69 - 11);
                             }
                         } else {
-                            $(".tablebox").height($(".tablewrapper").height() - 2);
+                            $(".tablebox").height($(".tablewrapper").height() - 11);
                         }
                     } else {
-                        $(".tablebox").height($(".tablewrapper").height() - 2);
+                        $(".tablebox").height($(".tablewrapper").height() - 11);
                     }
                 }
 
