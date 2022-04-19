@@ -6,21 +6,21 @@
  * © 2022 oYoSoftware
  * MIT License
  *
- * oyomirror is a tool to mirror an image on one or more of the four sides of an image
+ * oyomirror is a tool to mirror an image in one of four directions
  */
 
-function oyoMirror(image, side = "bottom", part = "25%", degrees = 90, perspective) {
+function oyoMirror(image, side = "bottom", partSize = "25%", degrees = 90, perspective) {
 
     var width = $(image).width();
     var height = $(image).height();
 
-    var percSign = part.toString().slice(-1);
+    var percSign = partSize.toString().slice(-1);
     if (percSign === "%") {
-        var svgHeight = parseFloat(part) / 100 * height;
-        var svgWidth = parseFloat(part) / 100 * width;
+        var svgHeight = parseFloat(partSize) / 100 * height;
+        var svgWidth = parseFloat(partSize) / 100 * width;
     } else {
-        var svgHeight = parseFloat(part);
-        var svgWidth = parseFloat(part);
+        var svgHeight = parseFloat(partSize);
+        var svgWidth = parseFloat(partSize);
     }
 
     switch (true) {
