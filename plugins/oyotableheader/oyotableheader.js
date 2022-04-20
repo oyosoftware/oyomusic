@@ -6,7 +6,7 @@
  * © 2022 oYoSoftware
  * MIT License
  *
- * oyotableheader is a tool to define a fixed table header
+ * oyotableheader is a tool to give a table a fixed header
  */
 
 function oyoTableHeader(refTable, height) {
@@ -52,7 +52,7 @@ function oyoTableHeader(refTable, height) {
                 $("tr", clone).css("border-width", "0px");
                 $("th", clone).css("border", intBorder);
                 break;
-            default:
+            case intBorderType === "none":
                 $(table).css("border-width", "0px");
                 $("tr", clone).css("border-width", "0px");
                 $("th", clone).css("border-width", "0px");
