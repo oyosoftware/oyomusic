@@ -264,14 +264,17 @@
                     }
                 }
 
-                var boxsetalbumsFrame = parent.frames["boxsetalbums"];
-                if (boxsetalbumsFrame) {
-                    var documentObserver = new ResizeObserver(function () {
-                        $("body").css("overflow-y", "hidden");
-                        var height = boxsetalbumsFrame.document.body.scrollHeight + 10;
-                        $(boxsetalbumsFrame.frameElement).height(height);
-                    });
-                    documentObserver.observe(document.documentElement);
+                try {
+                    var boxsetalbumsFrame = parent.frames["boxsetalbums"];
+                    if (boxsetalbumsFrame) {
+                        var documentObserver = new ResizeObserver(function () {
+                            $("body").css("overflow-y", "hidden");
+                            var height = boxsetalbumsFrame.document.body.scrollHeight + 10;
+                            $(boxsetalbumsFrame.frameElement).height(height);
+                        });
+                        documentObserver.observe(document.documentElement);
+                    }
+                } catch (e) {
                 }
 
                 url = "scripts/getArtist.php";
