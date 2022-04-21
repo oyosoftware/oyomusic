@@ -263,13 +263,14 @@
 
                 albumsFrame = parent.parent.frames["albums"];
 
-                artistindexFrame = parent.frames["artistindex"] || parent.parent.frames["artistindex"];
                 try {
+                    artistindexFrame = parent.frames["artistindex"] || parent.parent.frames["artistindex"];
                     audioPlayer = artistindexFrame.audioPlayer;
                 } catch (error) {
                     audioPlayer = new oyoPlayer("player");
                     $(".player").append(audioPlayer);
                 }
+
                 audio = audioPlayer.audio;
                 audioPlayer.setNotification("Push Play to start");
 
@@ -326,14 +327,17 @@
                     $(".title").css("font-weight", "normal");
                 }
 
-                var boxsetalbumsFrame = parent.frames["boxsetalbums"];
-                if (boxsetalbumsFrame) {
-                    var documentObserver = new ResizeObserver(function () {
-                        $("body").css("overflow-y", "hidden");
-                        var height = boxsetalbumsFrame.document.body.scrollHeight + 10;
-                        $(boxsetalbumsFrame.frameElement).height(height);
-                    });
-                    documentObserver.observe(document.documentElement);
+                try {
+                    var boxsetalbumsFrame = parent.frames["boxsetalbums"];
+                    if (boxsetalbumsFrame) {
+                        var documentObserver = new ResizeObserver(function () {
+                            $("body").css("overflow-y", "hidden");
+                            var height = boxsetalbumsFrame.document.body.scrollHeight + 10;
+                            $(boxsetalbumsFrame.frameElement).height(height);
+                        });
+                        documentObserver.observe(document.documentElement);
+                    }
+                } catch (error) {
                 }
 
                 $(".download").on("click", function () {
