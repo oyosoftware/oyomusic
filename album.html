@@ -331,7 +331,7 @@
                     var boxsetalbumsFrame = parent.frames["boxsetalbums"];
                     if (boxsetalbumsFrame) {
                         var documentObserver = new ResizeObserver(function () {
-                            $("body").css("overflow-y", "hidden");
+                            //$("body").css("overflow-y", "hidden");
                             var height = boxsetalbumsFrame.document.body.scrollHeight + 10;
                             $(boxsetalbumsFrame.frameElement).height(height);
                         });
@@ -683,13 +683,43 @@
                     if ($(this).width() === 250) {
                         $(".image").animate({"width": "500px"}, 1000);
                         $(".albumimagemirror").animate({"height": "127px"}, 1000);
-                        $("canvas").animate({"width": "500px"}, 1000);
-                        $(".albumtable").animate({"top": "-50px"}, 1000);
+                        var transform;
+                        $(".oyomirror").animate(
+                                {scale: 2, translateX: 125, translateY: 15.625},
+                                {step: function (value, fx) {
+                                        if (fx.prop === "scale") {
+                                            fx.start = 1;
+                                            transform = "scale(" + value + ")";
+                                        }
+                                        if (fx.prop === "translateX") {
+                                            transform += " translateX(" + value + "px)";
+                                        }
+                                        if (fx.prop === "translateY") {
+                                            transform += "translateY(" + value + "px)";
+                                            $(".oyomirror").css("transform", transform);
+                                        }
+                                    },
+                                    duration: 1000
+                                });
                     } else {
                         $(".image").animate({"width": "250px"}, 1000);
                         $(".albumimagemirror").animate({"height": "63.5px"}, 1000);
-                        $("canvas").animate({"width": "250px"}, 1000);
-                        $(".albumtable").animate({"top": "-25px"}, 1000);
+                        $(".oyomirror").animate(
+                                {scale: 1, translateX: 0, translateY: 0},
+                                {step: function (value, fx) {
+                                        if (fx.prop === "scale") {
+                                            transform = "scale(" + value + ")";
+                                        }
+                                        if (fx.prop === "translateX") {
+                                            transform += " translateX(" + value + "px)";
+                                        }
+                                        if (fx.prop === "translateY") {
+                                            transform += "translateY(" + value + "px)";
+                                            $(".oyomirror").css("transform", transform);
+                                        }
+                                    },
+                                    duration: 1000
+                                });
                     }
                 });
 
