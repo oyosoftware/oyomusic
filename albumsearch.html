@@ -19,6 +19,7 @@
         <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
         <script src="plugins/oyonavigator/oyonavigator.js"></script>
         <script src="plugins/oyotableheader/oyotableheader.js"></script>
+        <script src="plugins/oyopaddingbox/oyopaddingbox.js"></script>
 
         <style>
             * {
@@ -70,42 +71,40 @@
                 padding             : 0px 8px;
                 white-space         : nowrap;
             }
-            .tableboxwrapper {
-                position            : fixed;
-                top                 : 45px;
-                left                : 8px;
-            }
-            .tablebox {
-                border              : 1px solid black;
-                padding             : 1px;
-            }
-            .tableboxline {
-                height              : 100%;
-                border              : 1px solid black;
-            }
             .tableheaderwrapper {
                 display             : none;
+                width               : calc(100% - 10px);
                 position            : fixed;
                 top                 : 47px;
                 left                : 10px;
                 background-color    : white;
                 z-index             : 2;
             }
+            .tableheaderpaddingbox {
+                display             : table;
+                width               : 100%;
+                padding-right       : 10px;
+            }
             .tablewrapper {
                 display             : none;
                 width               : calc(100% - 2px);
                 position            : relative;
-                top                 : 46px;
+                top                 : 47px;
                 left                : 2px;
                 z-index             : 1;
+            }
+            .tablepaddingbox {
+                display             : table;
+                width               : 100%;
+                padding-right       : 10px;
+                padding-bottom      : 10px;
             }
             table {
                 font-size           : 10pt;
                 border-spacing      : 0px;
-                padding-right       : 10px;
+                margin-left         : -1px;
             }
             .albumstable {
-                padding-bottom      : 10px;
             }
             .albumstableheader {
                 visibility          : hidden;
@@ -246,57 +245,19 @@
 
                 $(window).on("scroll", function () {
                     $(".tableheaderwrapper").css("left", -1 * $(window).scrollLeft() + 10);
-                    resizeTableBox();
                 });
 
                 var tableHeader = new oyoTableHeader(".albumstable");
-                tableHeader.changeBorder("table", "0.5px solid black");
+                tableHeader.changeBorder("none");
                 $(".tableheaderwrapper").append(tableHeader);
 
-                var tableObserver = new ResizeObserver(function () {
-                    resizeTableBox();
-                });
-                tableObserver.observe($(".tablewrapper")[0]);
-
-                function resizeTableBox() {
-                    var x1 = $(document.documentElement).scrollLeft() + 1;
-                    var y1 = 0;
-                    var x2 = document.documentElement.clientWidth + $(document.documentElement).scrollLeft() - 21;
-                    var y2 = 23;
-                    var p1 = x1 + "px " + y1 + "px, ";
-                    var p2 = x2 + "px " + y1 + "px, ";
-                    var p3 = x2 + "px " + y2 + "px, ";
-                    var p4 = x1 + "px " + y2 + "px";
-                    var clipRect = "polygon(" + p1 + p2 + p3 + p4 + ")";
-                    $(".tableheaderwrapper").css("clip-path", clipRect);
-
-                    var x1 = $(document.documentElement).scrollLeft() + 0;
-                    var y1 = 23 + $(document.documentElement).scrollTop();
-                    var x2 = document.documentElement.clientWidth + $(document.documentElement).scrollLeft() - 20;
-                    var y2;
-                    if ($(".oyonavigator").length === 0) {
-                        y2 = document.documentElement.clientHeight - 46 - 11 + $(document.documentElement).scrollTop();
-                    } else {
-                        y2 = document.documentElement.clientHeight - 69 - 11 + $(document.documentElement).scrollTop();
-                    }
-                    var p1 = x1 + "px " + y1 + "px, ";
-                    var p2 = x2 + "px " + y1 + "px, ";
-                    var p3 = x2 + "px " + y2 + "px, ";
-                    var p4 = x1 + "px " + y2 + "px";
-                    var clipRect = "polygon(" + p1 + p2 + p3 + p4 + ")";
-                    $(".tablewrapper").css("clip-path", clipRect);
-
-                    $(".tablebox").width(document.documentElement.clientWidth - 20);
-                    if (document.documentElement.scrollHeight > document.documentElement.clientHeight) {
-                        if ($(".oyonavigator").length === 0) {
-                            $(".tablebox").height(document.documentElement.clientHeight - 46 - 11);
-                        } else {
-                            $(".tablebox").height(document.documentElement.clientHeight - 69 - 11);
-                        }
-                    } else {
-                        $(".tablebox").height($(".tablewrapper").height() - 11);
-                    }
-                }
+                var tableHeaderBox = new oyoPaddingBox(".tableheaderwrapper");
+                tableHeaderBox.change("0px", "0px");
+                tableHeaderBox.changeInnerBorderWidth("0px 0px 0.5px");
+                $(tableHeaderBox).css("z-index", 999);
+                $("body").append(tableHeaderBox);
+                var tableBox = new oyoPaddingBox(".tablewrapper");
+                $("body").append(tableBox);
 
                 url = "scripts/getSettings.php";
                 $.ajax({
@@ -335,9 +296,8 @@
                                     var navigator = new oyoNavigator(records, searchrecordspage, pagerange, baseUrl);
                                     $(".header").append(navigator);
                                     navigator.setPage(pageno);
-                                    $(".tableheaderwrapper").css("top", parseInt($(".tableheaderwrapper").css("top")) + 23);
-                                    $(".tablewrapper").css("top", parseInt($(".tablewrapper").css("top")) + 23);
-                                    $(".tableboxwrapper").css("top", parseFloat($(".tableboxwrapper").css("top")) + 23);
+                                    $(".tableheaderwrapper").css("top", parseFloat($(".tableheaderwrapper").css("top")) + $(navigator).height());
+                                    $(".tablewrapper").css("top", parseFloat($(".tablewrapper").css("top")) + $(navigator).height());
                                 }
                             }
                         });
@@ -507,32 +467,29 @@
             <div class="results"></div>
         </div>
 
-        <div class="tableboxwrapper">
-            <div class="tablebox">
-                <div class="tableboxline"></div>
-            </div>
-        </div>
-
         <div class="tableheaderwrapper">
+            <div class="tableheaderpaddingbox"></div>
         </div>
 
         <div class="tablewrapper">
-            <table class="albumstable">
-                <thead>
-                    <tr class="albumstableheader">
-                        <th class="fieldname hcover">Cover</th>
-                        <th class="fieldname hcountry">Country</th>
-                        <th class="fieldname hartist">Artist</th>
-                        <th class="fieldname htitle">Title</th>
-                        <th class="fieldname hreleased">Released</th>
-                        <th class="fieldname hcount">Count</th>
-                        <th class="fieldname hformat">Format</th>
-                        <th class="fieldname hgenre">Genre</th>
-                        <th class="fieldname hplayingtime">Playing Time</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+            <div class="tablepaddingbox">
+                <table class="albumstable">
+                    <thead>
+                        <tr class="albumstableheader">
+                            <th class="fieldname hcover">Cover</th>
+                            <th class="fieldname hcountry">Country</th>
+                            <th class="fieldname hartist">Artist</th>
+                            <th class="fieldname htitle">Title</th>
+                            <th class="fieldname hreleased">Released</th>
+                            <th class="fieldname hcount">Count</th>
+                            <th class="fieldname hformat">Format</th>
+                            <th class="fieldname hgenre">Genre</th>
+                            <th class="fieldname hplayingtime">Playing Time</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
 
     </body>
