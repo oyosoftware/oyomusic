@@ -54,26 +54,31 @@ function oyoPaddingBox(refObject) {
         var bottomRefSpace = parseFloat($(refObject).css("border-bottom-width")) + parseFloat($(refObject).css("padding-bottom"));
 
         var position = $(refObject).css("position");
+        var top, left;
         if (position === "fixed") {
-            var top = parseFloat($(refObject).css("top")) - topBoxSpace - topBoxBorderSpace + topRefSpace;
+            top = parseFloat($(refObject).css("top")) - topBoxSpace - topBoxBorderSpace + topRefSpace;
         } else {
-            var top = $(refObject).offset().top - topBoxSpace - topBoxBorderSpace + topRefSpace;
+            top = parseFloat(($(refObject).offset().top - topBoxSpace - topBoxBorderSpace + topRefSpace).toFixed(3));
         }
         $(paddingBox).css("top", top);
-        var left = $(refObject).offset().left - leftBoxSpace - leftBoxBorderSpace + leftRefSpace;
+        left = parseFloat(($(refObject).offset().left - leftBoxSpace - leftBoxBorderSpace + leftRefSpace).toFixed(3));
         $(paddingBox).css("left", left);
 
         var padding = parseFloat($(refObject).find("*").css("padding-right"));
         var width = $(refObject).width() + leftBoxSpace + leftBoxBorderSpace + rightBoxSpace + rightBoxBorderSpace - padding;
         $(paddingBox).outerWidth(width);
 
+        if (position === "fixed") {
+            var height = document.documentElement.clientHeight - parseFloat($(refObject).css("top"));
+        } else {
+            var height = document.documentElement.clientHeight - parseFloat($(refObject).offset().top.toFixed(3));
+        }
         var padding = parseFloat($(refObject).find("*").css("padding-bottom"));
-        if (document.documentElement.scrollHeight <= document.documentElement.clientHeight ||
-                $(refObject).outerHeight() <= document.documentElement.clientHeight - $(refObject).offset().top) {
-            var height = $(refObject).height() + topBoxSpace + topBoxBorderSpace + bottomBoxSpace + bottomBoxBorderSpace - padding;
+        if (document.documentElement.scrollHeight <= document.documentElement.clientHeight || $(refObject).outerHeight() <= height) {
+            var height = $(refObject).outerHeight() + topBoxSpace + topBoxBorderSpace + bottomBoxSpace + bottomBoxBorderSpace - padding;
             $(paddingBox).outerHeight(height);
         } else {
-            var height = document.documentElement.clientHeight - $(refObject).offset().top + topBoxSpace + topBoxBorderSpace + bottomBoxSpace + bottomBoxBorderSpace - padding;
+            var height = document.documentElement.clientHeight - parseFloat($(refObject).offset().top.toFixed(3)) + topBoxSpace + topBoxBorderSpace + bottomBoxSpace + bottomBoxBorderSpace - padding;
             $(paddingBox).outerHeight(height);
         }
 
