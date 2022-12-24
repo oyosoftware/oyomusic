@@ -1,0 +1,125 @@
+<html>
+    <head>
+        <title>Calculate Totals</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
+        <script src="..//plugins/oyoprogress/oyoprogress.js"></script>
+        <style>
+            * {
+                box-sizing      : border-box;
+            }
+            ::-webkit-scrollbar {
+                height          : 10px;
+                width           : 10px;
+            }
+            ::-webkit-scrollbar-thumb {
+                background      : white;
+                border          : 2px solid black;
+                border-radius   : 4px;
+            }
+            ::-webkit-scrollbar-thumb:vertical {
+                border-right    : 1px solid black;
+            }
+            ::-webkit-scrollbar-thumb:horizontal {
+                border-bottom   : 1px solid black;
+            }
+            .panel {
+            }
+            .messages {
+                border          : 1px solid black;
+                overflow        : hidden;
+                white-space     : nowrap;
+                padding         : 4px;
+            }
+            .messages {
+                height          : calc(100% - 137px);
+                min-height      : 30px;
+                overflow        : auto;
+            }
+        </style>
+    </head>
+    <body>
+        <script>
+            $(document).ready(function () {
+                var progress = new oyoProgress(800);
+                $(".panel").prepend(progress);
+                progress.text = "";
+                $("button").on("click", start);
+
+                function start() {
+                    $("button").attr("disabled", true);
+                    $(".messages").html("");
+                    var lastResponseLength = 0;
+                    var savedLastResponseLength = 0;
+
+                    $.ajax({
+                        type: 'post',
+                        url: "calculateTotalsCmd.php",
+                        cache: false,
+                        data: {},
+                        processData: false,
+                        xhrFields: {
+                            onprogress: function (e) {
+                                var response = e.currentTarget.response;
+
+                                var progressResponse = response.substring(lastResponseLength);
+                                var bufferEnd = progressResponse.substr(progressResponse.length - 2);
+                                if (bufferEnd === ",\n") {
+                                    progressResponse = progressResponse.substr(0, progressResponse.length - 2);
+                                }
+                                progressResponse = "[" + progressResponse + "]";
+
+                                savedLastResponseLength = lastResponseLength;
+                                lastResponseLength = response.length;
+
+                                try {
+                                    var jsonArray = JSON.parse(progressResponse);
+                                } catch (error) {
+                                    var message = "buffer congestion " + progressResponse;
+                                    $('.messages').append(message + "<br>");
+                                    lastResponseLength = savedLastResponseLength;
+                                }
+
+                                $(jsonArray).each(function (index, json) {
+                                    try {
+                                        switch (true) {
+                                            case json.records !== undefined:
+                                                progress.max = json.records;
+                                                progress.text = "&value of &max (&percentage)";
+                                                break;
+                                            case json.counter !== undefined:
+                                                progress.value = json.counter;
+                                                break;
+                                            case json.message !== undefined:
+                                                $('.messages').append(json.message + "<br>");
+                                                var scrollHeight = $('.messages').prop("scrollHeight");
+                                                $('.messages').scrollTop(scrollHeight);
+                                                break;
+                                        }
+                                    } catch (error) {
+                                        $('.messages').html(error);
+                                    }
+                                });
+
+                            }
+                        },
+                        complete: function () {
+                            $("button").attr("disabled", false);
+                        },
+                        error: function (xhr) {
+                            console.log(xhr.getAllResponseHeaders());
+                        }
+                    });
+                }
+
+            });
+        </script>
+        <h1>Calculate Totals</h1>
+        <button>Start</button>
+        <br><br>
+        <div class="panel"></div>
+        <br>
+        <div class="messages"></div>
+    </body>
+</html>
