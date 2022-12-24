@@ -1,3 +1,11 @@
+oYoMusic 2.1
+23-12-2022  Possibility for interfaces to run in browser
+23-12-2022  Total revamp of interfaces
+23-12-2022  Added progress plugin for interfaces
+15-05-2022  Added padding box plugin for album lists
+19-04-2022  Added mirror plugin for album art
 30-03-2022  Major layout changes in album lists
-16-03-2022  Added table header plugin
-17-03-2022  Added graphics plugin
+17-03-2022  Added graphics plugin for several buttons
+16-03-2022  Added table header plugin for album lists
+oYoMusic 2.0
+16-7-2019   New version
