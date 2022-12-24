@@ -530,11 +530,10 @@ function read_files($dir) {
 }
 
 $link = mysqli_connect($server, $username, $password, $database);
-$dsn = "odbc:driver={Microsoft Access Driver (*.mdb, *.accdb)};dbq=C:\\Users\\Ruud\\Documenten\\Hobby\\Muziek\\Verzameling\\MP3.mdb;charset=utf16le";
+$dsn = "odbc:driver={Microsoft Access Driver (*.mdb, *.accdb)};dbq=C:\\Users\\Someone\\Documents\\Music\\collection.mdb;charset=utf16le";
 $pdolink = new PDO($dsn);
 
 $dir = "M:\\Music";
-//$dir = "M:\\Music\Populair\PQRS\Soulwax";
 
 read_files($dir);
 
