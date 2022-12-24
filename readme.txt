@@ -1,8 +1,8 @@
-* oyomusic 2.0
+* oyomusic 2.1
 * tested with jQuery 3.4.0
 * http://www.oyoweb.nl
 *
-* © 2015-2021 oYoSoftware
+* © 2015-2022 oYoSoftware
 * MIT License
 *
 * oyomusic is a library for showing your own musical content
