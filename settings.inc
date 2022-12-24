@@ -13,4 +13,6 @@ $imagepath = "/music/images/albums";
 $imagepaththumbs = "/music/images/albums/thumbs";
 $imagepathartists = "/music/images/artists";
 $joomlapath = "/joomla";
+$catraxxdatabasepath = "C:/Users/Someone/Documents/Music/collection.mdb";
+$catraxxaudiosource = "Q:/Music";
 ?>
