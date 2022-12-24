@@ -44,11 +44,11 @@ Now that you have set up the library you can run some scripts from the interface
 - Go to a command line with cmd or beter, use Cmder, so you have a full screen command line and a full buffer that you can scroll in
 - Go to the interfaces folder
 - Use the command php -f scriptname.php
-- First, run intMP3toSQL.php to scan your audio source, you can eventually change the $base parameter to do a partial scan
-- If you have a CATraxx databse, you can convert your database instead, using intCATtoSQL.php
-- After that you have to run intCALtoSQL.php to do some calculations
-- If some files are deleted from the audiosource after a scan, you have to run intDELtoSQL.php
-- To collect your images, you have to run colImages.php
+- First, run readAudio.php to scan your audio source, you can eventually change the $base parameter to do a partial scan
+- If you have a CATraxx databse, you can convert your database instead, using readCATraxx.php
+- After that you have to run calculateTotals.php to do some calculations
+- If some files are deleted from the audiosource after a scan, you have to run cleanDatabase.php
+- To collect your images, you have to run collectImages.php
 - For some scripts there will be a file called error.log
 
 If all is well, you can now view your collection by going to your server link and actually play some music
@@ -59,3 +59,5 @@ If you want to set your collection online, there are a few considerations:
 - Change your settings file online, according to the database name online.
 
 GOOD LUCK
+
+Note: as of 24-12-2022 you can now run the interfaces in your browser. You can do this by the corresponding HTML file.
