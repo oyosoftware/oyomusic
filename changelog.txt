@@ -7,5 +7,7 @@ oYoMusic 2.1
 30-03-2022  Major layout changes in album lists
 17-03-2022  Added graphics plugin for several buttons
 16-03-2022  Added table header plugin for album lists
+13-11-2021  Added navigator plugin for album lists
+13-11-2021  Added resizer plugin
 oYoMusic 2.0
 16-7-2019   New version
