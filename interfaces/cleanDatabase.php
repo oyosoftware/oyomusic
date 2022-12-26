@@ -6,10 +6,8 @@ require_once('../settings.inc');
 require_once('../helpers/functions.php');
 
 function delete_removed_tracks($dir) {
-    global $link, $audiosource, $symlink, $log, $servername;
+    global $link, $audiosource, $log, $servername;
 
-    $pos = mb_strlen($symlink);
-    $dir = mb_substr($dir, $pos);
     $dir = mysqli_real_escape_string($link, $dir);
 
     $message = "delete of tracks begins " . date('H:i:s');
@@ -38,6 +36,7 @@ function delete_removed_tracks($dir) {
                 where folder like '$dir%'
                 order by folder, filename";
     $result = mysqli_query($link, $sql);
+    $previousfolder = "";
     $counter = 0;
 
     while ($row = mysqli_fetch_assoc($result)) {
@@ -60,16 +59,20 @@ function delete_removed_tracks($dir) {
             echo $json . ",\n";
         }
 
-        $file = $symlink . $row["folder"] . "/" . $row["filename"];
-        $linkinfo = linkinfo($file);
+        $folder = $row["folder"];
+        $filename = $row["filename"];
 
-        if ($linkinfo === -1) {
+        if ($folder <> $previousfolder) {
+            $dirlist = scandir($audiosource . $folder);
+        }
+
+        if (!in_array($filename, $dirlist)) {
             $albumid = $row["albumid"];
             $discno = $row["discno"];
             $track = $row["track"];
             $sqld = "delete from tracks where albumid = $albumid and discno = $discno and track = $track";
             mysqli_query($link, $sqld);
-            $path = $audiosource . $row["folder"] . "/" . $row["filename"];
+            $path = $audiosource . $folder . "/" . $filename;
             $logtext = "track " . $path . " doesn't exist anymore and will be deleted";
             fwrite($log, $logtext . "\r\n");
             if ($servername !== null) {
@@ -78,6 +81,7 @@ function delete_removed_tracks($dir) {
                 echo $json . ",\n";
             }
         }
+        $previousfolder = $folder;
     }
     $message = "track counter: $counter " . date('H:i:s');
     if ($servername === null) {
@@ -351,32 +355,19 @@ function clean_files() {
     }
 }
 
-function shutdown() {
-    global $symlink;
-    rmdir($symlink);
-}
-
-register_shutdown_function('shutdown');
-
 $log = fopen("error.log", "w");
 $servername = $argv[1];
 $link = mysqli_connect($server, $username, $password, $database);
 
 $base = "";
-//$base = "/Populair/MNO/Modern Eon";
+//$base = "/Populair/MNO/Of Montreal";
 
 $audiosource = str_ireplace("\\", "/", $audiosource);
 $base = str_ireplace("\\", "/", $base);
 $path = $audiosource . $base;
 
-$symlink = "/#cd";
-if (file_exists($symlink)) {
-    rmdir($symlink);
-}
-
 if (file_exists($path)) {
     $jobstart = time();
-    symlink($audiosource, $symlink);
 
     $message = "Clean Database";
     if ($servername === null) {
@@ -392,9 +383,7 @@ if (file_exists($path)) {
         echo $json . ",\n";
     }
 
-    $root = $symlink . $base;
-
-    delete_removed_tracks($root);
+    delete_removed_tracks($base);
     clean_files();
 
     $jobend = time();
