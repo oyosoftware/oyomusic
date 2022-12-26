@@ -19,7 +19,7 @@ function get_records($path) {
 }
 
 function read_files($dir) {
-    global $getID3, $symlink, $counter, $servername, $onlyPrivateFrames;
+    global $getID3, $counter, $servername, $onlyPrivateFrames;
     $iter = new DirectoryIterator($dir);
 
     foreach ($iter as $item) {
@@ -48,14 +48,23 @@ function read_files($dir) {
                         echo $json . ",\n";
                     }
 
-                    $pos = mb_strlen($symlink);
-                    $folder = mb_substr($item->getPath(), $pos);
+                    $folder = $item->getPath();
                     $filename = $item->getFilename();
 
                     // fetch tags
 
                     $pathname = $item->getPathname();
                     $tags = $getID3->analyze($pathname);
+
+                    if ($tags["tags"] === null) {
+                        $message = "file name may be too long for " . $folder . "/" . $filename;
+                        if ($servername !== null) {
+                            $response = array('message' => $message);
+                            $json = json_encode($response);
+                            echo $json . ", \n";
+                            continue;
+                        }
+                    }
 
                     if ($ext == 'mp3' or $ext == 'wav') {
                         $firsttag = true;
@@ -183,13 +192,6 @@ function read_files($dir) {
     }
 }
 
-function shutdown() {
-    global $symlink;
-    rmdir($symlink);
-}
-
-register_shutdown_function('shutdown');
-
 $servername = $argv[1];
 $link = mysqli_connect($server, $username, $password, $database);
 $getID3 = new getID3;
@@ -197,20 +199,14 @@ $getID3 = new getID3;
 $onlyPrivateFrames = false;
 
 $base = "";
-//$base = "/World";
+//$base = "/Populair/MNO/Of Montreal";
 
 $audiosource = str_ireplace("\\", "/", $audiosource);
 $base = str_ireplace("\\", "/", $base);
 $path = $audiosource . $base;
 
-$symlink = "/#ca";
-if (file_exists($symlink)) {
-    rmdir($symlink);
-}
-
 if (file_exists($path)) {
     $jobstart = time();
-    symlink($audiosource, $symlink);
 
     $records = get_records($base);
     if ($servername !== null) {
@@ -233,10 +229,8 @@ if (file_exists($path)) {
         echo $json . ",\n";
     }
 
-    $root = $symlink . $base;
-
     $counter = 0;
-    read_files($root);
+    read_files($path);
 
     $message = "counter: $counter " . date('H:i:s');
     if ($servername === null) {
