@@ -401,7 +401,8 @@ function oyoPlayer() {
     player.changeSource = function (source) {
         if (source) {
             currentSong = source;
-            source = source.replace(/\\/g, '/');
+            source = source.replaceAll("\\", "/'");
+            source = source.replaceAll("#", "%23");
             var protocol = document.location.protocol;
             switch (true) {
                 case protocol === "file:" || (protocol !== "file:" && source.substring(0, 2) !== "//" && source.substring(1, 3) !== ":/") :
