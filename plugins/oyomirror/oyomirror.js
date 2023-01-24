@@ -51,7 +51,7 @@ function oyoMirror(image, side = "bottom", partSize = "25%", degrees = 90, persp
     $(svg).css("position", "relative");
     var src = $(image).attr("src");
     src = src.replaceAll("\'", "\\'");
-    var backGround = "url(" + src + ") no-repeat";
+    var backGround = "url('" + src + "') no-repeat";
     $(svg).css("background", backGround);
     $(svg).css("background-size", width);
     $(mirror).append(svg);
