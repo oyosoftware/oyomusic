@@ -1,4 +1,7 @@
 oYoMusic 2.1
+29-01-2023  Secure input variables
+29-01-2023  Distinction between web root and linux local path
+31-12-2022  Albums frame now listens to it's content by a ResizeObserver
 23-12-2022  Possibility for interfaces to run in browser
 23-12-2022  Total revamp of interfaces
 23-12-2022  Added progress plugin for interfaces

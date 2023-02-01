@@ -202,6 +202,14 @@
                 tableHeader.changeBorder("none");
                 $(".tableheaderpaddingbox").append(tableHeader);
 
+                var tableHeaderBox = new oyoPaddingBox(".tableheaderwrapper");
+                tableHeaderBox.change("0px", "0px");
+                tableHeaderBox.changeInnerBorderWidth("0px 0px 0.5px");
+                $(tableHeaderBox).css("z-index", 999);
+                $("body").append(tableHeaderBox);
+                var tableBox = new oyoPaddingBox(".tablewrapper");
+                $("body").append(tableBox);
+
                 if (isboxset) {
                     $(".nameheader").css("display", "none");
                     $(".tableheaderwrapper").css("top", parseFloat($(".tableheaderwrapper").css("top")) - 28);
@@ -211,23 +219,16 @@
                 try {
                     var boxsetalbumsFrame = parent.frames["boxsetalbums"];
                     if (boxsetalbumsFrame) {
+                        $("body").css("overflow-y", "hidden");
                         var documentObserver = new ResizeObserver(function () {
-                            $("body").css("overflow-y", "hidden");
                             var height = boxsetalbumsFrame.document.body.scrollHeight + 10;
                             $(boxsetalbumsFrame.frameElement).height(height);
+                            tableBox.resize();
                         });
                         documentObserver.observe(document.documentElement);
                     }
                 } catch (error) {
                 }
-
-                var tableHeaderBox = new oyoPaddingBox(".tableheaderwrapper");
-                tableHeaderBox.change("0px", "0px");
-                tableHeaderBox.changeInnerBorderWidth("0px 0px 0.5px");
-                $(tableHeaderBox).css("z-index", 999);
-                $("body").append(tableHeaderBox);
-                var tableBox = new oyoPaddingBox(".tablewrapper");
-                $("body").append(tableBox);
 
                 url = "scripts/getArtist.php";
                 $.ajax({
@@ -346,8 +347,10 @@
                                 var playingtime = albums[i].playingtime;
                                 var genre = albums[i].genre;
                                 var imagefilename = encodeURIComponent(albums[i].imagefilename);
+
                                 var row = document.createElement("tr");
                                 $("tbody").append(row);
+
                                 var cell = document.createElement("td");
                                 $(cell).attr("class", "fieldvalue cover");
                                 $(row).append(cell);
@@ -375,22 +378,27 @@
                                     $(a).css("color", "blue");
                                 }
                                 $(cell).append(a);
+
                                 var cell = document.createElement("td");
                                 $(cell).attr("class", "fieldvalue released");
                                 $(cell).html(released);
                                 $(row).append(cell);
+
                                 var cell = document.createElement("td");
                                 $(cell).attr("class", "fieldvalue count");
                                 $(cell).html(disccount);
                                 $(row).append(cell);
+
                                 var cell = document.createElement("td");
                                 $(cell).attr("class", "fieldvalue format");
                                 $(cell).html(format);
                                 $(row).append(cell);
+
                                 var cell = document.createElement("td");
                                 $(cell).attr("class", "fieldvalue genre");
                                 $(cell).html(genre);
                                 $(row).append(cell);
+
                                 var cell = document.createElement("td");
                                 $(cell).attr("class", "fieldvalue playingtime");
                                 $(cell).html(playingtime);

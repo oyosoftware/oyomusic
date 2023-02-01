@@ -43,7 +43,7 @@
             ::-webkit-scrollbar-thumb {
                 background          : white;
                 border              : 2px solid black;
-                border-radius       : 54px;
+                border-radius       : 5px;
             }
             a:link {
                 text-decoration     : none;
@@ -330,8 +330,8 @@
                 try {
                     var boxsetalbumsFrame = parent.frames["boxsetalbums"];
                     if (boxsetalbumsFrame) {
+                        $("body").css("overflow-y", "hidden");
                         var documentObserver = new ResizeObserver(function () {
-                            //$("body").css("overflow-y", "hidden");
                             var height = boxsetalbumsFrame.document.body.scrollHeight + 10;
                             $(boxsetalbumsFrame.frameElement).height(height);
                         });
@@ -432,12 +432,14 @@
 
                         $(".backlink").prop("href", href);
 
+                        var audiosource = "";
                         url = "scripts/getSettings.php";
                         $.ajax({
                             url: url,
                             dataType: "jsonp",
                             jsonpCallback: "getSettings",
                             success: function (settings) {
+                                audiosource = settings.audiosource;
                                 var imagepath = settings.imagepath;
                                 var src = imagepath + "/" + imagefilename;
                                 $(".image").attr("src", src);
@@ -526,7 +528,7 @@
                                                         var filename = tracks[i].filename;
                                                         var fileexists = tracks[i].fileexists;
 
-                                                        songs[i + 1] = folder + "/" + filename;
+                                                        songs[i + 1] = audiosource + folder + "/" + filename;
                                                         tags[i + 1] = name2 + " - " + title + " (" + albumtitle + ")";
                                                         if (!audioPlayer.state.playing) {
                                                             audioPlayer.addToPlaylist(songs[i + 1], tags[i + 1]);
@@ -708,13 +710,14 @@
                                 {scale: 1, translateX: 0, translateY: 0},
                                 {step: function (value, fx) {
                                         if (fx.prop === "scale") {
+                                            fx.start = 2;
                                             transform = "scale(" + value + ")";
                                         }
                                         if (fx.prop === "translateX") {
                                             transform += " translateX(" + value + "px)";
                                         }
                                         if (fx.prop === "translateY") {
-                                            transform += "translateY(" + value + "px)";
+                                            transform += " translateY(" + value + "px)";
                                             $(".oyomirror").css("transform", transform);
                                         }
                                     },
