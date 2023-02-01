@@ -102,22 +102,15 @@
         </script>
 
         <?php
-        if (isset($_POST['artist'])) {
-            $artist = ucwords($_POST['artist']);
+        if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
+            $artist = ucwords(filter_input(INPUT_POST, "artist"));
             $artist = preg_replace('/\s+/', ' ', $artist);
-        } else {
-            $artist = "";
-        }
-        if (isset($_POST['song'])) {
-            $song = ucwords($_POST['song']);
+            $song = ucwords(filter_input(INPUT_POST, "song"));
             $song = preg_replace('/\s+/', ' ', $song);
-        } else {
-            $song = "";
-        }
-        if (isset($_POST['showformiffound'])) {
-            $showformiffound = $_POST['showformiffound'];
-        } else {
-            $showformiffound = "yes";
+            $showformiffound = ucwords(filter_input(INPUT_POST, "showformiffound"));
+            if ($showformiffound === "") {
+                $showformiffound = "yes";
+            }
         }
 
         $error_shown = false;
@@ -182,7 +175,7 @@
                     preg_match_all("#<span>(.*?)</span>#s", $html, $match);
                     $newsong = ucwords($match[1][0]);
                     $pos = mb_strpos($newsong, $song);
-                    $word = strtok($song, " ");
+                    //$word = strtok($song, " ");
 
                     if ($pos !== false and $pos === 0) {
 
@@ -229,21 +222,20 @@
         </form>
         <p class="search"></p>
 
-<?php
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $artistsong = $artist . " " . $song;
-    $artistsong = str_replace("/", "%2F", $artistsong);
-    $artistsong = str_replace("\\", "%5C", $artistsong);
-    $artistsong = str_replace("#", "", $artistsong);
-    $artistsong = str_replace("%", "", $artistsong);
-    $artistsong = str_replace('"', "%22", $artistsong);
-    $artistsong = str_replace("'", "%27", $artistsong);
+        <?php
+        if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
+            $artistsong = $artist . " " . $song;
+            $artistsong = str_replace("/", "%2F", $artistsong);
+            $artistsong = str_replace("\\", "%5C", $artistsong);
+            $artistsong = str_replace("#", "", $artistsong);
+            $artistsong = str_replace("%", "", $artistsong);
+            $artistsong = str_replace('"', "%22", $artistsong);
+            $artistsong = str_replace("'", "%27", $artistsong);
+            $artistsong = str_replace(" ", "%20", $artistsong);
 
-    $artistsong = str_replace(" ", "%20", $artistsong);
-
-    show_form($artistsong);
-}
-?>
+            show_form($artistsong);
+        }
+        ?>
 
     </body>
 

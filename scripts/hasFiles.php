@@ -1,65 +1,40 @@
 <?php
 
-if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    $albumid = $_GET['albumid'];
+error_reporting(E_ERROR);
+
+if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'GET') {
+    $albumid = filter_input(INPUT_GET, "albumid");
 }
 
-error_reporting(E_ERROR);
 require_once('../settings.inc');
 
 $link = mysqli_connect($server, $username, $password, $database);
-$sql = "use " . $database;
-if (!mysqli_query($link, $sql))
-    die("Database doesn't exist.");
-
 mysqli_set_charset($link, "utf8");
 
-if (file_exists($audiosource)) {
-    $target = $audiosource;
-} else {
-    $target = $_SERVER["DOCUMENT_ROOT"] . $audiosource;
-}
+$audiosource = str_ireplace("\\", "/", $audiosource);
 
-$sql = "select * from albums where id=$albumid";
-$result = mysqli_query($link, $sql);
-$row = mysqli_fetch_assoc($result);
-$folder = $row["Folder"];
-$target = $target . $folder;
-
-$symlink = "#f";
-for ($i = 0; $i < 4; $i++) {
-    $random = rand(0, 15);
-    if ($random < 10) {
-        $symlink .= $random;
-    } else {
-        $symlink .= chr(96 + $random - 9);
-    }
+switch (true) {
+    case mb_substr($audiosource, 0, 2) === "//":
+        break;
+    case mb_substr($audiosource, 1, 2) === ":/":
+        break;
+    case mb_substr($audiosource, 0, 7) === "file://":
+        break;
+    case mb_substr($audiosource, 0, 1) === "/":
+        $audiosource = filter_input(INPUT_SERVER, DOCUMENT_ROOT) . $audiosource;
+        break;
+    default:
+        $audiosource = "../" . $audiosource;
+        break;
 }
-if (file_exists($symlink)) {
-    rmdir($symlink);
-    unlink($symlink);
-}
-symlink($target, $symlink);
 
 $sql = "select * from albums inner join tracks on id=albumid where id=$albumid or boxsetid=$albumid";
 $result = mysqli_query($link, $sql);
 
 $filesexist = false;
 while ($row = mysqli_fetch_assoc($result)) {
-    $file = $symlink . '/' . $row["FileName"];
-    $linkinfo = linkinfo($file);
-
-    if ($linkinfo <> -1) {
-        $filesexist = true;
-        break;
-    }
-
-    $folder = $row["Folder"];
-    $pos = mb_strrpos($folder, "/");
-    $file = $symlink . mb_substr($folder, $pos) . '/' . $row["FileName"];
-    $linkinfo = linkinfo($file);
-
-    if ($linkinfo <> -1) {
+    $file = $audiosource . $row["Folder"] . '/' . $row["FileName"];
+    if (file_exists($file)) {
         $filesexist = true;
         break;
     }
@@ -68,7 +43,4 @@ while ($row = mysqli_fetch_assoc($result)) {
 echo $filesexist;
 
 mysqli_close($link);
-
-rmdir($symlink);
-unlink($symlink);
 ?>

@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+
+<!--  oyomusic 2.0
+  tested with jQuery 3.4.0
+  http://www.oyoweb.nl
+
+  © 2015-2022 oYoSoftware
+  MIT License
+
+  oyomusic is a library for showing your own musical content-->
+
+<html>
+
+    <head>
+
+        <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
+        <script src="include/oyoplayer.js"></script>
+        <link rel="stylesheet" href="include/oyoplayer.css">
+        <script src="include/oyographics.js"></script>
+        <script src="include/oyomirror.js"></script>
+
+        <script src="album.json"></script>
+
+        <style>
+            * {
+                box-sizing          : border-box;
+            }
+            body {
+                font-family         : Arial, Verdana, Helvetica, sans-serif;
+                font-size           : 13.33px;
+                margin              : 0px;
+                padding             : 8px;
+                padding-right       : 0px;
+            }
+            ::-webkit-scrollbar {
+                height              : 10px;
+                width               : 10px;
+            }
+            ::-webkit-scrollbar-corner {
+                background-color    : transparent;
+            }
+            ::-webkit-scrollbar-thumb {
+                background          : white;
+                border              : 2px solid black;
+                border-radius       : 4px;
+            }
+            a:link {
+                text-decoration     : none;
+            }
+            a:visited {
+                text-decoration     : none;
+            }
+            a:hover {
+                text-decoration     : underline;
+            }
+            table {
+                border-spacing      : 0px;
+            }
+            td {
+                padding             : 3px 5px 3px 5px;
+            }
+            .back {
+                font-size           : 13.33px;
+                height              : 25px;
+                vertical-align      : top;
+            }
+            .wrapper {
+                padding-right       : 8px;
+                width               : 100%;
+            }
+            .header {
+                border              : 1px solid black;
+                width               : 100%;
+                min-width           : 254px;
+                border-spacing      : 1px;
+            }
+            .headertitle {
+                background-color    : #B3CEB3;
+                color               : black;
+                font-weight         : bold;
+                font-size           : 18.66px;
+                padding             : 8px;
+            }
+            .maindiv {
+                white-space         : nowrap;
+                padding-bottom      : 8px;
+            }
+            .albumdiv {
+                padding             : 1px;
+                display             : inline-block;
+                vertical-align      : top;
+            }
+            .albumimage {
+                border              : 1px solid black;
+                padding             : 1px;
+            }
+            .image {
+                display             : block;
+                width               : 250px;
+            }
+            .albumimagemirror {
+                height              : 63.5px;
+                overflow            : hidden;
+                border              : 1px solid white;
+                padding             : 1px;
+                border-top          : 0px solid white;
+                padding-top         : 0px;
+            }
+            .albumtable {
+                border              : 1px solid black;
+                font-size           : 13.33px;
+            }
+            .fieldname {
+                vertical-align      : middle;
+                background-color    : #B3CEB3;
+                border              : 0px solid white;
+                border-width        : 0px 1px 1px 0px;
+                font-weight         : bold;
+                padding             : 3px 5px 3px 5px;
+                white-space         : nowrap;
+            }
+            .fieldvalue {
+                vertical-align      : top;
+                background-color    : lightgray;
+                border              : 0px solid white;
+                border-width        : 0px 1px 1px 0px;
+                padding             : 3px 5px 3px 5px;
+            }
+            .tracksdiv {
+                padding             : 1px;
+                display             : inline-block;
+                vertical-align      : top;
+                padding-left        : 20px
+            }
+            .tracktable {
+                border              : 1px solid black;
+                font-size           : 13.33px;
+                padding             : 1px 1px 0px 1px;
+            }
+            .albumdisctitle {
+                background-color    : #618FC9;
+                border              : 1px solid black;
+                border-right-color  : #618FC9;
+                color               : black;
+                font-weight         : bold;
+                padding             : 6px;
+            }
+            .albumdiscplayingtime {
+                background-color    : #618FC9;
+                border              : 1px solid black;
+                border-left-color   : #618FC9;
+                text-align          : right;
+                color               : black;
+                font-weight         : bold;
+                padding             : 6px;
+            }
+            .track {
+                font-weight         : bold;
+                text-align          : right;
+                white-space         : nowrap;
+            }
+            .playpause {
+                display             : none;
+            }
+            .playingtime {
+                text-align          : right;
+                border-right-width  : 0px;
+            }
+            .boxsetalbums {
+                width               : calc(100% + 8px);
+                border              : 0px solid black;
+                position            : relative;
+                left                : -8px;
+                margin-right        : -8px;
+            }
+            .links {
+                text-align          : center;
+                padding-top         : 8px;
+            }
+            .title {
+                position            : relative;
+            }
+        </style>
+
+    </head>
+
+    <body>
+
+        <script>
+            $(document).ready(function () {
+                if (location.search) {
+                    var parameters = location.search.substring(1).split("&");
+                    var boxsetindex = parameters[0].split("=")[1];
+                    var parameter = parameters[1].split("=")[0];
+                    if (parameter === "pageno") {
+                        var pageno = parseInt(parameters[1].split("=")[1]);
+                    }
+                }
+
+                var songs = [];
+                var tags = [];
+
+                audioPlayer = new oyoPlayer("player");
+                $(".player").append(audioPlayer);
+                $(".player").append("<br>");
+                audio = audioPlayer.audio;
+                audioPlayer.setNotification("Push Play to start");
+
+                $(audio).on("playing", playing);
+                $(audio).on("pause", paused);
+                $(audio).on("ended", ended);
+                $(audio).on("error", error);
+
+                function startPlayer(event) {
+                    var index = event.data.index;
+                    audioPlayer.playPause(index);
+                }
+
+                function playing() {
+                    $(".oyoplaypause").each(function (index, playPause) {
+                        playPause.changeState(0);
+                    });
+                    var track = audioPlayer.getCurrentTrack();
+                    var song = audioPlayer.getCurrentSong();
+                    $(".title").css("font-weight", "normal");
+                    if (songs[track] === song) {
+                        var playpauseid = "#playpause" + track;
+                        var playPause = $(playpauseid)[0];
+                        playPause.changeState(1);
+                        var titleid = "#title" + track;
+                        $(titleid).css("font-weight", "bold");
+                    }
+                }
+
+                function paused() {
+                    $(".oyoplaypause").each(function (index, playPause) {
+                        playPause.changeState(0);
+                    });
+                }
+
+                function ended() {
+                    $(".oyoplaypause").each(function (index, playPause) {
+                        playPause.changeState(0);
+                    });
+                    $(".title").css("font-weight", "normal");
+                }
+
+                function error() {
+                    $(".title").css("font-weight", "normal");
+                }
+
+                if (!boxsetindex) {
+                    var timer = setInterval(function () {
+                        var height = parseInt(window.localStorage.getItem("boxsetalbumsheight"));
+                        if (height !== $(".boxsetalbums").height()) {
+                            $(".boxsetalbums").height(height);
+                        }
+                    }, 0);
+                }
+
+                if (boxsetindex) {
+                    try {
+                        var boxsetalbumsFrame = parent.frames["boxsetalbums"];
+                        if (boxsetalbumsFrame) {
+                            $("body").css("overflow-y", "hidden");
+                            var documentObserver = new ResizeObserver(function () {
+                                var height = boxsetalbumsFrame.document.body.scrollHeight;
+                                window.localStorage.setItem("boxsetalbumsheight", height);
+                            });
+                            documentObserver.observe(document.documentElement);
+                        }
+                    } catch (error) {
+                    }
+                }
+
+                if (boxsetindex) {
+                    album = album.albums[boxsetindex];
+                }
+
+                var albumartist = album.artist;
+                var released = album.released;
+                var albumtitle = album.title;
+                var disccount = album.disccount;
+                var format = album.format;
+                var playingtime = album.playingtime;
+                var genre = album.genre;
+                var imagefilename = encodeURIComponent(album.imagefilename);
+                if (boxsetindex) {
+                    var imagefilename = album.folder + "/" + encodeURIComponent(album.imagefilename);
+                }
+                var isboxset = album.isboxset;
+
+                if (isboxset) {
+                    $(".oyoplayer").css("display", "none");
+                }
+
+                if (pageno > 0 && boxsetindex) {
+                    var href = "albumlist.html?pageno=" + pageno;
+                    $(".backlink").prop("href", href);
+                } else {
+                    $(".back").css("display", "none");
+
+                }
+
+                var src = imagefilename;
+                $(".image").attr("src", src);
+
+                $(".image").on("load", function () {
+                    var mirror = new oyoMirror(".image", "bottom", 62.5, 90);
+                    mirror.changeOpacity(0.5, 0);
+                    $(".albumimagemirror").append(mirror);
+                });
+
+                var headertitle = albumartist + " - " + albumtitle;
+                $(document).prop("title", headertitle);
+                $(".headertitle").html(headertitle);
+
+                if (isboxset) {
+                    $(".tracksdiv").css("display", "none");
+                }
+
+                if (!isboxset) {
+                    $(".boxsetalbums").css("display", "none");
+                } else {
+                    var src = "albumlist.html?pageno=1";
+                    $(".boxsetalbums").attr("src", src);
+                }
+
+                if (!boxsetindex) {
+                    var amazon = "http://www.amazon.co.uk/s/ref=nb_ss_gw/?url=search-alias%3Dmusic&field-keywords=" + encodeURIComponent(albumartist) + "+" + encodeURIComponent(albumtitle) + "&tag=ca0cc-20/ca0cc-20";
+                    $(".amazon").prop("href", amazon);
+                    var allmusic = "http://www.allmusic.com/search/album/" + encodeURIComponent(albumtitle);
+                    $(".allmusic").prop("href", allmusic);
+                } else {
+                    $(".links").css("display", "none");
+                }
+
+                $(".released").html(released);
+                $(".disccount").html(disccount);
+                $(".format").html(format);
+                $(".genre").html(genre);
+                $(".albumplayingtime").html(playingtime);
+
+                if (!isboxset) {
+
+                    audioPlayer.clearPlaylist();
+
+                    var filesExist = false;
+                    var difAlbumArtist = false;
+                    var difTrackArtist = false;
+                    var firstTrackName = album.discs[1].tracks[1].artist;
+                    var i = 0;
+
+                    Object.values(album.discs).forEach(function (disc) {
+                        if (disccount > 1) {
+                            var row = document.createElement("tr");
+                            $(".tracktable").append(row);
+                            var cell = document.createElement("td");
+                            $(cell).attr("class", "albumdisctitle");
+                            var disctitle = disc.title;
+                            $(cell).html(disctitle);
+                            $(row).append(cell);
+                            var cell = document.createElement("td");
+                            $(cell).attr("class", "albumdiscplayingtime");
+                            var discplayingtime = disc.playingtime;
+                            $(cell).html(discplayingtime);
+                            $(row).append(cell);
+                        }
+
+                        var discno = disc.discno;
+                        Object.values(album.discs[discno].tracks).forEach(function (trackx) {
+                            i += 1;
+                            var track = trackx.track;
+                            var title = trackx.title;
+                            var artist = trackx.artist;
+                            var playingtime = trackx.playingtime;
+                            var filename = trackx.filename;
+                            if (boxsetindex) {
+                                var filename = encodeURIComponent(album.folder) + "/" + filename;
+                            }
+                            var fileexists = trackx.fileexists;
+
+                            songs[i] = filename;
+                            tags[i] = artist + " - " + title + " (" + albumtitle + ")";
+                            audioPlayer.addToPlaylist(songs[i], tags[i]);
+
+                            var row = document.createElement("tr");
+                            $(".tracktable").append(row);
+
+                            var cell = document.createElement("td");
+                            $(cell).attr("class", "fieldvalue track");
+                            $(cell).html(track + ".");
+                            $(row).append(cell);
+
+                            var cell = document.createElement("td");
+                            $(cell).attr("class", "fieldvalue playpause");
+                            $(row).append(cell);
+
+                            var playPause = new oyoPlayPause();
+                            playPause.scale(1);
+                            playPause.changeBackgroundColor("lightgray");
+                            $(playPause).css("display", "none");
+                            $(playPause).attr("id", "playpause" + (i));
+                            $(playPause).on("click", {index: i}, startPlayer);
+                            $(cell).append(playPause);
+
+                            if (audioPlayer.state.playing) {
+                                var song = audioPlayer.getCurrentSong();
+                                if (songs[i] === song) {
+                                    playPause.changeState(1);
+                                }
+                            }
+
+                            if (fileexists) {
+                                $(playPause).css("display", "inline");
+                                filesExist = true;
+                            }
+
+                            var cell = document.createElement("td");
+                            $(cell).attr("class", "fieldvalue title");
+                            $(cell).attr("id", "title" + i);
+                            $(cell).html(title);
+                            $(row).append(cell);
+
+                            var cell = document.createElement("td");
+                            $(cell).attr("class", "fieldvalue artist");
+                            $(cell).css("display", "none");
+                            $(cell).html(artist);
+                            $(row).append(cell);
+
+                            if (albumartist !== artist) {
+                                difAlbumArtist = true;
+                            }
+                            if (artist !== firstTrackName) {
+                                difTrackArtist = true;
+                            }
+
+                            var cell = document.createElement("td");
+                            $(cell).attr("class", "fieldvalue playingtime");
+                            $(cell).html(playingtime);
+                            $(row).append(cell);
+                        });
+
+
+                    });
+
+                    var colspan = 2;
+
+                    if (filesExist) {
+                        $(".playpause").css("display", "table-cell");
+                        colspan += 1;
+                    }
+
+                    if (difAlbumArtist && difTrackArtist) {
+                        $(".artist").css("display", "table-cell");
+                        colspan += 1;
+                    }
+
+                    $(".albumdisctitle").attr("colspan", colspan);
+
+                    if (difAlbumArtist && !difTrackArtist) {
+                        headertitle = firstTrackName + " - " + albumtitle;
+                        $(document).prop("title", headertitle);
+                        $(".headertitle").html(headertitle);
+                    }
+
+                    audioPlayer.setSourceIndex(1);
+
+                    $("a").on("click", function (event) {
+                        var href = $(event.target).attr("href");
+                        window.localStorage.setItem(href, "visited");
+                    });
+
+                }
+
+                $(".image").on("click", function () {
+                    if ($(this).width() === 250) {
+                        $(".image").animate({"width": "500px"}, 1000);
+                        $(".albumimagemirror").animate({"height": "127px"}, 1000);
+                        var transform;
+                        $(".oyomirror").animate(
+                                {scale: 2, translateX: 125, translateY: 15.625},
+                                {step: function (value, fx) {
+                                        if (fx.prop === "scale") {
+                                            fx.start = 1;
+                                            transform = "scale(" + value + ")";
+                                        }
+                                        if (fx.prop === "translateX") {
+                                            transform += " translateX(" + value + "px)";
+                                        }
+                                        if (fx.prop === "translateY") {
+                                            transform += "translateY(" + value + "px)";
+                                            $(".oyomirror").css("transform", transform);
+                                        }
+                                    },
+                                    duration: 1000
+                                });
+                    } else {
+                        $(".image").animate({"width": "250px"}, 1000);
+                        $(".albumimagemirror").animate({"height": "63.5px"}, 1000);
+                        $(".oyomirror").animate(
+                                {scale: 1, translateX: 0, translateY: 0},
+                                {step: function (value, fx) {
+                                        if (fx.prop === "scale") {
+                                            fx.start = 2;
+                                            transform = "scale(" + value + ")";
+                                        }
+                                        if (fx.prop === "translateX") {
+                                            transform += " translateX(" + value + "px)";
+                                        }
+                                        if (fx.prop === "translateY") {
+                                            transform += " translateY(" + value + "px)";
+                                            $(".oyomirror").css("transform", transform);
+                                        }
+                                    },
+                                    duration: 1000
+                                });
+                    }
+                });
+
+            });
+
+        </script>
+
+        <div class="player"></div>
+        <div class="back"><a class="backlink">Back</a></div>
+
+        <!-- Heading -->
+        <div class="wrapper">
+            <div class="header">
+                <div class="headertitle"></div>
+            </div>
+        </div>
+
+        <br/>
+
+        <div class="wrapper">
+
+            <div class="maindiv">
+
+                <div  class="albumdiv">
+
+                    <div class="albumimage">
+                        <img class="image"/>
+                    </div>
+                    <div class="albumimagemirror"></div>
+
+                    <table class="albumtable">
+                        <tr>
+                            <td class="fieldname">Released</td>
+                            <td class="fieldvalue released"></td>
+                        </tr>
+                        <tr>
+                            <td class="fieldname">Count</td>
+                            <td class="fieldvalue disccount"></td>
+                        </tr>
+                        <tr>
+                            <td class="fieldname">Format</td>
+                            <td class="fieldvalue format"></td>
+                        </tr>
+                        <tr>
+                            <td class="fieldname">Genre</td>
+                            <td class="fieldvalue genre"></td>
+                        </tr>
+                        <tr>
+                            <td class="fieldname">Playing Time</td>
+                            <td class="fieldvalue albumplayingtime"></td>
+                        </tr>
+                    </table>
+
+                </div>
+
+                <div  class="tracksdiv">
+                    <table class="tracktable"></table>
+                </div>
+
+            </div>
+        </div>
+
+        <iframe name="boxsetalbums" class="boxsetalbums"></iframe>
+
+        <div class="links">
+            <a class="allmusic" target="_blank">Search All Music Guide</a>
+        </div>
+
+    </body>
+
+</html>

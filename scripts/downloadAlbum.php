@@ -1,26 +1,32 @@
 <?php
 
-if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    $albumid = $_GET['albumid'];
+error_reporting(E_ERROR);
+
+if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'GET') {
+    $albumid = filter_input(INPUT_GET, "albumid");
 }
 
-error_reporting(E_ERROR);
 require_once('../settings.inc');
 require_once('../helpers/functions.php');
 
-$log = fopen("output.log", "w");
-
 $link = mysqli_connect($server, $username, $password, $database);
-$sql = "use " . $database;
-if (!mysqli_query($link, $sql))
-    die("Database doesn't exist.");
-
 mysqli_set_charset($link, "utf8");
 
-if (file_exists($audiosource)) {
-    $target = $audiosource;
-} else {
-    $target = $_SERVER["DOCUMENT_ROOT"] . $audiosource;
+$audiosource = str_ireplace("\\", "/", $audiosource);
+
+switch (true) {
+    case mb_substr($audiosource, 0, 2) === "//":
+        break;
+    case mb_substr($audiosource, 1, 2) === ":/":
+        break;
+    case mb_substr($audiosource, 0, 7) === "file://":
+        break;
+    case mb_substr($audiosource, 0, 1) === "/":
+        $audiosource = filter_input(INPUT_SERVER, DOCUMENT_ROOT) . $audiosource;
+        break;
+    default:
+        $audiosource = "../" . $audiosource;
+        break;
 }
 
 $sql = "select * from artists inner join albums on artists.id=artistid where albums.id=$albumid";
@@ -33,22 +39,6 @@ $folder = $row["Folder"];
 
 $isboxset = $row["IsBoxset"];
 $boxsetid = (int) $row["BoxsetId"];
-$target = $target . $folder;
-
-$symlink = "#d";
-for ($i = 0; $i < 4; $i++) {
-    $random = rand(0, 15);
-    if ($random < 10) {
-        $symlink .= $random;
-    } else {
-        $symlink .= chr(96 + $random - 9);
-    }
-}
-if (file_exists($symlink)) {
-    rmdir($symlink);
-    unlink($symlink);
-}
-symlink($target, $symlink);
 
 $len = mb_strlen($folder);
 $pos = mb_strrpos($folder, "/");
@@ -65,7 +55,6 @@ if ($boxsetid != -1 or $singlefolder == "Singles") {
     $offset = -1 * ($len - $pos + 1);
     $pos = mb_strrpos($folder, "/", $offset);
 }
-$symlinkpos = mb_strlen($folder);
 
 $zip = new ZipArchive;
 $tempfile = tempnam("../tmp", "");
@@ -76,49 +65,74 @@ $zipfile = utf8_decode($zipfile);
 
 $zipfolder = mb_substr($folder, $pos + 1) . "/";
 $filename = "../plugins/oyoplayer/oyoplayer.js";
-$zipfilename = "oyoplayer.js";
+$zipfilename = "include/oyoplayer.js";
 $zip->addFile($filename, $zipfolder . $zipfilename);
 $filename = "../plugins/oyoplayer/oyoplayer.css";
-$zipfilename = "oyoplayer.css";
+$zipfilename = "include/oyoplayer.css";
+$zip->addFile($filename, $zipfolder . $zipfilename);
+$filename = "../plugins/oyographics/oyographics.js";
+$zipfilename = "include/oyographics.js";
+$zip->addFile($filename, $zipfolder . $zipfilename);
+$filename = "../plugins/oyomirror/oyomirror.js";
+$zipfilename = "include/oyomirror.js";
 $zip->addFile($filename, $zipfolder . $zipfilename);
 $filename = "album.html";
 $zipfilename = "album.html";
 $zip->addFile($filename, $zipfolder . $zipfilename);
 if ($isboxset == true) {
     $filename = "../plugins/oyonavigator/oyonavigator.js";
-    $zipfilename = "oyonavigator.js";
+    $zipfilename = "include/oyonavigator.js";
+    $zip->addFile($filename, $zipfolder . $zipfilename);
+    $filename = "../plugins/oyotableheader/oyotableheader.js";
+    $zipfilename = "include/oyotableheader.js";
+    $zip->addFile($filename, $zipfolder . $zipfilename);
+    $filename = "../plugins/oyopaddingbox/oyopaddingbox.js";
+    $zipfilename = "include/oyopaddingbox.js";
     $zip->addFile($filename, $zipfolder . $zipfilename);
     $filename = "albumlist.html";
     $zipfilename = "albumlist.html";
     $zip->addFile($filename, $zipfolder . $zipfilename);
 }
 
-makeJSON($albumid);
-
 $sql = "select * from albums where id=$albumid or boxsetid=$albumid order by boxsetindex";
 $result = mysqli_query($link, $sql);
 
 while ($row = mysqli_fetch_assoc($result)) {
-    $counter++;
     $id = $row["Id"];
     $folder = $row["Folder"];
 
-    $zipfolder = mb_substr($folder, $pos + 1) . "/";
-    $folder = mb_substr($folder, $symlinkpos);
-
-    $imagefilename = $symlink . $folder . "/" . "Folder.jpg";
+    $zipalbumfolder = mb_substr($folder, $pos + 1) . "/";
+    $imagefilename = $audiosource . $folder . "/" . "Folder.jpg";
+    if (mb_substr($audiosource, 0, 7) === "file://") {
+        $imagefilename = mb_substr($imagefilename, 7);
+    }
     $zipfilename = "Folder.jpg";
-    $zip->addFile($imagefilename, $zipfolder . $zipfilename);
+    $zip->addFile($imagefilename, $zipalbumfolder . $zipfilename);
 
     $sql = "select * from tracks where albumid=$id";
     $result2 = mysqli_query($link, $sql);
 
     while ($row2 = mysqli_fetch_assoc($result2)) {
-        $filename = $symlink . $folder . "/" . $row2["FileName"];
-        $zipfilename = $row2["FileName"];
-        $zip->addFile($filename, $zipfolder . $zipfilename);
+        $filename = $audiosource . $folder . "/" . $row2["FileName"];
+        if (mb_substr($audiosource, 0, 7) === "file://") {
+            $filename = mb_substr($filename, 7);
+        }
+        if (file_exists($filename)) {
+            $zipfilename = $row2["FileName"];
+            $zip->addFile($filename, $zipalbumfolder . $zipfilename);
+        }
     }
 }
+
+$album = makeJSON($albumid);
+$jsontempfile = tempnam("../tmp", "");
+$jsonfile = fopen($jsontempfile, "w");
+$json = "album = " . json_encode($album, JSON_PRETTY_PRINT);
+fwrite($jsonfile, $json);
+fclose($jsonfile);
+$filename = $jsontempfile;
+$zipfilename = "album.json";
+$zip->addFile($filename, $zipfolder . $zipfilename);
 
 $zip->close();
 
@@ -141,14 +155,10 @@ fclose($resource);
 ob_end_clean();
 
 unlink($tempfile);
-
-fclose($log);
-
-rmdir($symlink);
-unlink($symlink);
+unlink($jsontempfile);
 
 function makeJSON($albumid) {
-    global $link, $symlink, $zip, $zipfolder;
+    global $link, $audiosource;
 
     $album = new stdClass();
 
@@ -181,31 +191,30 @@ function makeJSON($albumid) {
     if (!$album->isboxset) {
         $album->discs = array();
         $sql = "select * from discs where albumid=$albumid order by albumid, discno";
-        $result = mysqli_query($link, $sql);
-        while ($row = mysqli_fetch_assoc($result)) {
-            $discno = (int) $row["DiscNo"];
+        $result2 = mysqli_query($link, $sql);
+        while ($row2 = mysqli_fetch_assoc($result2)) {
+            $discno = (int) $row2["DiscNo"];
             $album->discs[$discno] = new stdClass();
-            $album->discs[$discno]->discno = (int) $row["DiscNo"];
-            $album->discs[$discno]->title = $row["Title"];
-            $album->discs[$discno]->playingtime = formattime($row["PlayingTime"]);
+            $album->discs[$discno]->discno = (int) $row2["DiscNo"];
+            $album->discs[$discno]->title = $row2["Title"];
+            $album->discs[$discno]->playingtime = formattime($row2["PlayingTime"]);
             $album->discs[$discno]->tracks = array();
             $sql = "select * from tracks where albumid=$albumid and discno=$discno order by albumid, discno, track";
-            $result2 = mysqli_query($link, $sql);
-            while ($row2 = mysqli_fetch_assoc($result2)) {
-                $track = (int) $row2["Track"];
+            $result3 = mysqli_query($link, $sql);
+            while ($row3 = mysqli_fetch_assoc($result3)) {
+                $track = (int) $row3["Track"];
                 $album->discs[$discno]->tracks[$track] = new stdClass();
-                $album->discs[$discno]->tracks[$track]->track = (int) $row2["Track"];
-                $album->discs[$discno]->tracks[$track]->title = $row2["Title"];
-                $artistid = (int) $row2["ArtistId"];
+                $album->discs[$discno]->tracks[$track]->track = (int) $row3["Track"];
+                $album->discs[$discno]->tracks[$track]->title = $row3["Title"];
+                $artistid = (int) $row3["ArtistId"];
                 $sql = "select * from artists where id='$artistid'";
-                $result3 = mysqli_query($link, $sql);
-                $row3 = mysqli_fetch_assoc($result3);
-                $album->discs[$discno]->tracks[$track]->artist = $row3["Name"];
-                $album->discs[$discno]->tracks[$track]->playingtime = formattime($row2["PlayingTime"]);
-                $album->discs[$discno]->tracks[$track]->filename = $row2["FileName"];
-                $file = $symlink . '/' . $row2["FileName"];
-                $linkinfo = linkinfo($file);
-                if ($linkinfo <> -1) {
+                $result4 = mysqli_query($link, $sql);
+                $row4 = mysqli_fetch_assoc($result4);
+                $album->discs[$discno]->tracks[$track]->artist = $row4["Name"];
+                $album->discs[$discno]->tracks[$track]->playingtime = formattime($row3["PlayingTime"]);
+                $album->discs[$discno]->tracks[$track]->filename = $row3["FileName"];
+                $file = $audiosource . $row["Folder"] . '/' . $row3["FileName"];
+                if (file_exists($file)) {
                     $album->discs[$discno]->tracks[$track]->fileexists = true;
                 } else {
                     $album->discs[$discno]->tracks[$track]->fileexists = false;
@@ -273,9 +282,8 @@ function makeJSON($albumid) {
                     $album->albums[$counter]->discs[$discno]->tracks[$track]->artist = $row4["Name"];
                     $album->albums[$counter]->discs[$discno]->tracks[$track]->playingtime = formattime($row3["PlayingTime"]);
                     $album->albums[$counter]->discs[$discno]->tracks[$track]->filename = $row3["FileName"];
-                    $file = $symlink . "/" . $folder . "/" . $row3["FileName"];
-                    $linkinfo = linkinfo($file);
-                    if ($linkinfo <> -1) {
+                    $file = $audiosource . "/" . $row["Folder"] . "/" . $row3["FileName"];
+                    if (file_exists($file)) {
                         $album->albums[$counter]->discs[$discno]->tracks[$track]->fileexists = true;
                     } else {
                         $album->albums[$counter]->discs[$discno]->tracks[$track]->fileexists = false;
@@ -284,17 +292,7 @@ function makeJSON($albumid) {
             }
         }
     }
-
-    $tempfile = tempnam("../tmp", "");
-    $jsonfile = fopen($tempfile, "w");
-
-    $json = json_encode($album, JSON_PRETTY_PRINT);
-    fwrite($jsonfile, $json);
-    $filename = $tempfile;
-    $zipfilename = "album.json";
-    $zip->addFile($filename, $zipfolder . $zipfilename);
-
-    fclose($jsonfile);
+    return $album;
 }
 
 mysqli_close($link);

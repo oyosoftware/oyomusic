@@ -1,18 +1,15 @@
 <?php
 
-if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    $artistid = $_GET['artistid'];
+error_reporting(E_ERROR);
+
+if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'GET') {
+    $artistid = filter_input(INPUT_GET, "artistid");
 }
 
-error_reporting(22519);
 require_once('../settings.inc');
 require_once('../helpers/functions.php');
 
 $link = mysqli_connect($server, $username, $password, $database);
-$sql = "use " . $database;
-if (!mysqli_query($link, $sql))
-    die("Database doesn't exist.");
-
 mysqli_set_charset($link, "utf8");
 
 $data = 'getParentArtists([';
@@ -103,8 +100,6 @@ do {
     $name = $newname;
     $previousfolder = $folder;
 } while ($rows > 0);
-
-$parentfolder = $artistfolder;
 
 $data .= '])';
 echo $data;

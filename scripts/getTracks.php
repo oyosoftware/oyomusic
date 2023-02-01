@@ -1,48 +1,39 @@
 <?php
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $albumid = $_GET['albumid'];
+error_reporting(E_ERROR);
+
+if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'GET') {
+    $albumid = filter_input(INPUT_GET, "albumid");
 }
 
-error_reporting(E_ERROR);
 require_once('../settings.inc');
 require_once('../helpers/functions.php');
 
 $log = fopen("output.log", "w");
-
 $link = mysqli_connect($server, $username, $password, $database);
-$sql = "use " . $database;
-if (!mysqli_query($link, $sql))
-    die("Database doesn't exist.");
-
 mysqli_set_charset($link, "utf8");
 
-if (file_exists($audiosource)) {
-    $target = $audiosource;
-} else {
-    $target = $_SERVER["DOCUMENT_ROOT"] . $audiosource;
+$audiosource = str_replace("\\", "/", $audiosource);
+
+switch (true) {
+    case mb_substr($audiosource, 0, 2) === "//":
+        break;
+    case mb_substr($audiosource, 1, 2) === ":/":
+        break;
+    case mb_substr($audiosource, 0, 7) === "file://":
+        break;
+    case mb_substr($audiosource, 0, 1) === "/":
+        $audiosource = filter_input(INPUT_SERVER, DOCUMENT_ROOT) . $audiosource;
+        break;
+    default:
+        $audiosource = "../" . $audiosource;
+        break;
 }
 
 $sql = "select * from albums where id=$albumid";
 $result = mysqli_query($link, $sql);
 $row = mysqli_fetch_assoc($result);
 $folder = $row["Folder"];
-$target = $target . $folder;
-
-$symlink = "#t";
-for ($i = 0; $i < 4; $i++) {
-    $random = rand(0, 15);
-    if ($random < 10) {
-        $symlink .= $random;
-    } else {
-        $symlink .= chr(96 + $random - 9);
-    }
-}
-if (file_exists($symlink)) {
-    rmdir($symlink);
-    unlink($symlink);
-}
-symlink($target, $symlink);
 
 $sql = "select * from tracks where albumid=$albumid order by albumid, discno, track";
 $result = mysqli_query($link, $sql);
@@ -64,11 +55,10 @@ while ($row = mysqli_fetch_assoc($result)) {
 
     $time = formattime($row["PlayingTime"]);
 
-    $file = $symlink . '/' . $row["FileName"];
-    $linkinfo = linkinfo($file);
-    fwrite($log, $file . " " . $linkinfo . "\r\n");
+    $file = $audiosource . $folder . '/' . $row["FileName"];
+    fwrite($log, $file . "\r\n");
 
-    if ($linkinfo <> -1) {
+    if (file_exists($file)) {
         $fileexists = 'true';
     } else {
         $fileexists = 'false';
@@ -90,9 +80,5 @@ $data .= '])';
 echo $data;
 
 fclose($log);
-
 mysqli_close($link);
-
-rmdir($symlink);
-unlink($symlink);
 ?>

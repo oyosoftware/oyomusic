@@ -1,10 +1,11 @@
 <?php
 
-error_reporting(22519);
+error_reporting(E_ERROR);
+
 require_once('../settings.inc');
 
-$root = $_SERVER['DOCUMENT_ROOT'];
-$joomlapath = $root . $joomlapath;
+$documentroot = filter_input(INPUT_SERVER, 'DOCUMENT_ROOT');
+$joomlapath = $documentroot . $joomlapath;
 
 if (file_exists($joomlapath)) {
     define('_JEXEC', 1);
@@ -23,9 +24,5 @@ if (file_exists($joomlapath)) {
 
     $data = 'getSession({username: "' . $username . '", expire: ' . $expire . ', start: ' . $start . ', last: ' . $last . ', now: ' . $now . '})';
     echo $data;
-
-    $log = fopen("output.log", "w");
-    fwrite($log, $data);
-    fclose($log);
 }
 ?>

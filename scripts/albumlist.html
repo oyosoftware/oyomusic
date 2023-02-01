@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+<!--  oyomusic 2.0
+  tested with jQuery 3.4.0
+  http://www.oyoweb.nl
+
+  © 2015-2022 oYoSoftware
+  MIT License
+
+  oyomusic is a library for showing your own musical content-->
+
+<html>
+
+    <head>
+
+        <title>Album List</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
+        <script src="include/oyonavigator.js"></script>
+        <script src="include/oyotableheader.js"></script>
+        <script src="include/oyopaddingbox.js"></script>
+
+        <script src="album.json"></script>
+
+        <style>
+            * {
+                box-sizing          : border-box;
+            }
+            body {
+                font-family         : Arial, Verdana, Helvetica, sans-serif;
+                font-size           : 10pt;
+                margin              : 0px;
+                padding             : 8px;
+                padding-right       : 0px;
+                padding-top         : 0px;
+            }
+            ::-webkit-scrollbar {
+                height              : 10px;
+                width               : 10px;
+            }
+            ::-webkit-scrollbar-corner {
+                background-color    : transparent;
+            }
+            ::-webkit-scrollbar-thumb {
+                background          : white;
+                border              : 2px solid black;
+                border-radius       : 5px;
+            }
+            a:link {
+                text-decoration     : none;
+            }
+            a:visited {
+                text-decoration     : none;
+            }
+            a:hover {
+                text-decoration     : underline;
+            }
+            .header {
+                width               : 100%;
+                position            : fixed;
+                top                 : 0px;
+                left                : 0px;
+                padding             : 8px;
+                padding-bottom      : 0px;
+                text-align          : center;
+                background-color    : white;
+                z-index             : 2;
+            }
+            .nameheader {
+                padding             : 0px 8px;
+                white-space         : nowrap;
+            }
+            .namehead {
+                display             : inline-block;
+                vertical-align      : middle;
+                width               : 30px;
+            }
+            .name {
+                font-size           : 18pt;
+                font-weight         : bold;
+                width               : 100%;
+                text-align          : center;
+            }
+            .tableheaderwrapper {
+                display             : none;
+                width               : calc(100% - 10px);
+                position            : fixed;
+                top                 : 47px;
+                left                : 10px;
+                background-color    : white;
+                z-index             : 2;
+            }
+            .tableheaderpaddingbox {
+                display             : table;
+                width               : 100%;
+                padding-right       : 10px;
+            }
+            .tablewrapper {
+                display             : none;
+                width               : calc(100% - 2px);
+                position            : relative;
+                top                 : 47px;
+                left                : 2px;
+                z-index             : 1;
+            }
+            .tablepaddingbox {
+                display             : table;
+                width               : 100%;
+                padding-right       : 10px;
+                padding-bottom      : 10px;
+            }
+            table {
+                font-size           : 10pt;
+                border-spacing      : 0px;
+                margin-left         : -1px;
+            }
+            .albumstable {
+            }
+            .albumstableheader {
+                visibility          : hidden;
+            }
+            th, td {
+                padding             : 3px 5px 3px 5px;
+            }
+            .fieldname {
+                border              : 0.5px solid black;
+            }
+            .fieldvalue {
+                border              : 0.5px solid black;
+                border-bottom-width : 0px;
+                border-right-width  : 0px;
+            }
+            .hcover {
+                min-width           : 53px;
+                text-align          : center;
+            }
+            .cover {
+                position            : relative;
+                padding             : 1px;
+            }
+            .image {
+                vertical-align      : middle;
+            }
+            .htitle {
+            }
+            .title {
+                position            : relative;
+                width               : 60%;
+                white-space         : nowrap;
+            }
+            .hreleased {
+                text-align          : right;
+            }
+            .released {
+                width               : 4%;
+                text-align          : right;
+            }
+            .hcount {
+                text-align          : right;
+            }
+            .count {
+                width               : 4%;
+                text-align          : right;
+            }
+            .hformat {
+            }
+            .format {
+                width               : 4%;
+            }
+            .hgenre {
+            }
+            .genre {
+                width               : 24%;
+            }
+            .hplayingtime {
+                text-align          : right;
+                white-space         : nowrap;
+            }
+            .playingtime {
+                width               : 4%;
+                text-align          : right;
+                white-space         : nowrap;
+            }
+        </style>
+
+    </head>
+
+    <body>
+
+        <script>
+            $(document).ready(function () {
+                var parameters = location.search.substring(1).split("&");
+                var pageno = parseInt(parameters[0].split("=")[1]);
+
+                $(window).on("scroll", function () {
+                    $(".tableheaderwrapper").css("left", -1 * $(window).scrollLeft() + 10);
+                });
+
+                var tableHeader = new oyoTableHeader(".albumstable");
+                tableHeader.changeBorder("none");
+                $(".tableheaderpaddingbox").append(tableHeader);
+
+                var tableHeaderBox = new oyoPaddingBox(".tableheaderwrapper");
+                tableHeaderBox.change("0px", "0px");
+                tableHeaderBox.changeInnerBorderWidth("0px 0px 0.5px");
+                $(tableHeaderBox).css("z-index", 999);
+                $("body").append(tableHeaderBox);
+                var tableBox = new oyoPaddingBox(".tablewrapper");
+                $("body").append(tableBox);
+
+                var isboxset = true;
+
+                if (isboxset) {
+                    $(".nameheader").css("display", "none");
+                    $(".tableheaderwrapper").css("top", parseFloat($(".tableheaderwrapper").css("top")) - 28);
+                    $(".tablewrapper").css("top", parseFloat($(".tablewrapper").css("top")) - 28);
+                }
+
+                try {
+                    var boxsetalbumsFrame = parent.frames["boxsetalbums"];
+                    if (boxsetalbumsFrame) {
+                        $("body").css("overflow-y", "hidden");
+                        var documentObserver = new ResizeObserver(function () {
+                            var height = boxsetalbumsFrame.document.body.scrollHeight;
+                            window.localStorage.setItem("boxsetalbumsheight", height);
+                            setTimeout(function () {
+                                tableBox.resize();
+                            }, 250);
+                        });
+                        documentObserver.observe(document.documentElement);
+                    }
+                } catch (error) {
+                }
+
+                var recordspage = 10;
+                var pagerange = 9;
+
+                var disccount = album.disccount;
+                if (disccount > recordspage) {
+                    var baseUrl = "albumlist.html";
+                    var navigator = new oyoNavigator(disccount, recordspage, pagerange, baseUrl);
+                    $(".header").append(navigator);
+                    navigator.setPage(pageno);
+                    $(".tableheaderwrapper").css("top", parseFloat($(".tableheaderwrapper").css("top")) + $(navigator).height());
+                    $(".tablewrapper").css("top", parseFloat($(".tablewrapper").css("top")) + $(navigator).height());
+                }
+                var albums = album.albums;
+                addRecords(albums);
+
+                function addRecords(albums) {
+
+                    var first = recordspage * pageno - recordspage;
+                    var last = recordspage * pageno;
+                    var pagealbums = Object.values(albums).slice(first, last);
+
+                    pagealbums.forEach(function (album) {
+                        var released = album.released;
+                        var title = album.title;
+                        var disccount = album.disccount;
+                        var format = album.format;
+                        var playingtime = album.playingtime;
+                        var genre = album.genre;
+                        var imagefilename = encodeURIComponent(album.folder) + "/" + encodeURIComponent(album.imagefilename);
+                        var boxsetindex = album.boxsetindex;
+
+                        var row = document.createElement("tr");
+                        $("tbody").append(row);
+
+                        var cell = document.createElement("td");
+                        $(cell).attr("class", "fieldvalue cover");
+                        $(row).append(cell);
+                        var a = document.createElement("a");
+                        var href = "album.html?boxsetindex=" + boxsetindex + "&pageno=" + pageno;
+                        $(a).attr("href", href);
+                        $(cell).append(a);
+                        var image = document.createElement("img");
+                        $(image).attr("class", "image");
+                        $(image).width(50);
+                        var src = imagefilename;
+                        $(image).attr("src", src);
+                        $(a).append(image);
+
+                        var cell = document.createElement("td");
+                        $(cell).attr("class", "fieldvalue title");
+                        $(row).append(cell);
+                        var a = document.createElement("a");
+                        var href = "album.html?boxsetindex=" + boxsetindex + "&pageno=" + pageno;
+                        $(a).attr("href", href);
+                        $(a).html(title);
+                        $(cell).append(a);
+
+                        var cell = document.createElement("td");
+                        $(cell).attr("class", "fieldvalue released");
+                        $(cell).html(released);
+                        $(row).append(cell);
+
+                        var cell = document.createElement("td");
+                        $(cell).attr("class", "fieldvalue count");
+                        $(cell).html(disccount);
+                        $(row).append(cell);
+
+                        var cell = document.createElement("td");
+                        $(cell).attr("class", "fieldvalue format");
+                        $(cell).html(format);
+                        $(row).append(cell);
+
+                        var cell = document.createElement("td");
+                        $(cell).attr("class", "fieldvalue genre");
+                        $(cell).html(genre);
+                        $(row).append(cell);
+
+                        var cell = document.createElement("td");
+                        $(cell).attr("class", "fieldvalue playingtime");
+                        $(cell).html(playingtime);
+                        $(row).append(cell);
+
+                    });
+
+                    $(".tableheaderwrapper").css("display", "inline-block");
+                    $(".tablewrapper").css("display", "inline-block");
+
+                }
+
+            });
+
+        </script>
+
+        <div class="header">
+            <div class="nameheader">
+                <div class="namehead name"></div>
+            </div>
+        </div>
+
+        <div class="tableheaderwrapper">
+            <div class="tableheaderpaddingbox"></div>
+        </div>
+
+        <div class="tablewrapper">
+            <div class="tablepaddingbox">
+                <table class="albumstable">
+                    <thead>
+                        <tr class="albumstableheader">
+                            <th class="fieldname hcover">Cover</th>
+                            <th class="fieldname htitle">Title</th>
+                            <th class="fieldname hreleased">Released</th>
+                            <th class="fieldname hcount">Count</th>
+                            <th class="fieldname hformat">Format</th>
+                            <th class="fieldname hgenre">Genre</th>
+                            <th class="fieldname hplayingtime">Playing Time</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+    </body>
+
+</html>

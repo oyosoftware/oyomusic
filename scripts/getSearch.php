@@ -1,22 +1,19 @@
 <?php
 
-if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    if (isset($_GET['search'])) $search = $_GET['search'];
-    if (isset($_GET['country'])) $country = $_GET['country'];
-    if (isset($_GET['year'])) $year = $_GET['year'];
-    if (isset($_GET['genre'])) $genre = $_GET['genre'];
-    if (isset($_GET['pageno'])) $pageno = $_GET['pageno'];
+error_reporting(E_ERROR);
+
+if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'GET') {
+    $search = filter_input(INPUT_GET, "search");
+    $country = filter_input(INPUT_GET, "country");
+    $year = filter_input(INPUT_GET, "year");
+    $genre = filter_input(INPUT_GET, "genre");
+    $pageno = filter_input(INPUT_GET, "pageno");
 }
 
-error_reporting(22519);
 require_once('../settings.inc');
 require_once('../helpers/functions.php');
 
 $link = mysqli_connect($server, $username, $password, $database);
-$sql = "use " . $database;
-if (!mysqli_query($link, $sql))
-    die("Database doesn't exist.");
-
 mysqli_set_charset($link, "utf8");
 
 $first = $searchrecordspage * $pageno - $searchrecordspage;
@@ -38,7 +35,7 @@ $sql = "select artists.id as artistid, name, country, " .
 $search = str_replace('\\', '\\\\', $search);
 $search = str_replace('"', '\"', $search);
 $search = str_replace('%', '\%', $search);
-$search = mysqli_real_escape_string($link, $search);    
+$search = mysqli_real_escape_string($link, $search);
 $searchname = "name like '%$search%'";
 $searchtitle = "title like '%$search%'";
 $sql .= "and ($searchname or $searchtitle) ";
@@ -108,21 +105,21 @@ while ($row = mysqli_fetch_assoc($result)) {
     $name = str_replace('"', '\"', $name);
     $title = $row["title"];
     $title = str_replace('\\', '\\\\', $title);
-    $title = str_replace('"', '\"', $title); 
+    $title = str_replace('"', '\"', $title);
     $time = formattime($row["playingtime"]);
-    $data .=    '{'
-                    . 'artistid: '          . $row["artistid"]      . ', '
-                    . 'name: "'             . $name                 . '", '
-                    . 'country: "'          . $row["country"]       . '", '
-                    . 'albumid: '           . $row["albumid"]       . ', ' 
-                    . 'released: '          . $row["released"]      . ', '
-                    . 'title: "'            . $title                . '", '
-                    . 'disccount: '         . $row["disccount"]     . ', '
-                    . 'format: "'           . $row["format"]        . '", '
-                    . 'playingtime: "'      . $time                 . '", '
-                    . 'genre: "'            . $row["genre"]         . '", '            
-                    . 'imagefilename: "'    . $row["imagefilename"] . '"'
-                . '}, ';
+    $data .= '{'
+            . 'artistid: ' . $row["artistid"] . ', '
+            . 'name: "' . $name . '", '
+            . 'country: "' . $row["country"] . '", '
+            . 'albumid: ' . $row["albumid"] . ', '
+            . 'released: ' . $row["released"] . ', '
+            . 'title: "' . $title . '", '
+            . 'disccount: ' . $row["disccount"] . ', '
+            . 'format: "' . $row["format"] . '", '
+            . 'playingtime: "' . $time . '", '
+            . 'genre: "' . $row["genre"] . '", '
+            . 'imagefilename: "' . $row["imagefilename"] . '"'
+            . '}, ';
 }
 
 $data .= '])';

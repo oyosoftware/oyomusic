@@ -1,13 +1,13 @@
 <?php
-if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    $artist = ucwords($_GET['artist']);
+error_reporting(E_ERROR);
+
+if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'GET') {
+    $artist = filter_input(INPUT_GET, "artist");
     $artist = preg_replace('/\s+/', ' ', $artist);
-    $song = ucwords($_GET['song']);
+    $song = filter_input(INPUT_GET, "song");
     $song = preg_replace('/\s+/', ' ', $song);
-
     $artistsong = $artist . " - " . $song;
-
-    $referer = $_SERVER["HTTP_REFERER"];
+    $referer = filter_input(INPUT_SERVER, 'HTTP_REFERER');
 }
 ?>
 <html>
@@ -91,11 +91,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                         {
                             response.outerHeight(response.contents().find("body").outerHeight());
                             response.contents().find("input[name='artist']").focus();
-                            parent.$.initWindow()
+                            parent.$.initWindow();
                         }
                     } catch (error) {
                     }
-                }
+                };
 
                 $.addWrapper = function (sel) {
                     sel.each(function () {
@@ -107,17 +107,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                         "padding-right": "8px",
                         "border-spacing": "0px",
                         "width": "100%"
-                    })
+                    });
                     $(".wrappertd").css({
                         "margin": "0px",
                         "padding": "0px",
                         "width": "100%"
-                    })
-                }
+                    });
+                };
 
                 $(window).resize(function () {
                     $("#response").outerHeight($("#response").contents().find("#songtext").outerHeight());
-                })
+                });
 
                 $.addWrapper($(".titletable, #response"));
 
@@ -125,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
                 $("#search").submit();
 
-            })
+            });
         </script>
 
     </head>
@@ -156,9 +156,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     </body>
 
 </html>
-
-
-
-
-
-

@@ -1,27 +1,22 @@
 <?php
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $artistid = $_GET['artistid'];
-    $isboxset = $_GET['isboxset'];
-    $boxsetid = $_GET['boxsetid'];
-    $pageno = $_GET['pageno'];
-    if (isset($_GET['ovrrecordspage'])) {
-        $ovrrecordspage = $_GET['ovrrecordspage'];
-    } else {
+error_reporting(E_ERROR);
+
+if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'GET') {
+    $artistid = filter_input(INPUT_GET, "artistid");
+    $isboxset = filter_input(INPUT_GET, "isboxset");
+    $boxsetid = filter_input(INPUT_GET, "boxsetid");
+    $pageno = filter_input(INPUT_GET, "pageno");
+    $ovrrecordspage = filter_input(INPUT_GET, "ovrrecordspage");
+    if (!$ovrrecordspage) {
         $ovrrecordspage = 0;
     }
 }
 
-error_reporting(E_ERROR);
 require_once('../settings.inc');
 require_once('../helpers/functions.php');
 
 $link = mysqli_connect($server, $username, $password, $database);
-$sql = "use " . $database;
-if (!mysqli_query($link, $sql)) {
-    die("Database doesn't exist.");
-}
-
 mysqli_set_charset($link, "utf8");
 
 if ($ovrrecordspage != 0) {

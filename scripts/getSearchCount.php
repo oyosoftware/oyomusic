@@ -1,21 +1,18 @@
 <?php
 
-if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    if (isset($_GET['search'])) $search = $_GET['search'];
-    if (isset($_GET['country'])) $country = $_GET['country'];
-    if (isset($_GET['year'])) $year = $_GET['year'];
-    if (isset($_GET['genre'])) $genre = $_GET['genre'];
+error_reporting(E_ERROR);
+
+if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'GET') {
+    $search = filter_input(INPUT_GET, "search");
+    $country = filter_input(INPUT_GET, "country");
+    $year = filter_input(INPUT_GET, "year");
+    $genre = filter_input(INPUT_GET, "genre");
 }
 
-error_reporting(22519);
 require_once('../settings.inc');
 require_once('../helpers/functions.php');
 
 $link = mysqli_connect($server, $username, $password, $database);
-$sql = "use " . $database;
-if (!mysqli_query($link, $sql))
-    die("Database doesn't exist.");
-
 mysqli_set_charset($link, "utf8");
 
 $sql = "select count(*) as records " .
@@ -29,7 +26,7 @@ $sql = "select count(*) as records " .
 $search = str_replace('\\', '\\\\', $search);
 $search = str_replace('"', '\"', $search);
 $search = str_replace('%', '\%', $search);
-$search = mysqli_real_escape_string($link, $search);    
+$search = mysqli_real_escape_string($link, $search);
 $searchname = "name like '%$search%'";
 $searchtitle = "title like '%$search%'";
 $sql .= "and ($searchname or $searchtitle) ";
