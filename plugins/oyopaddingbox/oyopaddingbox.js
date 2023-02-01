@@ -75,10 +75,10 @@ function oyoPaddingBox(refObject) {
         }
         var padding = parseFloat($(refObject).find("*").css("padding-bottom"));
         if (document.documentElement.scrollHeight <= document.documentElement.clientHeight || $(refObject).outerHeight() <= height) {
-            var height = $(refObject).outerHeight() + topBoxSpace + topBoxBorderSpace + bottomBoxSpace + bottomBoxBorderSpace - padding;
+            var height = $(refObject).outerHeight() + topBoxSpace + topBoxBorderSpace + bottomBoxSpace + bottomBoxBorderSpace - padding - 0.5;
             $(paddingBox).outerHeight(height);
         } else {
-            var height = document.documentElement.clientHeight - parseFloat($(refObject).offset().top.toFixed(3)) + topBoxSpace + topBoxBorderSpace + bottomBoxSpace + bottomBoxBorderSpace - padding;
+            var height = document.documentElement.clientHeight - parseFloat($(refObject).offset().top.toFixed(3)) + topBoxSpace + topBoxBorderSpace + bottomBoxSpace + bottomBoxBorderSpace - padding - 0.5;
             $(paddingBox).outerHeight(height);
         }
 
@@ -104,8 +104,9 @@ function oyoPaddingBox(refObject) {
         var clipRect = "polygon(" + p1 + p2 + p3 + p4 + ")";
 
         $(refObject).css("clip-path", clipRect);
-
     }
+
+    paddingBox.resize = resizePaddingBox;
 
     paddingBox.change = function (outerBorder = boxBorder, padding = boxPadding, innerBorder = boxBorderBorder) {
         boxBorder = outerBorder;
@@ -114,6 +115,16 @@ function oyoPaddingBox(refObject) {
         $(paddingBox).css("border", boxBorder);
         $(paddingBox).css("padding", boxPadding);
         $(paddingBoxBorder).css("border", boxBorderBorder);
+    };
+
+    paddingBox.changeOuterBorder = function (outerBorder = boxBorder) {
+        boxBorder = outerBorder;
+        $(paddingBox).css("border", boxBorder);
+    };
+
+    paddingBox.changePadding = function (padding = boxPadding) {
+        boxPadding = padding;
+        $(paddingBox).css("padding", boxPadding);
     };
 
     paddingBox.changeInnerBorder = function (innerBorder = boxBorderBorder) {
@@ -130,5 +141,4 @@ function oyoPaddingBox(refObject) {
     };
 
     return paddingBox;
-
 }
