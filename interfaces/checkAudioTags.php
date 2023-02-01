@@ -48,22 +48,23 @@ function read_files($dir) {
                         echo $json . ",\n";
                     }
 
-                    $folder = $item->getPath();
-                    $filename = $item->getFilename();
-
                     // fetch tags
 
                     $pathname = $item->getPathname();
+                    $pathname = str_ireplace("\\", "/", $pathname);
+                    if (mb_substr($pathname, 0, 7) === "file://") {
+                        $pathname = mb_substr($pathname, 7);
+                    }
                     $tags = $getID3->analyze($pathname);
 
                     if ($tags["tags"] === null) {
-                        $message = "file name may be too long for " . $folder . "/" . $filename;
+                        $message = "file name may be too long for " . $pathname;
                         if ($servername !== null) {
                             $response = array('message' => $message);
                             $json = json_encode($response);
                             echo $json . ", \n";
-                            continue;
                         }
+                        continue;
                     }
 
                     if ($ext == 'mp3' or $ext == 'wav') {
@@ -86,7 +87,7 @@ function read_files($dir) {
                                 $json = json_encode($response);
                                 echo $json . ",\n";
                             }
-                            $response = array('pathname' => "$folder/$filename");
+                            $response = array('pathname' => "$pathname");
                             $json = json_encode($response);
                             echo $json . ",\n";
                         }
@@ -193,6 +194,7 @@ function read_files($dir) {
 }
 
 $servername = $argv[1];
+$documentroot = $argv[2];
 $link = mysqli_connect($server, $username, $password, $database);
 $getID3 = new getID3;
 
@@ -203,6 +205,22 @@ $base = "";
 
 $audiosource = str_ireplace("\\", "/", $audiosource);
 $base = str_ireplace("\\", "/", $base);
+
+switch (true) {
+    case mb_substr($audiosource, 0, 2) === "//":
+        break;
+    case mb_substr($audiosource, 1, 2) === ":/":
+        break;
+    case mb_substr($audiosource, 0, 7) === "file://":
+        break;
+    case mb_substr($audiosource, 0, 1) === "/":
+        $audiosource = $documentroot . $audiosource;
+        break;
+    default:
+        $audiosource = "../" . $audiosource;
+        break;
+}
+
 $path = $audiosource . $base;
 
 if (file_exists($path)) {
@@ -265,3 +283,4 @@ if (file_exists($path)) {
 }
 
 mysqli_close($link);
+?>

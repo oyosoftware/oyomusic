@@ -40,7 +40,7 @@ function get_records($path) {
 }
 
 function read_files($dir) {
-    global $getID3, $link, $symlink, $counter, $log, $servername, $records;
+    global $getID3, $link, $audiosource, $counter, $log, $servername, $records;
     $iter = new DirectoryIterator($dir);
     $itercounter = 0;
     $discnoprev = 0;
@@ -73,7 +73,7 @@ function read_files($dir) {
                         echo $json . ",\n";
                     }
 
-                    $pos = mb_strlen($symlink);
+                    $pos = mb_strlen($audiosource);
                     $folder = mb_substr($item->getPath(), $pos);
                     $filename = $item->getFilename();
                     $lastmodified = date("Ymd");
@@ -81,8 +81,26 @@ function read_files($dir) {
                     // fetch tags
 
                     $itercounter++;
+
                     $pathname = $item->getPathname();
+
+                    $pathname = $item->getPathname();
+                    $pathname = str_ireplace("\\", "/", $pathname);
+                    if (mb_substr($pathname, 0, 7) === "file://") {
+                        $pathname = mb_substr($pathname, 7);
+                    }
                     $tag = $getID3->analyze($pathname);
+
+                    if ($tag["tags"] === null) {
+                        $logtext = "file name may be too long for " . $pathname;
+                        fwrite($log, $logtext . "\r\n");
+                        if ($servername !== null) {
+                            $response = array('logtext' => $logtext);
+                            $json = json_encode($response);
+                            echo $json . ", \n";
+                        }
+                        continue;
+                    }
 
                     if ($ext == 'mp3' or $ext == 'wav') {
                         $albumartist = $tag["tags"]["id3v2"]["band"][0];
@@ -571,33 +589,37 @@ function read_files($dir) {
     } // end items in dir
 }
 
-function shutdown() {
-    global $symlink;
-    rmdir($symlink);
-}
-
-register_shutdown_function('shutdown');
-
 $log = fopen("error.log", "w");
 $servername = $argv[1];
+$documentroot = $argv[2];
 $link = mysqli_connect($server, $username, $password, $database);
 $getID3 = new getID3;
 
 $base = "";
-//$base = "/Populair/MNO/Notwist";
+//$base = "/Populair/MNO/Of Montreal";
 
 $audiosource = str_ireplace("\\", "/", $audiosource);
 $base = str_ireplace("\\", "/", $base);
-$path = $audiosource . $base;
 
-$symlink = "/#ra";
-if (file_exists($symlink)) {
-    rmdir($symlink);
+switch (true) {
+    case mb_substr($audiosource, 0, 2) === "//":
+        break;
+    case mb_substr($audiosource, 1, 2) === ":/":
+        break;
+    case mb_substr($audiosource, 0, 7) === "file://":
+        break;
+    case mb_substr($audiosource, 0, 1) === "/":
+        $audiosource = $documentroot . $audiosource;
+        break;
+    default:
+        $audiosource = "../" . $audiosource;
+        break;
 }
+
+$path = $audiosource . $base;
 
 if (file_exists($path)) {
     $jobstart = time();
-    symlink($audiosource, $symlink);
 
     $records = get_records($base);
     if ($servername !== null) {
@@ -620,10 +642,8 @@ if (file_exists($path)) {
         echo $json . ",\n";
     }
 
-    $root = $symlink . $base;
-
     $counter = 0;
-    read_files($root);
+    read_files($path);
 
     $message = "counter: $counter " . date('H:i:s');
     if ($servername === null) {

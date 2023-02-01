@@ -357,6 +357,7 @@ function clean_files() {
 
 $log = fopen("error.log", "w");
 $servername = $argv[1];
+$documentroot = $argv[2];
 $link = mysqli_connect($server, $username, $password, $database);
 
 $base = "";
@@ -364,6 +365,22 @@ $base = "";
 
 $audiosource = str_ireplace("\\", "/", $audiosource);
 $base = str_ireplace("\\", "/", $base);
+
+switch (true) {
+    case mb_substr($audiosource, 0, 2) === "//":
+        break;
+    case mb_substr($audiosource, 1, 2) === ":/":
+        break;
+    case mb_substr($audiosource, 0, 7) === "file://":
+        break;
+    case mb_substr($audiosource, 0, 1) === "/":
+        $audiosource = $documentroot . $audiosource;
+        break;
+    default:
+        $audiosource = "../" . $audiosource;
+        break;
+}
+
 $path = $audiosource . $base;
 
 if (file_exists($path)) {

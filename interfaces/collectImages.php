@@ -205,13 +205,30 @@ function collect_images($dir) {
 }
 
 $servername = $argv[1];
+$documentroot = $argv[2];
 $link = mysqli_connect($server, $username, $password, $database);
 
 $base = "";
-//$base = "/Populair/TUV/UNKLE";
+//$base = "/Populair/MNO/Of Montreal";
 
 $audiosource = str_ireplace("\\", "/", $audiosource);
 $base = str_ireplace("\\", "/", $base);
+
+switch (true) {
+    case mb_substr($audiosource, 0, 2) === "//":
+        break;
+    case mb_substr($audiosource, 1, 2) === ":/":
+        break;
+    case mb_substr($audiosource, 0, 7) === "file://":
+        break;
+    case mb_substr($audiosource, 0, 1) === "/":
+        $audiosource = $documentroot . $audiosource;
+        break;
+    default:
+        $audiosource = "../" . $audiosource;
+        break;
+}
+
 $path = $audiosource . $base;
 
 if (file_exists($path)) {
@@ -263,7 +280,7 @@ if (file_exists($path)) {
         echo $json . ",\n";
     }
 } else {
-    $message = "Error: path $path doesn't exist";
+    $message = "Error: path $path doesn't exist" . $dirlist[2];
     if ($servername === null) {
         echo "$message" . "\r\n";
     } else {
