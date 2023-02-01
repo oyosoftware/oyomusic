@@ -404,8 +404,11 @@ function oyoPlayer() {
             source = source.replaceAll("\\", "/'");
             source = source.replaceAll("#", "%23");
             var protocol = document.location.protocol;
+
             switch (true) {
-                case protocol === "file:" || (protocol !== "file:" && source.substring(0, 2) !== "//" && source.substring(1, 3) !== ":/") :
+                case protocol === "file:" ||
+                        (protocol !== "file:" &&
+                                source.substring(0, 2) !== "//" && source.substring(1, 3) !== ":/" && source.substring(0, 7) !== "file://") :
                     $(player.audio).attr("src", source);
                     break;
                 default:
