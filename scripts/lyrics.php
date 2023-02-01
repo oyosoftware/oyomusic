@@ -1,14 +1,12 @@
 <?php
 error_reporting(E_ERROR);
 
-if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'GET') {
-    $artist = filter_input(INPUT_GET, "artist");
-    $artist = preg_replace('/\s+/', ' ', $artist);
-    $song = filter_input(INPUT_GET, "song");
-    $song = preg_replace('/\s+/', ' ', $song);
-    $artistsong = $artist . " - " . $song;
-    $referer = filter_input(INPUT_SERVER, 'HTTP_REFERER');
-}
+$artist = filter_input(INPUT_GET, "artist");
+$artist = preg_replace('/\s+/', ' ', $artist);
+$song = filter_input(INPUT_GET, "song");
+$song = preg_replace('/\s+/', ' ', $song);
+$artistsong = $artist . " - " . $song;
+$referer = filter_input(INPUT_SERVER, 'HTTP_REFERER');
 ?>
 <html>
 

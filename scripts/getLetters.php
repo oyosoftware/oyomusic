@@ -1,6 +1,5 @@
 <?php
 
-//header("Access-Control-Allow-Origin: *");
 error_reporting(E_ERROR);
 
 require_once('../settings.inc');

@@ -2,13 +2,11 @@
 
 error_reporting(E_ERROR);
 
-if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'GET') {
-    $search = filter_input(INPUT_GET, "search");
-    $country = filter_input(INPUT_GET, "country");
-    $year = filter_input(INPUT_GET, "year");
-    $genre = filter_input(INPUT_GET, "genre");
-    $pageno = filter_input(INPUT_GET, "pageno");
-}
+$search = filter_input(INPUT_GET, "search");
+$country = filter_input(INPUT_GET, "country");
+$year = filter_input(INPUT_GET, "year");
+$genre = filter_input(INPUT_GET, "genre");
+$pageno = filter_input(INPUT_GET, "pageno");
 
 require_once('../settings.inc');
 require_once('../helpers/functions.php');

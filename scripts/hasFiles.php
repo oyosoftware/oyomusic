@@ -2,9 +2,7 @@
 
 error_reporting(E_ERROR);
 
-if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'GET') {
-    $albumid = filter_input(INPUT_GET, "albumid");
-}
+$albumid = filter_input(INPUT_GET, "albumid");
 
 require_once('../settings.inc');
 

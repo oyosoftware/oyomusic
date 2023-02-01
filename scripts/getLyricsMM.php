@@ -102,15 +102,13 @@
         </script>
 
         <?php
-        if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
-            $artist = ucwords(filter_input(INPUT_POST, "artist"));
-            $artist = preg_replace('/\s+/', ' ', $artist);
-            $song = ucwords(filter_input(INPUT_POST, "song"));
-            $song = preg_replace('/\s+/', ' ', $song);
-            $showformiffound = ucwords(filter_input(INPUT_POST, "showformiffound"));
-            if ($showformiffound === "") {
-                $showformiffound = "yes";
-            }
+        $artist = ucwords(filter_input(INPUT_POST, "artist"));
+        $artist = preg_replace('/\s+/', ' ', $artist);
+        $song = ucwords(filter_input(INPUT_POST, "song"));
+        $song = preg_replace('/\s+/', ' ', $song);
+        $showformiffound = ucwords(filter_input(INPUT_POST, "showformiffound"));
+        if ($showformiffound === "") {
+            $showformiffound = "yes";
         }
 
         $error_shown = false;

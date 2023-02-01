@@ -2,9 +2,7 @@
 
 error_reporting(E_ERROR);
 
-if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'GET') {
-    $letter = filter_input(INPUT_GET, "letter");
-}
+$letter = filter_input(INPUT_GET, "letter");
 
 require_once('../settings.inc');
 

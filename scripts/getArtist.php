@@ -2,9 +2,7 @@
 
 error_reporting(E_ERROR);
 
-if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'GET') {
-    $artistid = filter_input(INPUT_GET, "artistid");
-}
+$artistid = filter_input(INPUT_GET, "artistid");
 
 require_once('../settings.inc');
 

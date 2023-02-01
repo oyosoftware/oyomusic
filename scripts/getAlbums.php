@@ -2,15 +2,13 @@
 
 error_reporting(E_ERROR);
 
-if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'GET') {
-    $artistid = filter_input(INPUT_GET, "artistid");
-    $isboxset = filter_input(INPUT_GET, "isboxset");
-    $boxsetid = filter_input(INPUT_GET, "boxsetid");
-    $pageno = filter_input(INPUT_GET, "pageno");
-    $ovrrecordspage = filter_input(INPUT_GET, "ovrrecordspage");
-    if (!$ovrrecordspage) {
-        $ovrrecordspage = 0;
-    }
+$artistid = filter_input(INPUT_GET, "artistid");
+$isboxset = filter_input(INPUT_GET, "isboxset");
+$boxsetid = filter_input(INPUT_GET, "boxsetid");
+$pageno = filter_input(INPUT_GET, "pageno");
+$ovrrecordspage = filter_input(INPUT_GET, "ovrrecordspage");
+if (!$ovrrecordspage) {
+    $ovrrecordspage = 0;
 }
 
 require_once('../settings.inc');
