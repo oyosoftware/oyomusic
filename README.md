@@ -13,7 +13,7 @@
 </div>
 <ul>
   <li><strong>category</strong> library</li>
-  <li><strong>copyright</strong> 2015-2021 oyosoftware </li>
+  <li><strong>copyright</strong> 2015-2023 oyosoftware </li>
   <li><strong>license</strong> MIT License</li>
   <li><strong>link</strong> http://www.oyoweb.nl/music</li>
   <li><strong>source</strong> https://github.com/oyosoftware/oyomusic</li>
