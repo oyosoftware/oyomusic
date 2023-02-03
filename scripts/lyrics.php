@@ -6,7 +6,7 @@ $artist = preg_replace('/\s+/', ' ', $artist);
 $song = filter_input(INPUT_GET, "song");
 $song = preg_replace('/\s+/', ' ', $song);
 $artistsong = $artist . " - " . $song;
-$referer = filter_input(INPUT_SERVER, 'HTTP_REFERER');
+$referer = $_SERVER["HTTP_REFERER"];
 ?>
 <html>
 

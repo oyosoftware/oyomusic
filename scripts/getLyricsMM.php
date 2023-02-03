@@ -1,6 +1,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
         <base href="https://www.musixmatch.com/" target="_blank">
         <title>Get the lyrics!</title>
 
@@ -58,8 +59,6 @@
                 padding         : 3px 5px 3px 5px;
             }
         </style>
-
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
         <script>
 
@@ -221,18 +220,15 @@
         <p class="search"></p>
 
         <?php
-        if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
-            $artistsong = $artist . " " . $song;
-            $artistsong = str_replace("/", "%2F", $artistsong);
-            $artistsong = str_replace("\\", "%5C", $artistsong);
-            $artistsong = str_replace("#", "", $artistsong);
-            $artistsong = str_replace("%", "", $artistsong);
-            $artistsong = str_replace('"', "%22", $artistsong);
-            $artistsong = str_replace("'", "%27", $artistsong);
-            $artistsong = str_replace(" ", "%20", $artistsong);
-
-            show_form($artistsong);
-        }
+        $artistsong = $artist . " " . $song;
+        $artistsong = str_replace("/", "%2F", $artistsong);
+        $artistsong = str_replace("\\", "%5C", $artistsong);
+        $artistsong = str_replace("#", "", $artistsong);
+        $artistsong = str_replace("%", "", $artistsong);
+        $artistsong = str_replace('"', "%22", $artistsong);
+        $artistsong = str_replace("'", "%27", $artistsong);
+        $artistsong = str_replace(" ", "%20", $artistsong);
+        show_form($artistsong);
         ?>
 
     </body>
