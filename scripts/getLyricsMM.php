@@ -1,5 +1,7 @@
 <html>
+
     <head>
+
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
         <base href="https://www.musixmatch.com/" target="_blank">
@@ -60,8 +62,11 @@
             }
         </style>
 
-        <script>
+    </head>
 
+    <body>
+
+        <script>
             $(document).ready(function () {
 
                 $("input").focus(function () {
@@ -69,7 +74,7 @@
                 });
 
                 $("#search").keydown(function (event) {
-                    if (event.which == 13) {
+                    if (event.which === 13) {
                         $("#search").submit();
                     }
                 });
@@ -81,7 +86,7 @@
 
                 $("body").css("visibility", "visible");
 
-                if (parent.length == 0) {
+                if (parent.length === 0) {
                     $("body").css("margin", "20px");
                     $(".search").css("display", "block");
                 }
@@ -89,15 +94,6 @@
                 parent.$.initFrame($("#response", parent.document));
 
             });
-
-        </script>
-
-    </head>
-
-    <body>
-
-        <script>
-
         </script>
 
         <?php
@@ -105,9 +101,14 @@
         $artist = preg_replace('/\s+/', ' ', $artist);
         $song = ucwords(filter_input(INPUT_POST, "song"));
         $song = preg_replace('/\s+/', ' ', $song);
-        $showformiffound = ucwords(filter_input(INPUT_POST, "showformiffound"));
+        $showformiffound = filter_input(INPUT_POST, "showformiffound");
         if ($showformiffound === "") {
             $showformiffound = "yes";
+        }
+
+        $script = filter_input(INPUT_SERVER, 'HTTP_HOST') . filter_input(INPUT_SERVER, 'SCRIPT_NAME');
+        if ($script === "") {
+            $script = filter_input(INPUT_ENV, 'HTTP_HOST') . filter_input(INPUT_ENV, 'SCRIPT_NAME');
         }
 
         $error_shown = false;
@@ -209,7 +210,7 @@
         }
         ?>
 
-        <form class="search" id="search" action="http://<?= $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'] ?>" method="post" target="_self">
+        <form class="search" id="search" action="http://<?= $script ?>" method="post" target="_self">
             <label for="artist">Artist: </label>
             <input type="text" name="artist" value="<?= $artist ?>" autofocus="autofocus">
             &nbsp;&nbsp;
