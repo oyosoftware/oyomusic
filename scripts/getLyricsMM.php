@@ -1,11 +1,30 @@
+<?php
+error_reporting(E_ERROR);
+
+$artist = ucwords(filter_input(INPUT_POST, "artist"));
+$artist = preg_replace('/\s+/', ' ', $artist);
+$song = ucwords(filter_input(INPUT_POST, "song"));
+$song = preg_replace('/\s+/', ' ', $song);
+$showformiffound = filter_input(INPUT_POST, "showformiffound");
+if ($showformiffound === "") {
+    $showformiffound = "yes";
+}
+$script = filter_input(INPUT_SERVER, 'HTTP_HOST') . filter_input(INPUT_SERVER, 'SCRIPT_NAME');
+if ($script === "") {
+    $script = filter_input(INPUT_ENV, 'HTTP_HOST') . filter_input(INPUT_ENV, 'SCRIPT_NAME');
+}
+?>
+
+<!DOCTYPE html>
+
 <html>
 
     <head>
 
+        <title>Get the lyrics!</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
         <base href="https://www.musixmatch.com/" target="_blank">
-        <title>Get the lyrics!</title>
 
         <style>
             *    {
@@ -17,12 +36,11 @@
                 margin          : 0px;
                 padding         : 0px;
                 border          : 0px solid black;
-                visibility      : hidden;
             }
             input {
                 width           : 250px;
             }
-            #textsep {
+            .textsep {
                 width           : 100px;
                 text-align      : center;
                 font-size       : 14pt;
@@ -31,21 +49,13 @@
                 display         : none;
                 white-space     : nowrap;
             }
-            .shownot, .variable {
+            input[name=showformiffound] {
                 display         : none;
             }
-            #songtext {
-                border          : 0px solid black;
-            }
-            p:not([class=search]) {
-                border          : 1px solid black;
-                font-size       : 14px;
-                background      : #B3CEB3;
-                padding         : 3px 5px 3px 5px;
-            }
-            p[class='mxm-lyrics__content '] {
+            .lyrics {
                 border          : 0px solid black;
                 background      : white;
+                margin          : 0px;
                 white-space     : pre-wrap;
                 word-break      : break-word;
             }
@@ -73,44 +83,52 @@
                     $(this).select();
                 });
 
-                $("#search").keydown(function (event) {
+                setTimeout(function () {
+                    $("input[name=artist]").focus();
+                }, 0);
+
+                $(".search").keydown(function (event) {
                     if (event.which === 13) {
-                        $("#search").submit();
+                        if ($("input[name='artist']").val() !== "" && $("input[name='song']").val() !== "") {
+                            $(".search").submit();
+                        }
                     }
                 });
-
-                $("h1").css("font-size", "14pt");
-                $("h2").css("font-size", "10pt");
-
-                $("th").contents().unwrap().wrap("<table class='headertable'><tr><td class='headertd'></td></tr></table>");
-
-                $("body").css("visibility", "visible");
 
                 if (parent.length === 0) {
                     $("body").css("margin", "20px");
                     $(".search").css("display", "block");
+                } else {
+                    $("form").prepend("<br/>");
                 }
 
-                parent.$.initFrame($("#response", parent.document));
-
+                try {
+                    var responseFrame = parent.frames["response"];
+                    if (responseFrame) {
+                        $("body").css("overflow-y", "hidden");
+                        var documentObserver = new ResizeObserver(function () {
+                            var height = responseFrame.document.body.scrollHeight;
+                            $(responseFrame.frameElement).height(height);
+                        });
+                        documentObserver.observe(document.documentElement);
+                    }
+                } catch (error) {
+                }
             });
         </script>
 
+        <form class="search" id="search" action="http://<?= $script ?>" method="post" target="_self">
+            <label for="artist">Artist: </label>
+            <input type="text" name="artist" value="<?= $artist ?>">
+            &nbsp;&nbsp;
+            <label for="song">Song: </label>
+            <input type="text" name="song" value="<?= $song ?>">
+            <input type="text" name="showformiffound" value="<?= $showformiffound ?>">
+        </form>
+
+        <br/>
+
         <?php
-        $artist = ucwords(filter_input(INPUT_POST, "artist"));
-        $artist = preg_replace('/\s+/', ' ', $artist);
-        $song = ucwords(filter_input(INPUT_POST, "song"));
-        $song = preg_replace('/\s+/', ' ', $song);
-        $showformiffound = filter_input(INPUT_POST, "showformiffound");
-        if ($showformiffound === "") {
-            $showformiffound = "yes";
-        }
-
-        $script = filter_input(INPUT_SERVER, 'HTTP_HOST') . filter_input(INPUT_SERVER, 'SCRIPT_NAME');
-        if ($script === "") {
-            $script = filter_input(INPUT_ENV, 'HTTP_HOST') . filter_input(INPUT_ENV, 'SCRIPT_NAME');
-        }
-
         $error_shown = false;
 
         function show_form($artistsong) {
@@ -149,11 +167,11 @@
 
             if ($grab->html) {
                 $html = $grab->html[0][0];
-                echo "<b><a href='" . $config['url'] . "'>Original page</a></b>";
+                echo "<b><a href='" . $config['url'] . "'>Original page</a></b>\r\n";
             } else {
-                echo "<h3>404 Page not found!</h3>";
+                echo "<h3>404 Page not found!</h3>\r\n";
                 $error_shown = true;
-                echo '<script>$(".search").css("display", "block")</script>';
+                echo "<script>$('.search').css('display', 'block')</script>\r\n";
             }
 
             // Songtext
@@ -187,49 +205,40 @@
 
                         if ($grab->html) {
                             $error = false;
-                            echo '<div id="songtext">';
-                            foreach ($grab->html[0] as $html2) {
+                            echo "<div class='songtext'><p class='lyrics'>\r\n";
+                            foreach ($grab->html[1] as $html2) {
+                                $html2 = trim($html2);
                                 echo $html2;
                             }
-                            echo '</div>';
+                            echo "</p></div>\r\n";
                             break;
                         }
                     }
                 }
 
                 if (!$error) {
-                    echo '<div id="textsep">&#1161;</div>';
-                    echo '<br/>';
+                    echo "<br/>\r\n";
+                    echo "<div class='textsep'>&#1161;</div>\r\n";
                 }
             }
 
             if (!$error_shown and $error) {
-                echo "<h3>404 Page not found!</h3>";
-                echo '<script>$(".search").css("display", "block")</script>';
+                echo "<h3>404 Page not found!</h3>\r\n";
+                echo "<script>$('.search').css('display', 'block')</script>\r\n";
             }
         }
-        ?>
 
-        <form class="search" id="search" action="http://<?= $script ?>" method="post" target="_self">
-            <label for="artist">Artist: </label>
-            <input type="text" name="artist" value="<?= $artist ?>" autofocus="autofocus">
-            &nbsp;&nbsp;
-            <label for="song">Song: </label>
-            <input type="text" name="song" value="<?= $song ?>">
-            <input class="shownot" type="text" name="showformiffound" value="<?= $showformiffound ?>">
-        </form>
-        <p class="search"></p>
-
-        <?php
-        $artistsong = $artist . " " . $song;
-        $artistsong = str_replace("/", "%2F", $artistsong);
-        $artistsong = str_replace("\\", "%5C", $artistsong);
-        $artistsong = str_replace("#", "", $artistsong);
-        $artistsong = str_replace("%", "", $artistsong);
-        $artistsong = str_replace('"', "%22", $artistsong);
-        $artistsong = str_replace("'", "%27", $artistsong);
-        $artistsong = str_replace(" ", "%20", $artistsong);
-        show_form($artistsong);
+        $artistsong = trim($artist . " " . $song);
+        if ($artistsong !== "") {
+            $artistsong = str_replace("/", "%2F", $artistsong);
+            $artistsong = str_replace("\\", "%5C", $artistsong);
+            $artistsong = str_replace("#", "", $artistsong);
+            $artistsong = str_replace("%", "", $artistsong);
+            $artistsong = str_replace('"', "%22", $artistsong);
+            $artistsong = str_replace("'", "%27", $artistsong);
+            $artistsong = str_replace(" ", "%20", $artistsong);
+            show_form($artistsong);
+        }
         ?>
 
     </body>
