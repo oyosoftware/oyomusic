@@ -8,7 +8,7 @@
                 padding : 8px;
                 width   : 250px;
             }
-            #file {
+            .file {
                 width   : 107px;
             }
             .sql {
@@ -32,13 +32,13 @@
     </head>
     <body>
 
-        <form id="form" method="POST" enctype="multipart/form-data">
-            <input id="file" type="file" accept=".sql" name="name"/>
+        <form id="form" method="post" enctype="multipart/form-data">
+            <input class="file" type="file" accept=".sql" name="name"/>
             <input type="submit"/>
         </form>
 
         <?php
-        error_reporting(22519);
+        error_reporting(E_ERROR);
 
         if (isset($_FILES['name'])) {
             $file = $_FILES['name']['name'];
@@ -47,7 +47,7 @@
 
         function show() {
             global $file;
-            $sql = strtoupper(file_get_contents($file));
+            $sql = file_get_contents($file);
             echo "<div class='sql'>" . $sql . "</div><br/>\r\n";
 
             require_once('../settings.inc');
