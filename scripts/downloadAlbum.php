@@ -20,7 +20,11 @@ switch (true) {
     case mb_substr($audiosource, 0, 7) === "file://":
         break;
     case mb_substr($audiosource, 0, 1) === "/":
-        $audiosource = filter_input(INPUT_SERVER, DOCUMENT_ROOT) . $audiosource;
+        $documentroot = filter_input(INPUT_SERVER, 'DOCUMENT_ROOT');
+        if (is_null($documentroot)) {
+            $documentroot = filter_input(INPUT_ENV, 'DOCUMENT_ROOT');
+        }
+        $audiosource = $documentroot . $audiosource;
         break;
     default:
         $audiosource = "../" . $audiosource;

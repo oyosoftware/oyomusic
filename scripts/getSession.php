@@ -5,6 +5,9 @@ error_reporting(E_ERROR);
 require_once('../settings.inc');
 
 $documentroot = filter_input(INPUT_SERVER, 'DOCUMENT_ROOT');
+if (is_null($documentroot)) {
+    $documentroot = filter_input(INPUT_ENV, 'DOCUMENT_ROOT');
+}
 $joomlapath = $documentroot . $joomlapath;
 
 if (file_exists($joomlapath)) {
