@@ -1,5 +1,5 @@
 oYoMusic 2.1
-05-02-2023  Environment variables as an escape route for server variables
+05-02-2023  Fallback on environment variables when server vairiables ar ni available
 05-02-2023  Rewritten lyric scripts
 29-01-2023  Secure input variables
 29-01-2023  Distinction between web root and linux local path
