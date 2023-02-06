@@ -1,4 +1,6 @@
 oYoMusic 2.1
+05-02-2023  Environment variables as an escape route for server variables
+05-02-2023  Rewritten lyric scripts
 29-01-2023  Secure input variables
 29-01-2023  Distinction between web root and linux local path
 31-12-2022  Albums frame now listens to it's content by a ResizeObserver
