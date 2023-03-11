@@ -63,40 +63,4 @@ function formattime(int $totalseconds) {
     return $timestring;
 }
 
-function strunacc($string) {
-    $strFrom = "ÀÁÂÃÄÅÆàáâãäåæĀāĂăĄąÇçĆćĈĉĊċČčĎďĐđÈÉÊËèéêëĒēĔĕĖėĘęĚěĜĝĞğĠġĢģĤĥĦħĨÌÍÎÏìíîïĩĪīĬĭĮįİıĲĳĴĵĶķĸĹĺĻļĽľĿŀŁłÑñŃńŅņŇňŉŊŋÒÓÔÕÖòóôõöŌōŎŏŐőŒœØøŔŕŖŗŘřßŚśŜŝŞşŠšŢţŤťŦŧÙÚÛÜùúûüŨũŪūŬŭŮůŰűŲųŴŵÝýÿŶŷŸŹźŻżŽžёЁ";
-    $strFrom = array_map(function ($i) use ($strFrom) {
-        return mb_substr($strFrom, $i, 1);
-    }, range(0, mb_strlen($strFrom) - 1));
-
-    $strTo = "AAAAAAAaaaaaaaAaAaAaCcCcCcCcCcDdDdEEEEeeeeEeEeEeEeEeGgGgGgGgHhHhIIIIIiiiiiIiIiIiIiIiJjKkkLlLlLlLlLlNnNnNnNnnNnOOOOOoooooOoOoOoEeOoRrRrRrSSsSsSsSsTtTtTtUUUUuuuuUuUuUuUuUuUuWwYyyYyYZzZzZzeE";
-    $strTo = array_map(function ($i) use ($strTo) {
-        return mb_substr($strTo, $i, 1);
-    }, range(0, mb_strlen($strTo) - 1));
-
-    $string = str_replace($strFrom, $strTo, $string);
-    return $string;
-}
-
-function stracccmp($string1, $string2) {
-    $string1 = strunacc($string1);
-    $string2 = strunacc($string2);
-    $value = strcmp($string1, $string2);
-    return $value;
-}
-
-function stracccasecmp($string1, $string2) {
-    $string1 = strunacc($string1);
-    $string2 = strunacc($string2);
-    $value = strcasecmp($string1, $string2);
-    return $value;
-}
-
-function access_escape($string) {
-    $symbolsin = array("[", "'", '"', "?", "*", "#", "%", "_");
-    $symbolsout = array("[[]", "''", '""', "[?]", "[*]", "[#]", "[%]", "[_]");
-    $string = str_replace($symbolsin, $symbolsout, $string);
-    return $string;
-}
-
 ?>
