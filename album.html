@@ -595,7 +595,7 @@
                                                             }
                                                         }
                                                         var a = document.createElement("a");
-                                                        var href = "scripts/getLyrics.php?artist=" + encodeURIComponent(name2) + "&song=" + encodeURIComponent(title);
+                                                        var href = "lyrics.html?artist=" + encodeURIComponent(name2) + "&song=" + encodeURIComponent(title) + "&showform=false";
                                                         $(a).prop("href", href);
                                                         $(a).html(title);
                                                         var visited = window.localStorage.getItem(href);
