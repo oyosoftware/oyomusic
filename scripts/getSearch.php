@@ -9,7 +9,7 @@ $genre = filter_input(INPUT_GET, "genre");
 $pageno = filter_input(INPUT_GET, "pageno");
 
 require_once('../settings.inc');
-require_once('../helpers/functions.php');
+require_once('../include/date_time.php');
 
 $link = mysqli_connect($server, $username, $password, $database);
 mysqli_set_charset($link, "utf8");
