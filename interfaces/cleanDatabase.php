@@ -3,7 +3,7 @@
 error_reporting(E_ERROR);
 
 require_once('../settings.inc');
-require_once('../helpers/functions.php');
+require_once('../include/date_time.php');
 
 function delete_removed_tracks($dir) {
     global $link, $audiosource, $log, $servername;

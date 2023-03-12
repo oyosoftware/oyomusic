@@ -2,7 +2,7 @@
 
 error_reporting(E_ERROR);
 require_once('../settings.inc');
-require_once('../helpers/functions.php');
+require_once('../include/date_time.php');
 
 function calculate_totals() {
     global $link, $servername;
