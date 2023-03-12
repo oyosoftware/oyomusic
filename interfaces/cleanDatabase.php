@@ -336,9 +336,9 @@ function clean_files() {
         if ($albumcount == 0 and $trackcount == 0) {
             $sqld = "delete from artists where id = $id";
             mysqli_query($link, $sqld);
-            $logtext = "delete artist " . $id . " " . $name;
+            $logtext = "delete artist " . $name;
             fwrite($log, $logtext . "\r\n");
-            if ($servername === null) {
+            if ($servername !== null) {
                 $response = array('logtext' => $logtext);
                 $json = json_encode($response);
                 echo $json . ",\n";
@@ -361,7 +361,7 @@ $documentroot = $argv[2];
 $link = mysqli_connect($server, $username, $password, $database);
 
 $base = "";
-//$base = "/Populair/MNO/Of Montreal";
+//$base = "/Populair/DEF/Foucault, Jeffrey";
 
 $audiosource = str_ireplace("\\", "/", $audiosource);
 $base = str_ireplace("\\", "/", $base);
