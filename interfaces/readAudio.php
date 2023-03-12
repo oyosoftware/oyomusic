@@ -5,6 +5,7 @@ error_reporting(E_ERROR);
 require_once('../settings.inc');
 require_once('../plugins/getid3/getid3.php');
 require_once('../helpers/functions.php');
+require_once('../include/special_characters.php');
 
 function getLetter($name) {
     $letter = strunacc(mb_substr($name, 0, 1));

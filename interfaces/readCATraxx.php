@@ -2,9 +2,7 @@
 
 error_reporting(E_ERROR);
 require_once('../settings.inc');
-require_once('../helpers/functions.php');
-
-//require_once('intDELtoSQL.php');
+require_once('../include/special_characters.php');
 
 function getLetter($name) {
     $letter = strunacc(mb_substr($name, 0, 1));
@@ -29,7 +27,7 @@ function getLetter($name) {
 
 function read_files($dir) {
     global $link, $pdolink;
-    $dir = access_escape($dir);
+    $dir = access_escape_string($dir);
 
     $sql = "select track.TrackID, AlbumID, DiscNo, Index,"
             . "Mid(StrConv(Title, 64),   1, 254) as ucTitle1,"
@@ -489,13 +487,13 @@ function read_files($dir) {
         }
 
         // tracks
+        //echo mysqli_affected_rows($link) . " " . $track . " " . $tracktitle . "\r\n";
         $esctracktitle = mysqli_real_escape_string($link, $tracktitle);
         $escfolder = mysqli_real_escape_string($link, $folder);
         $escfilename = mysqli_real_escape_string($link, $filename);
         $sql = "select * from albums inner join tracks on id = albumid where folder = '$escfolder' and filename = '$escfilename'";
         $result = mysqli_query($link, $sql);
 
-        //echo mysqli_affected_rows($link) . " " . $track . " " . $tracktitle . "\r\n";
         if (mysqli_affected_rows($link) == 0) {
             $sqli = "insert into tracks (albumid, discno, track, title, artistid, playingtime, audiobitrate, audiobitratemode, filename, lastmodified)
                             values ($albumid, $discno, $track, '$esctracktitle', $artistid, $playingtime, $bitrate, '$bitratemode', '$escfilename', $trackmodified)";
@@ -530,10 +528,11 @@ function read_files($dir) {
 }
 
 $link = mysqli_connect($server, $username, $password, $database);
-$dsn = "odbc:driver={Microsoft Access Driver (*.mdb, *.accdb)};dbq=C:\\Users\\Someone\\Documents\\Music\\collection.mdb;charset=utf16le";
+$dsn = "odbc:driver={Microsoft Access Driver (*.mdb, *.accdb)};dbq=" . $catraxxdatabasepath . ";charset=utf16le";
 $pdolink = new PDO($dsn);
 
-$dir = "M:\\Music";
+$dir = $catraxxaudiosource;
+//$dir = $dir . "\Populair\DEF\Dag\1998 - Apartment #635";
 
 read_files($dir);
 
