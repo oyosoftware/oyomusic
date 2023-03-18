@@ -91,6 +91,8 @@ function getLyrics() {
             $pos = mb_strpos($foundartist, $searchartist);
             if ($pos === false) {
                 continue;
+            } else {
+                $lyricsartist = $match[3][0];
             }
 
             $match = null;
@@ -100,6 +102,8 @@ function getLyrics() {
 
             if ($foundsong === null) {
                 continue;
+            } else {
+                $lyricssong = $match[1][0];
             }
 
             $searchsong = mb_strtoupper($song);
@@ -140,6 +144,8 @@ function getLyrics() {
                 $contentgrabber->grabhtml($config['url'], $config['start_tag'], $config['end_tag']);
 
                 if ($contentgrabber->html) {
+                    $lyrics->artist = $lyricsartist;
+                    $lyrics->song = $lyricssong;
                     $lyrics->content = null;
                     $lyrics->empty = null;
                     foreach ($contentgrabber->html[1] as $html) {
@@ -159,6 +165,8 @@ function getLyrics() {
                     $emptygrabber->grabhtml($config['url'], $config['start_tag'], $config['end_tag']);
 
                     if ($emptygrabber->html) {
+                        $lyrics->artist = $lyricsartist;
+                        $lyrics->song = $lyricssong;
                         $lyrics->empty = null;
                         foreach ($emptygrabber->html[1] as $html) {
                             $document = new DOMDocument();
