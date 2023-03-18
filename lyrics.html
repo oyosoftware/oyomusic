@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <title>Lyrics</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
+
+        <style>
+            * {
+                box-sizing          : border-box;
+            }
+            body {
+                font-family         : Arial, Verdana, Helvetica, sans-serif;
+                font-size           : 10pt;
+                margin              : 0px;
+                padding             : 8px;
+                padding-right       : 0px;
+            }
+            ::-webkit-scrollbar {
+                height              : 10px;
+                width               : 10px;
+            }
+            ::-webkit-scrollbar-corner {
+                background-color    : transparent;
+            }
+            ::-webkit-scrollbar-thumb {
+                background          : white;
+                border              : 2px solid black;
+                border-radius       : 5px;
+            }
+            a:link {
+                text-decoration     : none;
+            }
+            a:visited {
+                text-decoration     : none;
+            }
+            a:hover {
+                text-decoration     : underline;
+            }
+            .back {
+                display             : none;
+                font-size           : 13.33px;
+                height              : 25px;
+                vertical-align      : top;
+            }
+            .backlink {
+                display             : block;
+            }
+            .wrapper {
+                padding-right       : 8px;
+                width               : 100%;
+            }
+            .header {
+                background-color    : #B3CEB3;
+                border              : 1px solid black;
+                width               : 100%;
+                min-width           : 254px;
+                height              : 40px;
+                border-spacing      : 1px;
+            }
+            .headertitle {
+                color               : black;
+                font-weight         : bold;
+                font-size           : 18.66px;
+                padding             : 8px;
+            }
+            .search {
+                display             : none;
+                white-space         : nowrap;
+            }
+            .originalpage {
+                display             : none;
+                font-weight         : bold;
+                background          : white;
+                margin              : 0px;
+            }
+            .lyrics {
+                display             : none;
+                background          : white;
+                margin              : 0px;
+                white-space         : pre-wrap;
+                word-break          : break-word;
+            }
+            .textsep {
+                display             : none;
+                width               : 100px;
+                text-align          : center;
+                font-size           : 14pt;
+            }
+            .pagenotfound {
+                display             : none;
+                margin              : 0px;
+            }
+        </style>
+
+    </head>
+
+    <body>
+
+        <script>
+            $(document).ready(function () {
+                var artist = "", song = "", showform = false;
+
+                var parameters = location.search.substring(1).split("&");
+                if (parameters[0]) {
+                    artist = decodeURIComponent(parameters[0].split("=")[1]);
+                }
+                if (parameters[1]) {
+                    song = decodeURIComponent(parameters[1].split("=")[1]);
+                }
+                if (parameters[2]) {
+                    showform = parameters[2].split("=")[1] === "true";
+                } else {
+                    showform = true;
+                }
+
+                var href = document.referrer;
+                $(".backlink").prop("href", href);
+
+                if (!document.referrer || document.referrer === location.href) {
+                    $(".search").css("display", "block");
+                    $("input[name=artist]").focus();
+                } else {
+                    $(".back").css("display", "block");
+                }
+
+                init();
+                if (artist !== "" && song !== "") {
+                    submit();
+                }
+
+                function init() {
+                    artist = ucwords(artist);
+                    artist = artist.replaceAll(/\s+/g, " ").trim();
+                    song = ucwords(song);
+                    song = song.replace(/\s+/g, " ").trim();
+                    var artistsong = artist;
+                    if (artist && song) {
+                        artistsong += " - ";
+                    }
+                    artistsong += song;
+
+                    $(document).prop("title", artistsong);
+                    $(".backlink").prop("href", href);
+                    $(".headertitle").html(artistsong);
+                    $("input[name=artist]").val(artist);
+                    $("input[name=song]").val(song);
+                }
+
+                $(".search").keydown(function (event) {
+                    if (event.which === 13) {
+                        artist = $("input[name=artist]").val();
+                        song = $("input[name=song]").val();
+                        init();
+                        if (artist !== "" && song !== "") {
+                            submit();
+                        }
+                    }
+                });
+
+                $("input").focus(function () {
+                    $(this).select();
+                });
+
+                function  submit() {
+                    url = "scripts/getLyrics.php";
+                    $.ajax({
+                        url: url,
+                        data: {artist: artist, song: song},
+                        dataType: "jsonp",
+                        jsonpCallback: "getLyrics",
+                        success: function (lyrics) {
+                            if (lyrics.found || lyrics.empty) {
+                                var artistsong = lyrics.artist;
+                                if (lyrics.artist && lyrics.song) {
+                                    artistsong += " - ";
+                                }
+                                artistsong += lyrics.song;
+                                $(document).prop("title", artistsong);
+                                $(".headertitle").html(artistsong);
+                            }
+                            if (lyrics.found && showform || !lyrics.found) {
+                                $(".search").css("display", "block");
+                                $("input[name=artist]").focus();
+                            } else {
+                                $(".search").css("display", "none");
+                            }
+                            if (lyrics.page) {
+                                $(".originalpage").attr("href", lyrics.page);
+                                $(".originalpage").css("display", "block");
+                                $(".pagenotfound").css("display", "none");
+                            } else {
+                                $(".originalpage").css("display", "none");
+                                $(".pagenotfound").css("display", "block");
+                            }
+                            if (lyrics.found) {
+                                if (lyrics.content) {
+                                    $(".lyrics").html("<br>" + lyrics.content);
+                                } else {
+                                    $(".lyrics").html("<br>" + lyrics.empty);
+                                }
+                                $(".lyrics").css("display", "block");
+                                $(".textsep").css("display", "block");
+                            } else {
+                                $(".lyrics").html("");
+                                $(".lyrics").css("display", "none");
+                                $(".textsep").css("display", "none");
+                            }
+                        }
+                    });
+                }
+
+                function ucwords(sentence) {
+                    var words = sentence.split(" ");
+                    words.forEach(function (word, i) {
+                        if (word) {
+                            words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+                        }
+                    });
+                    sentence = words.join(" ");
+                    return sentence;
+                }
+
+            });
+        </script>
+
+        <div class="back"><a class="backlink">Back</a></div>
+
+        <div class="wrapper">
+            <div class="header">
+                <div class="headertitle"></div>
+            </div>
+        </div>
+
+        <div>
+            <form class="search">
+                <br>
+                <label for="artist">Artist: </label>
+                <input id="artist" type="text" name="artist" value="">
+                &nbsp;&nbsp;
+                <label for="song">Song: </label>
+                <input id="song" type="text" name="song" value="">
+            </form>
+        </div>
+
+        <div class="wrapper">
+            <a class="originalpage" href="" target="_blank"><br>Original page</a>
+        </div>
+
+        <div class="wrapper">
+            <div class="lyrics"></div>
+        </div>
+
+        <div class='textsep'><br>&#1161;</div>
+
+        <h3 class="pagenotfound"><br>Page not found!</h3>
+
+    </body>
+
+</html>
