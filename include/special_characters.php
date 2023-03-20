@@ -2,9 +2,7 @@
 
 /**
  * Converts all UTF-8 accent characters to ASCII characters.
- *
- * Extracted from WordPress code (roughly copy/pasted), thanks (and sorry) to authors.
- *
+ * Thanks to Rap2hpoutre for extracting these characters from WordPress
  * @see https://github.com/WordPress/WordPress/blob/master/wp-includes/formatting.php
  * @param $string
  * @param null $locale
