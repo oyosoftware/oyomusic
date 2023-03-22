@@ -8,7 +8,6 @@ $year = filter_input(INPUT_GET, "year");
 $genre = filter_input(INPUT_GET, "genre");
 
 require_once('../settings.inc');
-require_once('../helpers/functions.php');
 
 $link = mysqli_connect($server, $username, $password, $database);
 mysqli_set_charset($link, "utf8");
