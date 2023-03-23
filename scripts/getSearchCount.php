@@ -31,7 +31,7 @@ $sql .= "and ($searchname or $searchtitle) ";
 if ($country <> "") {
     $sql .= "and country = '$country' ";
 }
-if ($year <> 0) {
+if ($year <> "") {
     $sql .= "and released = $year ";
 }
 if ($genre <> "") {
@@ -69,7 +69,7 @@ $sql .= "and ($searchname or $searchtitle) ";
 if ($country <> "") {
     $sql .= "and country = '$country' ";
 }
-if ($year <> 0) {
+if ($year <> "") {
     $sql .= "and released = $year ";
 }
 if ($genre <> "") {
@@ -80,6 +80,7 @@ $result = mysqli_query($link, $sql);
 
 $records = 0;
 while ($row = mysqli_fetch_assoc($result)) {
+
     $records += $row["records"];
 }
 

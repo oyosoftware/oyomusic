@@ -41,7 +41,7 @@ $sql .= "and ($searchname or $searchtitle) ";
 if ($country <> "") {
     $sql .= "and country = '$country' ";
 }
-if ($year <> 0) {
+if ($year <> "") {
     $sql .= "and released = $year ";
 }
 if ($genre <> "") {
@@ -83,7 +83,7 @@ $sql .= "and ($searchname or $searchtitle) ";
 if ($country <> "") {
     $sql .= "and country = '$country' ";
 }
-if ($year <> 0) {
+if ($year <> "") {
     $sql .= "and released = $year ";
 }
 if ($genre <> "") {
@@ -92,8 +92,6 @@ if ($genre <> "") {
 
 $sql .= "order by query, name, released, title ";
 $sql .= "limit $first, $searchrecordspage";
-
-//echo $sql;
 
 $result = mysqli_query($link, $sql);
 
