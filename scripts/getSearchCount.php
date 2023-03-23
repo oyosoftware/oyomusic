@@ -28,13 +28,13 @@ $searchname = "name like '%$search%'";
 $searchtitle = "title like '%$search%'";
 $sql .= "and ($searchname or $searchtitle) ";
 
-if ($country <> "") {
+if (!empty($country)) {
     $sql .= "and country = '$country' ";
 }
-if ($year <> "") {
+if (!empty($year)) {
     $sql .= "and released = $year ";
 }
-if ($genre <> "") {
+if (!empty($genre)) {
     $sql .= "and genre = '$genre' ";
 }
 
@@ -66,13 +66,13 @@ $searchname = $searchname . ")";
 $searchtitle = $searchtitle . ")";
 $sql .= "and ($searchname or $searchtitle) ";
 
-if ($country <> "") {
+if (!empty($country)) {
     $sql .= "and country = '$country' ";
 }
-if ($year <> "") {
+if (!empty($year)) {
     $sql .= "and released = $year ";
 }
-if ($genre <> "") {
+if (!empty($genre)) {
     $sql .= "and genre = '$genre' ";
 }
 
