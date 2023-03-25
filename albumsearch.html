@@ -448,7 +448,7 @@
                                 }
                             } // end for loop
                             $("a").click(function (event) {
-                                var datalink = $(event.target).attr("data-link");
+                                var datalink = $(event.currentTarget).attr("data-link");
                                 window.localStorage.setItem(datalink, "visited");
                             });
                         }

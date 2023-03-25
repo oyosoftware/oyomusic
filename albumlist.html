@@ -280,7 +280,7 @@
                                 }
 
                                 $(".namelink").on("click", function () {
-                                    var href = $(event.target).attr("href");
+                                    var href = $(event.currentTarget).attr("href");
                                     window.localStorage.setItem(href, "visited");
                                 });
                             }
@@ -407,7 +407,7 @@
                                 }
                             } // end albums loop
                             $("a").on("click", function () {
-                                var href = $(event.target).attr("href");
+                                var href = $(event.currentTarget).attr("href");
                                 window.localStorage.setItem(href, "visited");
                             });
                         }
