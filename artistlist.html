@@ -95,19 +95,10 @@
                         }
 
                         $("a").click(function (event) {
-                            window.localStorage.setItem($(event.target).attr("href"), "visited");
-                            $(event.target).css("color", "green");
+                            $(event.currentTarget).css("color", "green");
+                            var href = $(event.currentTarget).attr("href");
+                            window.localStorage.setItem(href, "visited");
                         });
-
-                        var firstartist = $("a").eq(0);
-                        var firstartisthref = $("a").attr("href");
-                        var visited = window.localStorage.getItem(firstartisthref);
-
-                        if (visited === 'visited') {
-                            $(firstartist).css("color", "green");
-                        } else {
-                            $(firstartist).css("color", "blue");
-                        }
 
                         if (artistIndexFrame) {
                             parent.frames["albums"].location.href = $("a").attr("href");
