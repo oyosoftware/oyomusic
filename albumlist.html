@@ -47,11 +47,9 @@
             }
             a:link {
                 text-decoration     : none;
-                color               : blue;
             }
             a:visited {
                 text-decoration     : none;
-                color               : green;
             }
             a:hover {
                 text-decoration     : underline;
@@ -264,6 +262,12 @@
                                         var href = "albumlist.html?artistid=" + id + "&isboxset=0" + "&boxsetid=0" + "&pageno=1";
                                         $(a).attr("href", href);
                                         $(a).html(name2);
+                                        var visited = window.localStorage.getItem(href);
+                                        if (visited === 'visited') {
+                                            $(a).css("color", "green");
+                                        } else {
+                                            $(a).css("color", "blue");
+                                        }
                                         $(".name").append(a);
                                     } else {
                                         var span = document.createElement("span");
@@ -274,6 +278,11 @@
                                         $(".name").html($(".name").html() + ", ");
                                     }
                                 }
+
+                                $(".namelink").on("click", function () {
+                                    var href = $(event.target).attr("href");
+                                    window.localStorage.setItem(href, "visited");
+                                });
                             }
                         });
                         url = "scripts/getSettings.php";
@@ -360,6 +369,12 @@
                                 var href = "album.html?albumid=" + albumid + "&pageno=" + pageno;
                                 $(a).attr("href", href);
                                 $(a).html(title);
+                                var visited = window.localStorage.getItem(href);
+                                if (visited === 'visited') {
+                                    $(a).css("color", "green");
+                                } else {
+                                    $(a).css("color", "blue");
+                                }
                                 $(cell).append(a);
 
                                 var cell = document.createElement("td");
@@ -391,10 +406,13 @@
                                     $(".tablewrapper").css("display", "block");
                                 }
                             } // end albums loop
+                            $("a").on("click", function () {
+                                var href = $(event.target).attr("href");
+                                window.localStorage.setItem(href, "visited");
+                            });
                         }
                     }); // end of getAlbums
                 }
-
             });
         </script>
 

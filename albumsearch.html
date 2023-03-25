@@ -301,7 +301,6 @@
                                 }
                             }
                         });
-
                         addRecords(imagepaththumbs);
                     }
                 });
@@ -447,19 +446,14 @@
                                     $(".tableheaderwrapper").css("display", "inline-block");
                                     $(".tablewrapper").css("display", "inline-block");
                                 }
-
                             } // end for loop
-
                             $("a").click(function (event) {
                                 var datalink = $(event.target).attr("data-link");
                                 window.localStorage.setItem(datalink, "visited");
                             });
-
                         }
                     }); // end of getSearch
-
                 }
-
             });
         </script>
 
