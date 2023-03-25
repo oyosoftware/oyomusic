@@ -214,8 +214,9 @@
                         }
 
                         $(".record > a").click(function (event) {
-                            window.localStorage.setItem($(event.target).attr("href"), "visited");
-                            $(event.target).css("color", "green");
+                            $(event.currentTarget).css("color", "green");
+                            var href = $(event.currentTarget).attr("href");
+                            window.localStorage.setItem(href, "visited");
                         });
                         parent.frames['artists'].location.href = $("a").attr("href");
                     }
