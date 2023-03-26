@@ -10,14 +10,16 @@ mysqli_set_charset($link, "utf8");
 $sql = "select released from albums group by released order by released desc";
 $result = mysqli_query($link, $sql);
 
-$data = 'getYears([';
+$years = array();
 
 while ($row = mysqli_fetch_assoc($result)) {
-    $data .= '{year: ' . $row["released"] . '}, ';
+    $year = (object) [];
+    $year->year = (int) $row["released"];
+    $years[] = $year;
 }
 
-$data .= '])';
-echo $data;
+$years = 'getYears(' . json_encode($years, JSON_PRETTY_PRINT) . ")";
+echo $years;
 
 mysqli_close($link);
 ?>

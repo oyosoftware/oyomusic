@@ -13,22 +13,19 @@ mysqli_set_charset($link, "utf8");
 $sql = "select * from discs where albumid=$albumid order by albumid, discno";
 $result = mysqli_query($link, $sql);
 
-$data = 'getDiscs([';
+$discs = array();
 
 while ($row = mysqli_fetch_assoc($result)) {
+    $disc = (object) [];
+    $disc->discno = (int) $row["DiscNo"];
+    $disc->title = $row["Title"];
     $time = formattime($row["PlayingTime"]);
-    $title = $row["Title"];
-    $title = str_replace('\\', '\\\\', $title);
-    $title = str_replace('"', '\"', $title);
-    $data .= '{'
-            . 'discno: ' . $row["DiscNo"] . ', '
-            . 'title: "' . $title . '", '
-            . 'playingtime: "' . $time . '"'
-            . '}, ';
+    $disc->playingtime = $time;
+    $discs[] = $disc;
 }
 
-$data .= '])';
-echo $data;
+$discs = 'getDiscs(' . json_encode($discs, JSON_PRETTY_PRINT) . ")";
+echo $discs;
 
 mysqli_close($link);
 ?>

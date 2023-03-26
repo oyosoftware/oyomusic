@@ -16,7 +16,7 @@ mysqli_set_charset($link, "utf8");
 
 $first = $searchrecordspage * $pageno - $searchrecordspage;
 
-$data = 'getSearch([';
+$searches = array();
 
 $sql = "select artists.id as artistid, name, country, " .
         "albums.id as albumid, released, title, disccount, " .
@@ -96,30 +96,24 @@ $sql .= "limit $first, $searchrecordspage";
 $result = mysqli_query($link, $sql);
 
 while ($row = mysqli_fetch_assoc($result)) {
-    $name = $row["name"];
-    $name = str_replace('\\', '\\\\', $name);
-    $name = str_replace('"', '\"', $name);
-    $title = $row["title"];
-    $title = str_replace('\\', '\\\\', $title);
-    $title = str_replace('"', '\"', $title);
+    $search = (object) [];
+    $search->artistid = (int) $row["artistid"];
+    $search->name = $row["name"];
+    $search->country = $row["country"];
+    $search->albumid = (int) $row["albumid"];
+    $search->released = (int) $row["released"];
+    $search->title = $row["title"];
+    $search->disccount = (int) $row["disccount"];
+    $search->format = $row["format"];
     $time = formattime($row["playingtime"]);
-    $data .= '{'
-            . 'artistid: ' . $row["artistid"] . ', '
-            . 'name: "' . $name . '", '
-            . 'country: "' . $row["country"] . '", '
-            . 'albumid: ' . $row["albumid"] . ', '
-            . 'released: ' . $row["released"] . ', '
-            . 'title: "' . $title . '", '
-            . 'disccount: ' . $row["disccount"] . ', '
-            . 'format: "' . $row["format"] . '", '
-            . 'playingtime: "' . $time . '", '
-            . 'genre: "' . $row["genre"] . '", '
-            . 'imagefilename: "' . $row["imagefilename"] . '"'
-            . '}, ';
+    $search->playingtime = $time;
+    $search->genre = $row["genre"];
+    $search->imagefilename = $row["imagefilename"];
+    $searches[] = $search;
 }
 
-$data .= '])';
-echo $data;
+$searches = 'getSearch(' . json_encode($searches, JSON_PRETTY_PRINT) . ")";
+echo $searches;
 
 mysqli_close($link);
 ?>

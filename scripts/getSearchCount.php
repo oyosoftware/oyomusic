@@ -80,7 +80,6 @@ $result = mysqli_query($link, $sql);
 
 $records = 0;
 while ($row = mysqli_fetch_assoc($result)) {
-
     $records += $row["records"];
 }
 

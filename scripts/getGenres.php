@@ -10,14 +10,17 @@ mysqli_set_charset($link, "utf8");
 $sql = "select * from genres order by genre";
 $result = mysqli_query($link, $sql);
 
-$data = 'getGenres([';
+$genres = array();
 
 while ($row = mysqli_fetch_assoc($result)) {
-    $data .= '{id: ' . $row["Id"] . ', genre: "' . $row["Genre"] . '"}, ';
+    $genre = (object) [];
+    $genre->id = (int) $row["Id"];
+    $genre->genre = $row["Genre"];
+    $genres[] = $genre;
 }
 
-$data .= '])';
-echo $data;
+$genres = 'getGenres(' . json_encode($genres, JSON_PRETTY_PRINT) . ")";
+echo $genres;
 
 mysqli_close($link);
 ?>

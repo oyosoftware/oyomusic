@@ -7,7 +7,6 @@ $albumid = filter_input(INPUT_GET, "albumid");
 require_once('../settings.inc');
 require_once('../include/date_time.php');
 
-$log = fopen("output.log", "w");
 $link = mysqli_connect($server, $username, $password, $database);
 mysqli_set_charset($link, "utf8");
 
@@ -40,47 +39,37 @@ $folder = $row["Folder"];
 $sql = "select * from tracks where albumid=$albumid order by albumid, discno, track";
 $result = mysqli_query($link, $sql);
 
-$data = 'getTracks([';
+$tracks = array();
 
 while ($row = mysqli_fetch_assoc($result)) {
-    $title = $row["Title"];
-    $title = str_replace('\\', '\\\\', $title);
-    $title = str_replace('"', '\"', $title);
 
     $artistid = $row["ArtistId"];
     $sql = "select * from artists where id='$artistid'";
     $result2 = mysqli_query($link, $sql);
     $row2 = mysqli_fetch_assoc($result2);
-    $name = $row2["Name"];
-    $name = str_replace('\\', '\\\\', $name);
-    $name = str_replace('"', '\"', $name);
 
+    $track = (object) [];
+    $track->albumid = (int) $row["AlbumId"];
+    $track->discno = (int) $row["DiscNo"];
+    $track->track = (int) $row["Track"];
+    $track->title = $row["Title"];
+    $track->name = $row2["Name"];
     $time = formattime($row["PlayingTime"]);
-
+    $track->playingtime = $time;
+    $track->audiobitrate = (int) $row["AudioBitrate"];
+    $track->audiobitratemode = $row["AudioBitrateMode"];
+    $track->filename = $row["FileName"];
     $file = $audiosource . $folder . '/' . $row["FileName"];
-    fwrite($log, $file . "\r\n");
-
     if (file_exists($file)) {
-        $fileexists = 'true';
+        $track->fileexists = true;
     } else {
-        $fileexists = 'false';
+        $track->fileexists = false;
     }
-
-    $data .= '{'
-            . 'discno: ' . $row["DiscNo"] . ', '
-            . 'track: ' . $row["Track"] . ', '
-            . 'title: "' . $title . '", '
-            . 'name: "' . $name . '", '
-            . 'playingtime: "' . $time . '", '
-            . 'audiobitrate: ' . $row["AudioBitrate"] . ', '
-            . 'filename: "' . $row["FileName"] . '", '
-            . 'fileexists: ' . $fileexists . ''
-            . '}, ';
+    $tracks[] = $track;
 }
 
-$data .= '])';
-echo $data;
+$tracks = 'getTracks(' . json_encode($tracks, JSON_PRETTY_PRINT) . ")";
+echo $tracks;
 
-fclose($log);
 mysqli_close($link);
 ?>

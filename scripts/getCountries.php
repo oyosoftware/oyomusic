@@ -10,14 +10,17 @@ mysqli_set_charset($link, "utf8");
 $sql = "select * from countries order by country";
 $result = mysqli_query($link, $sql);
 
-$data = 'getCountries([';
+$countries = array();
 
 while ($row = mysqli_fetch_assoc($result)) {
-    $data .= '{id: ' . $row["Id"] . ', country: "' . $row["Country"] . '"}, ';
+    $country = (object) [];
+    $country->id = (int) $row["Id"];
+    $country->country = $row["Country"];
+    $countries[] = $country;
 }
 
-$data .= '])';
-echo $data;
+$countries = 'getCountries(' . json_encode($countries, JSON_PRETTY_PRINT) . ")";
+echo $countries;
 
 mysqli_close($link);
 ?>

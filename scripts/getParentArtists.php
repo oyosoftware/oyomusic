@@ -10,7 +10,7 @@ require_once('../include/special_characters.php');
 $link = mysqli_connect($server, $username, $password, $database);
 mysqli_set_charset($link, "utf8");
 
-$data = 'getParentArtists([';
+$parentartists = array();
 
 $symbols = array("\\", "/", ":", "*", "?", "\"", "<", ">", "|", ".", "-");
 
@@ -83,7 +83,6 @@ do {
                 "order by pos1, name limit 1";
     }
 
-    //echo $sql . "\r\n";
     $result = mysqli_query($link, $sql);
     $rows = mysqli_affected_rows($link);
     if ($rows > 0) {
@@ -92,15 +91,19 @@ do {
         $newname = str_replace($symbols, "", $newname);
         $newname = strunacc($newname);
         if ($name != $newname) {
-            $data .= '{id: ' . $row["artistid"] . ', name: "' . $row["name"] . '", albumcount: ' . $row["albumcount"] . '}, ';
+            $parentartist = (object) [];
+            $parentartist->id = (int) $row["artistid"];
+            $parentartist->name = $row["name"];
+            $parentartist->albumcount = (int) $row["albumcount"];
+            $parentartists[] = $parentartist;
         }
     }
     $name = $newname;
     $previousfolder = $folder;
 } while ($rows > 0);
 
-$data .= '])';
-echo $data;
+$parentartists = 'getParentArtists(' . json_encode($parentartists, JSON_PRETTY_PRINT) . ")";
+echo $parentartists;
 
 mysqli_close($link);
 ?>

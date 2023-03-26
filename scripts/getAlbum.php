@@ -14,11 +14,6 @@ $sql = "select * from albums where id=$albumid";
 $result = mysqli_query($link, $sql);
 $row = mysqli_fetch_assoc($result);
 
-$time = formattime($row["PlayingTime"]);
-$title = $row["Title"];
-$title = str_replace('\\', '\\\\', $title);
-$title = str_replace('"', '\"', $title);
-
 $formatid = $row["FormatId"];
 $sql = "select * from formats where id='$formatid'";
 $result2 = mysqli_query($link, $sql);
@@ -29,21 +24,22 @@ $sql = "select * from genres where id='$genreid'";
 $result3 = mysqli_query($link, $sql);
 $row3 = mysqli_fetch_assoc($result3);
 
-$data = 'getAlbum({'
-        . 'artistid: ' . $row["ArtistId"] . ', '
-        . 'released: ' . $row["Released"] . ', '
-        . 'title: "' . $title . '", '
-        . 'disccount: ' . $row["DiscCount"] . ', '
-        . 'format: "' . $row2["Format"] . '", '
-        . 'playingtime: "' . $time . '", '
-        . 'genre: "' . $row3["Genre"] . '", '
-        . 'folder: "' . $row["Folder"] . '", '
-        . 'imagefilename: "' . $row["ImageFileName"] . '", '
-        . 'isboxset: ' . $row["IsBoxset"] . ', '
-        . 'boxsetid: ' . $row["BoxsetId"]
-        . '})';
+$album = (object) [];
+$album->artistid = (int) $row["ArtistId"];
+$album->released = (int) $row["Released"];
+$album->title = $row["Title"];
+$album->disccount = (int) $row["DiscCount"];
+$album->format = $row2["Format"];
+$time = formattime($row["PlayingTime"]);
+$album->playingtime = $time;
+$album->genre = $row3["Genre"];
+$album->folder = $row["Folder"];
+$album->imagefilename = $row["ImageFileName"];
+$album->isboxset = (boolean) $row["IsBoxset"];
+$album->boxsetid = (int) $row["BoxsetId"];
 
-echo $data;
+$album = 'getAlbum(' . json_encode($album, JSON_PRETTY_PRINT) . ")";
+echo $album;
 
 mysqli_close($link);
 ?>

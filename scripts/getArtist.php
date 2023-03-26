@@ -13,13 +13,13 @@ $sql = "select * from artists where id=$artistid";
 $result = mysqli_query($link, $sql);
 $row = mysqli_fetch_assoc($result);
 
-$data = 'getArtist({'
-        . 'name: "' . $row["Name"] . '", '
-        . 'letter: "' . $row["Letter"] . '", '
-        . 'albumcount: ' . $row["AlbumCount"]
-        . '})';
+$artist = (object) [];
+$artist->name = $row["Name"];
+$artist->letter = $row["Letter"];
+$artist->albumcount = (int) $row["AlbumCount"];
 
-echo $data;
+$artist = 'getArtist(' . json_encode($artist, JSON_PRETTY_PRINT) . ")";
+echo $artist;
 
 mysqli_close($link);
 ?>

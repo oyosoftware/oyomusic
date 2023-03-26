@@ -12,17 +12,17 @@ mysqli_set_charset($link, "utf8");
 $sql = "select * from artists where letter like '$letter%' and albumcount > 0 order by name";
 $result = mysqli_query($link, $sql);
 
-$data = 'getArtists([';
+$artists = array();
 
 while ($row = mysqli_fetch_assoc($result)) {
-    $data .= '{'
-            . 'id: ' . $row["Id"] . ", "
-            . 'name: "' . $row["Name"] . '"'
-            . '}, ';
+    $artist = (object) [];
+    $artist->id = (int) $row["Id"];
+    $artist->name = $row["Name"];
+    $artists[] = $artist;
 }
 
-$data .= '])';
-echo $data;
+$artists = 'getArtists(' . json_encode($artists, JSON_PRETTY_PRINT) . ")";
+echo $artists;
 
 mysqli_close($link);
 ?>

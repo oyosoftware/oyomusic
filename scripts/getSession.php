@@ -25,7 +25,14 @@ if (file_exists($joomlapath)) {
     $last = $session->get("session.timer.last") ? $session->get("session.timer.last") : 0;
     $now = $session->get("session.timer.now") ? $session->get("session.timer.now") : 0;
 
-    $data = 'getSession({username: "' . $username . '", expire: ' . $expire . ', start: ' . $start . ', last: ' . $last . ', now: ' . $now . '})';
-    echo $data;
+    $session = (object) [];
+    $session->username = $username;
+    $session->expire = $expire;
+    $session->start = $start;
+    $session->last = $last;
+    $session->now = $now;
+
+    $session = 'getSession(' . json_encode($session, JSON_PRETTY_PRINT) . ")";
+    echo $session;
 }
 ?>

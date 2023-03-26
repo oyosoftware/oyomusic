@@ -162,7 +162,7 @@ unlink($jsontempfile);
 function makeJSON($albumid) {
     global $link, $audiosource;
 
-    $album = new stdClass();
+    $album = (object) [];
 
     $sql = "select * from artists inner join albums on artists.id=artistid where albums.id=$albumid";
     $result = mysqli_query($link, $sql);
@@ -196,7 +196,7 @@ function makeJSON($albumid) {
         $result2 = mysqli_query($link, $sql);
         while ($row2 = mysqli_fetch_assoc($result2)) {
             $discno = (int) $row2["DiscNo"];
-            $album->discs[$discno] = new stdClass();
+            $album->discs[$discno] = (object) [];
             $album->discs[$discno]->discno = (int) $row2["DiscNo"];
             $album->discs[$discno]->title = $row2["Title"];
             $album->discs[$discno]->playingtime = formattime($row2["PlayingTime"]);
@@ -205,7 +205,7 @@ function makeJSON($albumid) {
             $result3 = mysqli_query($link, $sql);
             while ($row3 = mysqli_fetch_assoc($result3)) {
                 $track = (int) $row3["Track"];
-                $album->discs[$discno]->tracks[$track] = new stdClass();
+                $album->discs[$discno]->tracks[$track] = (object) [];
                 $album->discs[$discno]->tracks[$track]->track = (int) $row3["Track"];
                 $album->discs[$discno]->tracks[$track]->title = $row3["Title"];
                 $artistid = (int) $row3["ArtistId"];
@@ -231,7 +231,7 @@ function makeJSON($albumid) {
         while ($row = mysqli_fetch_assoc($result)) {
             $counter += 1;
             $albumid = (int) $row["Id"];
-            $album->albums[$counter] = new stdClass();
+            $album->albums[$counter] = (object) [];
             $album->albums[$counter]->artist = $row["Name"];
             $album->albums[$counter]->released = (int) $row["Released"];
             $album->albums[$counter]->title = $row["Title"];
@@ -265,7 +265,7 @@ function makeJSON($albumid) {
             $result2 = mysqli_query($link, $sql);
             while ($row2 = mysqli_fetch_assoc($result2)) {
                 $discno = (int) $row2["DiscNo"];
-                $album->albums[$counter]->discs[$discno] = new stdClass();
+                $album->albums[$counter]->discs[$discno] = (object) [];
                 $album->albums[$counter]->discs[$discno]->discno = (int) $row2["DiscNo"];
                 $album->albums[$counter]->discs[$discno]->title = $row2["Title"];
                 $album->albums[$counter]->discs[$discno]->playingtime = formattime($row2["PlayingTime"]);
@@ -274,7 +274,7 @@ function makeJSON($albumid) {
                 $result3 = mysqli_query($link, $sql);
                 while ($row3 = mysqli_fetch_assoc($result3)) {
                     $track = (int) $row3["Track"];
-                    $album->albums[$counter]->discs[$discno]->tracks[$track] = new stdClass();
+                    $album->albums[$counter]->discs[$discno]->tracks[$track] = (object) [];
                     $album->albums[$counter]->discs[$discno]->tracks[$track]->track = (int) $row3["Track"];
                     $album->albums[$counter]->discs[$discno]->tracks[$track]->title = $row3["Title"];
                     $artistid = (int) $row3["ArtistId"];
