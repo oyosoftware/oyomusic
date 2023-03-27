@@ -1,4 +1,6 @@
 oYoMusic 2.1
+26-03-2023  JSON output for scripts
+18-03-2023  PHP 8.0 compatibilty
 05-02-2023  Fallback on environment variables when server variables are not available
 05-02-2023  Rewritten lyric scripts
 29-01-2023  Secure input variables
