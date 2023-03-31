@@ -27,12 +27,12 @@ $row3 = mysqli_fetch_assoc($result3);
 $album = (object) [];
 $album->artistid = (int) $row["ArtistId"];
 $album->released = (int) $row["Released"];
-$album->title = $row["Title"];
+$album->title = htmlspecialchars($row["Title"]);
 $album->disccount = (int) $row["DiscCount"];
-$album->format = $row2["Format"];
+$album->format = htmlspecialchars($row2["Format"]);
 $time = formattime($row["PlayingTime"]);
 $album->playingtime = $time;
-$album->genre = $row3["Genre"];
+$album->genre = htmlspecialchars($row3["Genre"]);
 $album->folder = $row["Folder"];
 $album->imagefilename = $row["ImageFileName"];
 $album->isboxset = (boolean) $row["IsBoxset"];
@@ -40,6 +40,10 @@ $album->boxsetid = (int) $row["BoxsetId"];
 
 $album = 'getAlbum(' . json_encode($album, JSON_PRETTY_PRINT) . ")";
 echo $album;
+
+$log = fopen("json.log", "w");
+fwrite($log, $artists);
+fclose($log);
 
 mysqli_close($link);
 ?>

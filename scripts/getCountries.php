@@ -15,7 +15,7 @@ $countries = array();
 while ($row = mysqli_fetch_assoc($result)) {
     $country = (object) [];
     $country->id = (int) $row["Id"];
-    $country->country = $row["Country"];
+    $country->country = htmlspecialchars($row["Country"]);
     $countries[] = $country;
 }
 

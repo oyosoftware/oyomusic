@@ -144,8 +144,8 @@ function getLyrics() {
                 $contentgrabber->grabhtml($config['url'], $config['start_tag'], $config['end_tag']);
 
                 if ($contentgrabber->html) {
-                    $lyrics->artist = $lyricsartist;
-                    $lyrics->song = $lyricssong;
+                    $lyrics->artist = htmlspecialchars($lyricsartist);
+                    $lyrics->song = htmlspecialchars($lyricssong);
                     $lyrics->content = null;
                     $lyrics->empty = null;
                     foreach ($contentgrabber->html[1] as $html) {
@@ -154,7 +154,7 @@ function getLyrics() {
                         foreach ($document->childNodes as $content) {
                             if (!is_null($content->nodeValue)) {
                                 $html = utf8_decode($content->nodeValue);
-                                $lyrics->content .= $html . "\n";
+                                $lyrics->content .= htmlspecialchars($html) . "\n";
                             }
                         }
                     }
@@ -165,8 +165,8 @@ function getLyrics() {
                     $emptygrabber->grabhtml($config['url'], $config['start_tag'], $config['end_tag']);
 
                     if ($emptygrabber->html) {
-                        $lyrics->artist = $lyricsartist;
-                        $lyrics->song = $lyricssong;
+                        $lyrics->artist = htmlspecialchars($lyricsartist);
+                        $lyrics->song = htmlspecialchars($lyricssong);
                         $lyrics->empty = null;
                         foreach ($emptygrabber->html[1] as $html) {
                             $document = new DOMDocument();
@@ -174,7 +174,7 @@ function getLyrics() {
                             foreach ($document->childNodes as $empty) {
                                 if (!is_null($empty->nodeValue)) {
                                     $html = utf8_decode($empty->nodeValue);
-                                    $lyrics->empty .= $html . "\n";
+                                    $lyrics->empty .= htmlspecialchars($html) . "\n";
                                 }
                             }
                         }

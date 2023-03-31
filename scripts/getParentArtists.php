@@ -93,7 +93,7 @@ do {
         if ($name != $newname) {
             $parentartist = (object) [];
             $parentartist->id = (int) $row["artistid"];
-            $parentartist->name = $row["name"];
+            $parentartist->name = htmlspecialchars($row["name"]);
             $parentartist->albumcount = (int) $row["albumcount"];
             $parentartists[] = $parentartist;
         }

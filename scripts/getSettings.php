@@ -9,10 +9,10 @@ $imagepaththumbs = str_ireplace("\\", "/", $imagepaththumbs);
 
 $settings = (object) [];
 $settings->pagetitle = $pagetitle;
-$settings->headertitle = $headertitle;
-$settings->recordspage = $recordspage;
-$settings->searchrecordspage = $searchrecordspage;
-$settings->pagerange = $pagerange;
+$settings->headertitle = htmlspecialchars($headertitle);
+$settings->recordspage = (int) $recordspage;
+$settings->searchrecordspage = (int) $searchrecordspage;
+$settings->pagerange = (int) $pagerange;
 $settings->audiosource = $audiosource;
 $settings->imagepath = $imagepath;
 $settings->imagepaththumbs = $imagepaththumbs;

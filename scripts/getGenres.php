@@ -15,7 +15,7 @@ $genres = array();
 while ($row = mysqli_fetch_assoc($result)) {
     $genre = (object) [];
     $genre->id = (int) $row["Id"];
-    $genre->genre = $row["Genre"];
+    $genre->genre = htmlspecialchars($row["Genre"]);
     $genres[] = $genre;
 }
 

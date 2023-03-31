@@ -14,8 +14,8 @@ $result = mysqli_query($link, $sql);
 $row = mysqli_fetch_assoc($result);
 
 $artist = (object) [];
-$artist->name = $row["Name"];
-$artist->letter = $row["Letter"];
+$artist->name = htmlspecialchars($row["Name"]);
+$artist->letter = htmlspecialchars($row["Letter"]);
 $artist->albumcount = (int) $row["AlbumCount"];
 
 $artist = 'getArtist(' . json_encode($artist, JSON_PRETTY_PRINT) . ")";

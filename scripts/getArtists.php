@@ -17,7 +17,7 @@ $artists = array();
 while ($row = mysqli_fetch_assoc($result)) {
     $artist = (object) [];
     $artist->id = (int) $row["Id"];
-    $artist->name = $row["Name"];
+    $artist->name = htmlspecialchars($row["Name"]);
     $artists[] = $artist;
 }
 

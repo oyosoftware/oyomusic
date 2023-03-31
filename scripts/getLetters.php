@@ -14,7 +14,7 @@ $letters = array();
 
 while ($row = mysqli_fetch_assoc($result)) {
     $letter = (object) [];
-    $letter->letter = $row["letter"];
+    $letter->letter = htmlspecialchars($row["letter"]);
     $letters[] = $letter;
 }
 
