@@ -368,17 +368,17 @@
                         }
 
                         var discno = disc.discno;
-                        Object.values(album.discs[discno].tracks).forEach(function (trackx) {
+                        Object.values(album.discs[discno].tracks).forEach(function (track) {
                             i += 1;
-                            var track = trackx.track;
-                            var title = trackx.title;
-                            var artist = trackx.artist;
-                            var playingtime = trackx.playingtime;
-                            var filename = trackx.filename;
+                            var tracknumber = track.track;
+                            var title = track.title;
+                            var artist = track.artist;
+                            var playingtime = track.playingtime;
+                            var filename = track.filename;
                             if (boxsetindex) {
                                 var filename = encodeURIComponent(album.folder) + "/" + filename;
                             }
-                            var fileexists = trackx.fileexists;
+                            var fileexists = track.fileexists;
 
                             songs[i] = filename;
                             tags[i] = artist + " - " + title + " (" + albumtitle + ")";
@@ -389,7 +389,7 @@
 
                             var cell = document.createElement("td");
                             $(cell).attr("class", "fieldvalue track");
-                            $(cell).html(track + ".");
+                            $(cell).html(tracknumber + ".");
                             $(row).append(cell);
 
                             var cell = document.createElement("td");
@@ -440,8 +440,6 @@
                             $(cell).html(playingtime);
                             $(row).append(cell);
                         });
-
-
                     });
 
                     var colspan = 2;
