@@ -329,6 +329,15 @@
                     $(".title").css("font-weight", "normal");
                 }
 
+                function htmlUnescape(str) {
+                    return str
+                            .replace(/&quot;/g, '"')
+                            .replace(/&amp;/g, '&')
+                            .replace(/&apos;/g, "'")
+                            .replace(/&lt;/g, '<')
+                            .replace(/&gt;/g, '>');
+                }
+
                 try {
                     var boxsetalbumsFrame = parent.frames["boxsetalbums"];
                     if (boxsetalbumsFrame) {
@@ -596,14 +605,16 @@
                                                             }
                                                         }
                                                         var a = document.createElement("a");
-                                                        var href = "lyrics.html?artist=" + encodeURIComponent(name2) + "&song=" + encodeURIComponent(title) + "&showform=false";
+                                                        var escapename2 = htmlUnescape(name2);
+                                                        var escapetitle = htmlUnescape(title);
+                                                        var href = "lyrics.html?artist=" + encodeURIComponent(escapename2) + "&song=" + encodeURIComponent(escapetitle) + "&showform=false";
                                                         $(a).prop("href", href);
                                                         $(a).html(title);
                                                         $(cell).append(a);
 
                                                         var div1 = document.createElement("div");
                                                         $(div1).attr("class", "hint");
-                                                        $(div1).html("Song Lyrics " + title);
+                                                        $(div1).html("Song Lyrics " + escapetitle);
                                                         $(a).append(div1);
                                                         var div2 = document.createElement("div");
                                                         $(div2).attr("class", "hintafter1");

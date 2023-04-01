@@ -13,6 +13,7 @@
                 box-sizing          : border-box;
             }
             body {
+                display             : none;
                 font-family         : Arial, Verdana, Helvetica, sans-serif;
                 font-size           : 10pt;
                 margin              : 0px;
@@ -147,10 +148,30 @@
 
                     $(document).prop("title", artistsong);
                     $(".backlink").prop("href", href);
-                    $(".headertitle").html(artistsong);
+                    var escapeartistsong = htmlEscape(artistsong);
+                    $(".headertitle").html(escapeartistsong);
                     $("input[name=artist]").val(artist);
                     $("input[name=song]").val(song);
                 }
+
+                function htmlEscape(str) {
+                    return str
+                            .replace(/"/g, '&quot')
+                            .replace(/&/g, '&amp')
+                            .replace(/'/g, '&apos')
+                            .replace(/</g, '&lt')
+                            .replace(/>/g, '&gt');
+                }
+
+                function htmlUnescape(str) {
+                    return str
+                            .replace(/&quot;/g, '"')
+                            .replace(/&amp;/g, '&')
+                            .replace(/&apos;/g, "'")
+                            .replace(/&lt;/g, '<')
+                            .replace(/&gt;/g, '>');
+                }
+
 
                 $(".search").keydown(function (event) {
                     if (event.which === 13) {
@@ -175,13 +196,15 @@
                         dataType: "jsonp",
                         jsonpCallback: "getLyrics",
                         success: function (lyrics) {
+                            $("body").css("display", "block");
                             if (lyrics.found || lyrics.empty) {
                                 var artistsong = lyrics.artist;
                                 if (lyrics.artist && lyrics.song) {
                                     artistsong += " - ";
                                 }
                                 artistsong += lyrics.song;
-                                $(document).prop("title", artistsong);
+                                var unescapeartistsong = htmlUnescape(artistsong);
+                                $(document).prop("title", unescapeartistsong);
                                 $(".headertitle").html(artistsong);
                             }
                             if (lyrics.found && showform || !lyrics.found) {
