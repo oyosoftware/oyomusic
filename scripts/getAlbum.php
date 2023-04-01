@@ -41,9 +41,5 @@ $album->boxsetid = (int) $row["BoxsetId"];
 $album = 'getAlbum(' . json_encode($album, JSON_PRETTY_PRINT) . ")";
 echo $album;
 
-$log = fopen("json.log", "w");
-fwrite($log, $artists);
-fclose($log);
-
 mysqli_close($link);
 ?>
