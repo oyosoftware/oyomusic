@@ -12,7 +12,7 @@ if (!$ovrrecordspage) {
 }
 
 require_once('../settings.inc');
-require_once('../helpers/functions.php');
+require_once('../include/date_time.php');
 
 $link = mysqli_connect($server, $username, $password, $database);
 mysqli_set_charset($link, "utf8");
@@ -29,14 +29,9 @@ if ($isboxset == 0) {
 }
 $result = mysqli_query($link, $sql);
 
-$data = 'getAlbums([';
+$albums = array();
 
 while ($row = mysqli_fetch_assoc($result)) {
-    $title = $row["Title"];
-    $title = str_replace('\\', '\\\\', $title);
-    $title = str_replace('"', '\"', $title);
-    $time = formattime($row["PlayingTime"]);
-
     $formatid = $row["FormatId"];
     $sql = "select * from formats where id='$formatid'";
     $result2 = mysqli_query($link, $sql);
@@ -47,21 +42,22 @@ while ($row = mysqli_fetch_assoc($result)) {
     $result3 = mysqli_query($link, $sql);
     $row3 = mysqli_fetch_assoc($result3);
 
-    $data .= '{'
-            . 'albumid: ' . $row["Id"] . ', '
-            . 'released: ' . $row["Released"] . ', '
-            . 'title: "' . $title . '", '
-            . 'disccount: ' . $row["DiscCount"] . ', '
-            . 'format: "' . $row2["Format"] . '", '
-            . 'playingtime: "' . $time . '", '
-            . 'genre: "' . $row3["Genre"] . '", '
-            . 'imagefilename: "' . $row["ImageFileName"] . '", '
-            . 'isboxset: ' . $row["IsBoxset"]
-            . '}, ';
+    $album = (object) [];
+    $album->albumid = (int) $row["Id"];
+    $album->released = (int) $row["Released"];
+    $album->title = htmlspecialchars($row["Title"]);
+    $album->disccount = (int) $row["DiscCount"];
+    $album->format = htmlspecialchars($row2["Format"]);
+    $time = formattime($row["PlayingTime"]);
+    $album->playingtime = $time;
+    $album->genre = htmlspecialchars($row3["Genre"]);
+    $album->imagefilename = $row["ImageFileName"];
+    $album->isboxset = (int) $row["IsBoxset"];
+    $albums[] = $album;
 }
 
-$data .= '])';
-echo $data;
+$albums = 'getAlbums(' . json_encode($albums, JSON_PRETTY_PRINT) . ")";
+echo $albums;
 
 mysqli_close($link);
 ?>

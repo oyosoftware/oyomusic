@@ -5,7 +5,7 @@ error_reporting(E_ERROR);
 $albumid = filter_input(INPUT_GET, "albumid");
 
 require_once('../settings.inc');
-require_once('../helpers/functions.php');
+require_once('../include/date_time.php');
 
 $link = mysqli_connect($server, $username, $password, $database);
 mysqli_set_charset($link, "utf8");
@@ -13,11 +13,6 @@ mysqli_set_charset($link, "utf8");
 $sql = "select * from albums where id=$albumid";
 $result = mysqli_query($link, $sql);
 $row = mysqli_fetch_assoc($result);
-
-$time = formattime($row["PlayingTime"]);
-$title = $row["Title"];
-$title = str_replace('\\', '\\\\', $title);
-$title = str_replace('"', '\"', $title);
 
 $formatid = $row["FormatId"];
 $sql = "select * from formats where id='$formatid'";
@@ -29,21 +24,22 @@ $sql = "select * from genres where id='$genreid'";
 $result3 = mysqli_query($link, $sql);
 $row3 = mysqli_fetch_assoc($result3);
 
-$data = 'getAlbum({'
-        . 'artistid: ' . $row["ArtistId"] . ', '
-        . 'released: ' . $row["Released"] . ', '
-        . 'title: "' . $title . '", '
-        . 'disccount: ' . $row["DiscCount"] . ', '
-        . 'format: "' . $row2["Format"] . '", '
-        . 'playingtime: "' . $time . '", '
-        . 'genre: "' . $row3["Genre"] . '", '
-        . 'folder: "' . $row["Folder"] . '", '
-        . 'imagefilename: "' . $row["ImageFileName"] . '", '
-        . 'isboxset: ' . $row["IsBoxset"] . ', '
-        . 'boxsetid: ' . $row["BoxsetId"]
-        . '})';
+$album = (object) [];
+$album->artistid = (int) $row["ArtistId"];
+$album->released = (int) $row["Released"];
+$album->title = htmlspecialchars($row["Title"]);
+$album->disccount = (int) $row["DiscCount"];
+$album->format = htmlspecialchars($row2["Format"]);
+$time = formattime($row["PlayingTime"]);
+$album->playingtime = $time;
+$album->genre = htmlspecialchars($row3["Genre"]);
+$album->folder = $row["Folder"];
+$album->imagefilename = $row["ImageFileName"];
+$album->isboxset = (int) $row["IsBoxset"];
+$album->boxsetid = (int) $row["BoxsetId"];
 
-echo $data;
+$album = 'getAlbum(' . json_encode($album, JSON_PRETTY_PRINT) . ")";
+echo $album;
 
 mysqli_close($link);
 ?>

@@ -5,7 +5,7 @@ error_reporting(E_ERROR);
 $albumid = filter_input(INPUT_GET, "albumid");
 
 require_once('../settings.inc');
-require_once('../helpers/functions.php');
+require_once('../include/date_time.php');
 
 $link = mysqli_connect($server, $username, $password, $database);
 mysqli_set_charset($link, "utf8");
@@ -66,29 +66,29 @@ $zipfile = "$name - $zipfilefolder.zip";
 $zipfile = utf8_decode($zipfile);
 
 $zipfolder = mb_substr($folder, $pos + 1) . "/";
-$filename = "../plugins/oyoplayer/oyoplayer.js";
+$filename = "../include/oyoplayer.js";
 $zipfilename = "include/oyoplayer.js";
 $zip->addFile($filename, $zipfolder . $zipfilename);
-$filename = "../plugins/oyoplayer/oyoplayer.css";
+$filename = "../include/oyoplayer.css";
 $zipfilename = "include/oyoplayer.css";
 $zip->addFile($filename, $zipfolder . $zipfilename);
-$filename = "../plugins/oyographics/oyographics.js";
+$filename = "../include/oyographics.js";
 $zipfilename = "include/oyographics.js";
 $zip->addFile($filename, $zipfolder . $zipfilename);
-$filename = "../plugins/oyomirror/oyomirror.js";
+$filename = "../include/oyomirror.js";
 $zipfilename = "include/oyomirror.js";
 $zip->addFile($filename, $zipfolder . $zipfilename);
 $filename = "album.html";
 $zipfilename = "album.html";
 $zip->addFile($filename, $zipfolder . $zipfilename);
 if ($isboxset == true) {
-    $filename = "../plugins/oyonavigator/oyonavigator.js";
+    $filename = "../include/oyonavigator.js";
     $zipfilename = "include/oyonavigator.js";
     $zip->addFile($filename, $zipfolder . $zipfilename);
-    $filename = "../plugins/oyotableheader/oyotableheader.js";
+    $filename = "../include/oyotableheader.js";
     $zipfilename = "include/oyotableheader.js";
     $zip->addFile($filename, $zipfolder . $zipfilename);
-    $filename = "../plugins/oyopaddingbox/oyopaddingbox.js";
+    $filename = "../include/oyopaddingbox.js";
     $zipfilename = "include/oyopaddingbox.js";
     $zip->addFile($filename, $zipfolder . $zipfilename);
     $filename = "albumlist.html";
@@ -162,22 +162,22 @@ unlink($jsontempfile);
 function makeJSON($albumid) {
     global $link, $audiosource;
 
-    $album = new stdClass();
+    $album = (object) [];
 
     $sql = "select * from artists inner join albums on artists.id=artistid where albums.id=$albumid";
     $result = mysqli_query($link, $sql);
     $row = mysqli_fetch_assoc($result);
 
-    $album->artist = $row["Name"];
+    $album->artist = htmlspecialchars($row["Name"]);
     $album->released = (int) $row["Released"];
-    $album->title = $row["Title"];
+    $album->title = htmlspecialchars($row["Title"]);
     $album->disccount = (int) $row["DiscCount"];
 
     $formatid = (int) $row["FormatId"];
     $sql = "select * from formats where id='$formatid'";
     $result2 = mysqli_query($link, $sql);
     $row2 = mysqli_fetch_assoc($result2);
-    $album->format = $row2["Format"];
+    $album->format = htmlspecialchars($row2["Format"]);
 
     $album->playingtime = formattime($row["PlayingTime"]);
 
@@ -185,10 +185,10 @@ function makeJSON($albumid) {
     $sql = "select * from genres where id='$genreid'";
     $result2 = mysqli_query($link, $sql);
     $row2 = mysqli_fetch_assoc($result2);
-    $album->genre = $row2["Genre"];
+    $album->genre = htmlspecialchars($row2["Genre"]);
 
     $album->imagefilename = "Folder.jpg";
-    $album->isboxset = (boolean) $row["IsBoxset"];
+    $album->isboxset = (int) $row["IsBoxset"];
 
     if (!$album->isboxset) {
         $album->discs = array();
@@ -196,23 +196,23 @@ function makeJSON($albumid) {
         $result2 = mysqli_query($link, $sql);
         while ($row2 = mysqli_fetch_assoc($result2)) {
             $discno = (int) $row2["DiscNo"];
-            $album->discs[$discno] = new stdClass();
+            $album->discs[$discno] = (object) [];
             $album->discs[$discno]->discno = (int) $row2["DiscNo"];
-            $album->discs[$discno]->title = $row2["Title"];
+            $album->discs[$discno]->title = htmlspecialchars($row2["Title"]);
             $album->discs[$discno]->playingtime = formattime($row2["PlayingTime"]);
             $album->discs[$discno]->tracks = array();
             $sql = "select * from tracks where albumid=$albumid and discno=$discno order by albumid, discno, track";
             $result3 = mysqli_query($link, $sql);
             while ($row3 = mysqli_fetch_assoc($result3)) {
                 $track = (int) $row3["Track"];
-                $album->discs[$discno]->tracks[$track] = new stdClass();
+                $album->discs[$discno]->tracks[$track] = (object) [];
                 $album->discs[$discno]->tracks[$track]->track = (int) $row3["Track"];
-                $album->discs[$discno]->tracks[$track]->title = $row3["Title"];
+                $album->discs[$discno]->tracks[$track]->title = htmlspecialchars($row3["Title"]);
                 $artistid = (int) $row3["ArtistId"];
                 $sql = "select * from artists where id='$artistid'";
                 $result4 = mysqli_query($link, $sql);
                 $row4 = mysqli_fetch_assoc($result4);
-                $album->discs[$discno]->tracks[$track]->artist = $row4["Name"];
+                $album->discs[$discno]->tracks[$track]->artist = htmlspecialchars($row4["Name"]);
                 $album->discs[$discno]->tracks[$track]->playingtime = formattime($row3["PlayingTime"]);
                 $album->discs[$discno]->tracks[$track]->filename = $row3["FileName"];
                 $file = $audiosource . $row["Folder"] . '/' . $row3["FileName"];
@@ -231,17 +231,17 @@ function makeJSON($albumid) {
         while ($row = mysqli_fetch_assoc($result)) {
             $counter += 1;
             $albumid = (int) $row["Id"];
-            $album->albums[$counter] = new stdClass();
-            $album->albums[$counter]->artist = $row["Name"];
+            $album->albums[$counter] = (object) [];
+            $album->albums[$counter]->artist = htmlspecialchars($row["Name"]);
             $album->albums[$counter]->released = (int) $row["Released"];
-            $album->albums[$counter]->title = $row["Title"];
+            $album->albums[$counter]->title = htmlspecialchars($row["Title"]);
             $album->albums[$counter]->disccount = (int) $row["DiscCount"];
 
             $formatid = (int) $row["FormatId"];
             $sql = "select * from formats where id='$formatid'";
             $result2 = mysqli_query($link, $sql);
             $row2 = mysqli_fetch_assoc($result2);
-            $album->albums[$counter]->format = $row2["Format"];
+            $album->albums[$counter]->format = htmlspecialchars($row2["Format"]);
 
             $album->albums[$counter]->playingtime = formattime($row["PlayingTime"]);
 
@@ -249,39 +249,38 @@ function makeJSON($albumid) {
             $sql = "select * from genres where id='$genreid'";
             $result2 = mysqli_query($link, $sql);
             $row2 = mysqli_fetch_assoc($result2);
-            $album->albums[$counter]->genre = $row2["Genre"];
+            $album->albums[$counter]->genre = htmlspecialchars($row2["Genre"]);
 
             $folder = $row["Folder"];
-            $len = mb_strlen($folder);
             $pos = mb_strrpos($folder, "/");
             $folder = mb_substr($folder, $pos + 1);
             $album->albums[$counter]->folder = $folder;
 
             $album->albums[$counter]->imagefilename = "Folder.jpg";
-            $album->albums[$counter]->isboxset = (boolean) $row["IsBoxset"];
+            $album->albums[$counter]->isboxset = (int) $row["IsBoxset"];
             $album->albums[$counter]->boxsetindex = (int) $row["BoxsetIndex"];
             $album->albums[$counter]->discs = array();
             $sql = "select * from discs where albumid=$albumid order by albumid, discno";
             $result2 = mysqli_query($link, $sql);
             while ($row2 = mysqli_fetch_assoc($result2)) {
                 $discno = (int) $row2["DiscNo"];
-                $album->albums[$counter]->discs[$discno] = new stdClass();
+                $album->albums[$counter]->discs[$discno] = (object) [];
                 $album->albums[$counter]->discs[$discno]->discno = (int) $row2["DiscNo"];
-                $album->albums[$counter]->discs[$discno]->title = $row2["Title"];
+                $album->albums[$counter]->discs[$discno]->title = htmlspecialchars($row2["Title"]);
                 $album->albums[$counter]->discs[$discno]->playingtime = formattime($row2["PlayingTime"]);
                 $album->albums[$counter]->discs[$discno]->tracks = array();
                 $sql = "select * from tracks where albumid=$albumid and discno=$discno order by albumid, discno, track";
                 $result3 = mysqli_query($link, $sql);
                 while ($row3 = mysqli_fetch_assoc($result3)) {
                     $track = (int) $row3["Track"];
-                    $album->albums[$counter]->discs[$discno]->tracks[$track] = new stdClass();
+                    $album->albums[$counter]->discs[$discno]->tracks[$track] = (object) [];
                     $album->albums[$counter]->discs[$discno]->tracks[$track]->track = (int) $row3["Track"];
-                    $album->albums[$counter]->discs[$discno]->tracks[$track]->title = $row3["Title"];
+                    $album->albums[$counter]->discs[$discno]->tracks[$track]->title = htmlspecialchars($row3["Title"]);
                     $artistid = (int) $row3["ArtistId"];
                     $sql = "select * from artists where id='$artistid'";
                     $result4 = mysqli_query($link, $sql);
                     $row4 = mysqli_fetch_assoc($result4);
-                    $album->albums[$counter]->discs[$discno]->tracks[$track]->artist = $row4["Name"];
+                    $album->albums[$counter]->discs[$discno]->tracks[$track]->artist = htmlspecialchars($row4["Name"]);
                     $album->albums[$counter]->discs[$discno]->tracks[$track]->playingtime = formattime($row3["PlayingTime"]);
                     $album->albums[$counter]->discs[$discno]->tracks[$track]->filename = $row3["FileName"];
                     $file = $audiosource . "/" . $row["Folder"] . "/" . $row3["FileName"];
