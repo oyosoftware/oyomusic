@@ -208,7 +208,7 @@ function clean_files() {
             $logtext = "delete album " . $albumartist . " - " . $released . " - " . $albumtitle . "\r\n";
             fwrite($log, $logtext . "\r\n");
             if ($servername !== null) {
-                $response = array('logtext' => $logtext);
+                $response = array('logtext' => htmlspecialchars($logtext));
                 $json = json_encode($response);
                 echo $json . ",\n";
             }
@@ -273,7 +273,7 @@ function clean_files() {
             $logtext = "delete boxset " . $boxsetartist . " - " . $released . " - " . $boxsettitle;
             fwrite($log, $logtext . "\r\n");
             if ($servername !== null) {
-                $response = array('logtext' => $logtext);
+                $response = array('logtext' => htmlspecialchars($logtext));
                 $json = json_encode($response);
                 echo $json . ",\n";
             }
@@ -339,7 +339,7 @@ function clean_files() {
             $logtext = "delete artist " . $name;
             fwrite($log, $logtext . "\r\n");
             if ($servername !== null) {
-                $response = array('logtext' => $logtext);
+                $response = array('logtext' => htmlspecialchars($logtext));
                 $json = json_encode($response);
                 echo $json . ",\n";
             }
@@ -361,7 +361,7 @@ $documentroot = $argv[2];
 $link = mysqli_connect($server, $username, $password, $database);
 
 $base = "";
-//$base = "/Populair/DEF/Foucault, Jeffrey";
+//$base = "/Populair/GHI/It Bites";
 
 $audiosource = str_ireplace("\\", "/", $audiosource);
 $base = str_ireplace("\\", "/", $base);

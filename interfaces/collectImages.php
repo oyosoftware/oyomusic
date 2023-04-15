@@ -124,7 +124,7 @@ function collect_images($dir) {
         // album
 
         if ($servername !== null) {
-            $response = array('title' => $albumtitle);
+            $response = array('title' => htmlspecialchars($albumtitle));
             $json = json_encode($response);
             echo $json . ",\n";
         }
@@ -209,7 +209,7 @@ $documentroot = $argv[2];
 $link = mysqli_connect($server, $username, $password, $database);
 
 $base = "";
-//$base = "/Populair/MNO/Of Montreal";
+//$base = "/Populair/DEF/David & David";
 
 $audiosource = str_ireplace("\\", "/", $audiosource);
 $base = str_ireplace("\\", "/", $base);

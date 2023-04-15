@@ -68,7 +68,7 @@ function calculate_totals() {
             if ($servername === null) {
                 echo $message . "\r\n";
             } else {
-                $response = array('message' => $message);
+                $response = array('message' => htmlspecialchars($message));
                 $json = json_encode($response);
                 echo $json . ",\n";
             }
@@ -133,7 +133,7 @@ function calculate_totals() {
             if ($servername === null) {
                 echo $message . "\r\n";
             } else {
-                $response = array('message' => $message);
+                $response = array('message' => htmlspecialchars($message));
                 $json = json_encode($response);
                 echo $json . ",\n";
             }
@@ -198,7 +198,7 @@ function calculate_totals() {
             if ($servername === null) {
                 echo $message . "\r\n";
             } else {
-                $response = array('message' => $message);
+                $response = array('message' => htmlspecialchars($message));
                 $json = json_encode($response);
                 echo $json . ",\n";
             }
@@ -259,7 +259,7 @@ function calculate_totals() {
             if ($servername === null) {
                 echo $message . "\r\n";
             } else {
-                $response = array('message' => $message);
+                $response = array('message' => htmlspecialchars($message));
                 $json = json_encode($response);
                 echo $json . ",\n";
             }
@@ -300,7 +300,7 @@ $jobend = time();
 $seconds = $jobend - $jobstart;
 $duration = formattime($seconds);
 
-$message = "job is ready " . date('H:i:s') . " and took $duration";
+$message = "job is ready and took $duration";
 if ($servername === null) {
     echo $message . "\r\n";
 } else {

@@ -58,7 +58,7 @@ function read_files($dir) {
                     $tags = $getID3->analyze($pathname);
 
                     if ($tags["tags"] === null) {
-                        $message = "file name may be too long for " . $pathname;
+                        $message = "file name may be too long for $pathname";
                         if ($servername !== null) {
                             $response = array('message' => $message);
                             $json = json_encode($response);
@@ -80,10 +80,10 @@ function read_files($dir) {
                         $tracktitle = $tags["tags"]["id3v2"]["title"][0];
                         if ($servername !== null) {
                             if ($firsttag == true) {
-                                $response = array('name' => $albumartist);
+                                $response = array('name' => htmlspecialchars($albumartist));
                                 $json = json_encode($response);
                                 echo $json . ",\n";
-                                $response = array('title' => $albumtitle);
+                                $response = array('title' => htmlspecialchars($albumtitle));
                                 $json = json_encode($response);
                                 echo $json . ",\n";
                             }
@@ -95,21 +95,21 @@ function read_files($dir) {
                         if ($onlyPrivateFrames == false) {
                             foreach ($tags["tags"]["id3v2"] as $key => $value) {
                                 if ($key <> "title"
-                                        and $key <> "artist"
-                                        and $key <> "band"
-                                        and $key <> "album"
-                                        and $key <> "track_number"
-                                        and $key <> "part_of_a_set"
-                                        and $key <> "year"
-                                        and $key <> "genre"
-                                        and $key <> "length"
-                                        and $key <> "text") {
+                                    and $key <> "artist"
+                                    and $key <> "band"
+                                    and $key <> "album"
+                                    and $key <> "track_number"
+                                    and $key <> "part_of_a_set"
+                                    and $key <> "year"
+                                    and $key <> "genre"
+                                    and $key <> "length"
+                                    and $key <> "text") {
                                     If ($firsttag == true) {
                                         $message = "$albumartist - $released - $albumtitle - $discno-$track - $tracktitle";
                                         if ($servername === null) {
                                             echo $message . "\r\n";
                                         } else {
-                                            $response = array('message' => $message);
+                                            $response = array('message' => htmlspecialchars($message));
                                             $json = json_encode($response);
                                             echo $json . ",\n";
                                         }
@@ -122,7 +122,7 @@ function read_files($dir) {
                                             echo $message . "\r\n";
                                         } else {
                                             $message = "&nbsp;&nbsp;&nbsp;&nbsp;" . $message;
-                                            $response = array('message' => $message);
+                                            $response = array('message' => htmlspecialchars($message));
                                             $json = json_encode($response, JSON_INVALID_UTF8_IGNORE);
                                             echo $json . ",\n";
                                         }
@@ -131,15 +131,15 @@ function read_files($dir) {
                                 if ($key == "text") {
                                     foreach ($tags["tags"]["id3v2"]["text"] as $key3 => $value3) {
                                         if ($key3 <> "Album Artist"
-                                                and $key3 <> "Tool Name"
-                                                and $key3 <> "Tool Version"
-                                                and $key3 <> "HDCDx") {
+                                            and $key3 <> "Tool Name"
+                                            and $key3 <> "Tool Version"
+                                            and $key3 <> "HDCDx") {
                                             if ($firsttag == true) {
                                                 $message = "$albumartist - $released - $albumtitle - $discno-$track - $tracktitle";
                                                 if ($servername === null) {
                                                     echo $message . "\r\n";
                                                 } else {
-                                                    $response = array('message' => $message);
+                                                    $response = array('message' => htmlspecialchars($message));
                                                     $json = json_encode($response);
                                                     echo $json . ",\n";
                                                 }
@@ -151,7 +151,7 @@ function read_files($dir) {
                                                 echo "$message" . "\r\n";
                                             } else {
                                                 $message = "&nbsp;&nbsp;&nbsp;&nbsp;" . $message;
-                                                $response = array('message' => $message);
+                                                $response = array('message' => htmlspecialchars($message));
                                                 $json = json_encode($response, JSON_INVALID_UTF8_IGNORE);
                                                 echo $json . ",\n";
                                             }
@@ -169,7 +169,7 @@ function read_files($dir) {
                                 if ($servername === null) {
                                     echo $message . "\r\n";
                                 } else {
-                                    $response = array('message' => $message);
+                                    $response = array('message' => htmlspecialchars($message));
                                     $json = json_encode($response);
                                     echo $json . ",\n";
                                 }
@@ -263,7 +263,7 @@ if (file_exists($path)) {
     $seconds = $jobend - $jobstart;
     $duration = formattime($seconds);
 
-    $message = "job is ready " . date('H:i:s') . " and took $duration";
+    $message = "job is ready and took $duration";
     if ($servername === null) {
         echo "$message" . "\r\n";
     } else {

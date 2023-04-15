@@ -56,7 +56,9 @@ function read_files($dir) {
             } else {
                 $ext = $item->getExtension();
                 if ($ext == 'mp3' or $ext == 'wav' or $ext == 'flac' or $ext == 'ogg') {
+
                     $counter++;
+
                     if (($counter % 10000) == 0) {
                         $message = "counter: $counter " . date('H:i:s');
                         if ($servername === null) {
@@ -93,7 +95,7 @@ function read_files($dir) {
                     $tag = $getID3->analyze($pathname);
 
                     if ($tag["tags"] === null) {
-                        $logtext = "file name may be too long for " . $pathname;
+                        $logtext = "file name may be too long for $pathname";
                         fwrite($log, $logtext . "\r\n");
                         if ($servername !== null) {
                             $response = array('logtext' => $logtext);
@@ -144,7 +146,7 @@ function read_files($dir) {
                         foreach ($id3warnings as $value) {
                             if ($value and strpos($value, "ID3v1") == false) {
                                 if ($tracklogged == false and $logged == false) {
-                                    $logtext = "warning: file may be corrupt " . $folder . "/" . $filename;
+                                    $logtext = "warning: file may be corrupt $folder/$filename";
                                     fwrite($log, $logtext . "\r\n");
                                     if ($servername !== null) {
                                         $response = array('logtext' => $logtext);
@@ -188,7 +190,7 @@ function read_files($dir) {
 
                     if ($genre == "") {
                         $warning = true;
-                        $logtext = "warning: genre is empty for track " . $folder . "/" . $filename;
+                        $logtext = "warning: genre is empty for track $folder/$filename";
                         fwrite($log, $logtext . "\r\n");
                         if ($servername !== null) {
                             $response = array('logtext' => $logtext);
@@ -200,7 +202,7 @@ function read_files($dir) {
 
                     if (!is_numeric($released)) {
                         $error = true;
-                        $logtext = "error: released is not numeric for track " . $folder . "/" . $filename;
+                        $logtext = "error: released is not numeric for track $folder/$filename";
                         fwrite($log, $logtext . "\r\n");
                         if ($servername !== null) {
                             $response = array('logtext' => $logtext);
@@ -227,7 +229,7 @@ function read_files($dir) {
 
                     if (!is_numeric($discno)) {
                         $error = true;
-                        $logtext = "error: discno is not numeric for track " . $folder . "/" . $filename;
+                        $logtext = "error: discno is not numeric for track $folder/$filename";
                         fwrite($log, $logtext . "\r\n");
                         if ($servername !== null) {
                             $response = array('logtext' => $logtext);
@@ -239,7 +241,7 @@ function read_files($dir) {
 
                     if ($artist == "") {
                         $warning = true;
-                        $logtext = "warning: artist is empty for track " . $folder . "/" . $filename;
+                        $logtext = "warning: artist is empty for track $folder/$filename";
                         fwrite($log, $logtext . "\r\n");
                         if ($servername !== null) {
                             $response = array('logtext' => $logtext);
@@ -251,7 +253,7 @@ function read_files($dir) {
 
                     if (!is_numeric($track)) {
                         $warning = true;
-                        $logtext = "warning: track " . $track . " is not (completely) numeric for track " . $folder . "/" . $filename;
+                        $logtext = "warning: track $track is not (completely) numeric for track $folder/$filename";
                         fwrite($log, $logtext . "\r\n");
                         if ($servername !== null) {
                             $response = array('logtext' => $logtext);
@@ -262,7 +264,7 @@ function read_files($dir) {
                         $track = mb_substr($track, 0, $pos);
                         if (!is_numeric($track)) {
                             $error = true;
-                            $logtext = "error: track is still not numeric for track " . $folder . "/" . $filename;
+                            $logtext = "error: track is still not numeric for track $folder/$filename";
                             fwrite($log, $logtext . "\r\n");
                             if ($servername !== null) {
                                 $response = array('logtext' => $logtext);
@@ -275,7 +277,7 @@ function read_files($dir) {
 
                     if ($tracktitle == "") {
                         $warning = true;
-                        $logtext = "warning: tracktitle is empty for track " . $folder . "/" . $filename;
+                        $logtext = "warning: tracktitle is empty for track $folder/$filename";
                         fwrite($log, $logtext . "\r\n");
                         if ($servername !== null) {
                             $response = array('logtext' => $logtext);
@@ -290,11 +292,12 @@ function read_files($dir) {
                         continue;
                     }
 
+                    // Write to database
                     // album artists
 
                     if ($itercounter == 1) {
                         if ($servername !== null) {
-                            $response = array('name' => $albumartist);
+                            $response = array('name' => htmlspecialchars($albumartist));
                             $json = json_encode($response);
                             echo $json . ",\n";
                         }
@@ -310,7 +313,7 @@ function read_files($dir) {
                             if ($servername === null) {
                                 echo $message . "\r\n";
                             } else {
-                                $response = array('message' => $message);
+                                $response = array('message' => htmlspecialchars($message));
                                 $json = json_encode($response);
                                 echo $json . ",\n";
                             }
@@ -320,11 +323,11 @@ function read_files($dir) {
                             if ($row["Name"] != $albumartist or $row["Letter"] != $albumartistletter) {
                                 $sqlu = "update artists set name = '$escalbumartist', letter = '$escalbumartistletter' where id = $albumartistid";
                                 mysqli_query($link, $sqlu);
-                                $message = "update $albumartist";
+                                $message = "update $albumartistletter - $albumartist";
                                 if ($servername === null) {
                                     echo $message . "\r\n";
                                 } else {
-                                    $response = array('message' => $message);
+                                    $response = array('message' => htmlspecialchars($message));
                                     $json = json_encode($response);
                                     echo $json . ",\n";
                                 }
@@ -369,7 +372,7 @@ function read_files($dir) {
 
                     if ($itercounter == 1) {
                         if ($servername !== null) {
-                            $response = array('title' => $albumtitle);
+                            $response = array('title' => htmlspecialchars($albumtitle));
                             $json = json_encode($response);
                             echo $json . ",\n";
                         }
@@ -392,7 +395,7 @@ function read_files($dir) {
                             if ($servername === null) {
                                 echo $message . "\r\n";
                             } else {
-                                $response = array('message' => $message);
+                                $response = array('message' => htmlspecialchars($message));
                                 $json = json_encode($response);
                                 echo $json . ",\n";
                             }
@@ -400,7 +403,7 @@ function read_files($dir) {
                             $row = mysqli_fetch_assoc($result);
                             $albumid = $row["Id"];
                             if ($row["ArtistId"] != $albumartistid or $row["Released"] != $released or $row["Title"] != $albumtitle or
-                                    $row["GenreId"] != $genreid) {
+                                $row["GenreId"] != $genreid) {
                                 $sqlu = "update albums set artistid = $albumartistid, released = $released, title = '$escalbumtitle',
                                                            genreid = $genreid, lastmodified = $lastmodified
                                          where id = $albumid";
@@ -409,7 +412,7 @@ function read_files($dir) {
                                 if ($servername === null) {
                                     echo $message . "\r\n";
                                 } else {
-                                    $response = array('message' => $message);
+                                    $response = array('message' => htmlspecialchars($message));
                                     $json = json_encode($response);
                                     echo $json . ",\n";
                                 }
@@ -421,7 +424,7 @@ function read_files($dir) {
                                 if ($servername === null) {
                                     echo $message . "\r\n";
                                 } else {
-                                    $response = array('message' => $message);
+                                    $response = array('message' => htmlspecialchars($message));
                                     $json = json_encode($response);
                                     echo $json . ",\n";
                                 }
@@ -444,7 +447,7 @@ function read_files($dir) {
 
                     $escartist = mysqli_real_escape_string($link, $artist);
                     $escartistletter = mysqli_real_escape_string($link, $artistletter);
-                    if ($artist <> '') {
+                    if ($artist <> "") {
                         $sql = "select * from artists where name = '$escartist'";
                         $result = mysqli_query($link, $sql);
                         if (mysqli_affected_rows($link) == 0) {
@@ -457,11 +460,11 @@ function read_files($dir) {
                             if ($row["Name"] != $artist or $row["Letter"] != $artistletter) {
                                 $sqlu = "update artists set name = '$escartist', letter = '$escartistletter' where id = $artistid";
                                 mysqli_query($link, $sqlu);
-                                $message = "update $artist";
+                                $message = "update $artistletter - $artist";
                                 if ($servername === null) {
                                     echo $message . "\r\n";
                                 } else {
-                                    $response = array('message' => $message);
+                                    $response = array('message' => htmlspecialchars($message));
                                     $json = json_encode($response);
                                     echo $json . ",\n";
                                 }
@@ -485,21 +488,19 @@ function read_files($dir) {
                     $result = mysqli_query($link, $sql);
                     $affectedrows = mysqli_affected_rows($link);
 
+                    if ($affectedrows > 0) {
+                        $row = mysqli_fetch_assoc($result);
+                    }
+
                     $keyexists = false;
-                    if ($affectedrows == 0) {
+                    if ($affectedrows == 0 or
+                        $affectedrows > 0 and
+                        ($row["AlbumId"] != $albumid or $row["DiscNo"] != $discno or $row["Track"] != $track)) {
                         $sql = "select * from albums inner join tracks on id=albumid where albumid=$albumid and discno=$discno and track=$track";
                         $result2 = mysqli_query($link, $sql);
                         if (mysqli_affected_rows($link) > 0) {
                             $keyexists = true;
-                        }
-                    } else {
-                        $row = mysqli_fetch_assoc($result);
-                        if ($row["AlbumId"] != $albumid or $row["DiscNo"] != $discno or $row["Track"] != $track) {
-                            $sql = "select * from albums inner join tracks on id=albumid where albumid=$albumid and discno=$discno and track=$track";
-                            $result2 = mysqli_query($link, $sql);
-                            if (mysqli_affected_rows($link) > 0) {
-                                $keyexists = true;
-                            }
+                            $logged = true;
                         }
                     }
 
@@ -509,51 +510,59 @@ function read_files($dir) {
                         $oldfilename = $row2["FileName"];
                         $sqld = "delete from tracks where albumid=$albumid and discno=$discno and track=$track";
                         mysqli_query($link, $sqld);
-                        $counter = $counter - 1;
-                        $records = $records - 1;
-                        if ($servername !== null) {
-                            $response = array('records' => $records);
-                            $json = json_encode($response);
-                            echo $json . ",\n";
-                        }
-                        $logtext = "warning: track index already exists and will be deleted for " . $oldfolder . "/" . $oldfilename;
+                        $logtext = "warning: track index already exists and will be deleted for $oldfolder/$oldfilename";
                         fwrite($log, $logtext . "\r\n");
                         if ($servername !== null) {
                             $response = array('logtext' => $logtext);
                             $json = json_encode($response);
                             echo $json . ",\n";
                         }
-                        $logged = true;
+                        $counter = $counter - 1;
+                        if ($servername !== null) {
+                            $response = array('counter' => $counter);
+                            $json = json_encode($response);
+                            echo $json . ",\n";
+                        }
+                        $records = $records - 1;
+                        if ($servername !== null) {
+                            $response = array('records' => $records);
+                            $json = json_encode($response);
+                            echo $json . ",\n";
+                        }
                     }
 
                     if ($affectedrows == 0) {
                         $sqli = "insert into tracks (albumid, discno, track, title, artistid, playingtime, audiobitrate, audiobitratemode, filename, lastmodified)
                                  values ($albumid, $discno, $track, '$esctracktitle', $artistid, $playingtime, $bitrate, '$bitratemode', '$escfilename', $lastmodified)";
                         mysqli_query($link, $sqli);
-                        $counter = $counter + 1;
-                        $records = $records + 1;
-                        if ($servername !== null) {
-                            $response = array('records' => $records);
-                            $json = json_encode($response);
-                            echo $json . ",\n";
-                        }
                         if ($keyexists) {
-                            $logtext = "warning: new track index is inserted for:" . $folder . "/" . $filename;
+                            $logtext = "warning: new track index is inserted for $folder/$filename";
                             fwrite($log, $logtext . "\r\n");
                             if ($servername !== null) {
                                 $response = array('logtext' => $logtext);
                                 $json = json_encode($response);
                                 echo $json . ",\n";
                             }
-                            $logged = true;
+                            $counter = $counter + 1;
+                            if ($servername !== null) {
+                                $response = array('counter' => $counter);
+                                $json = json_encode($response);
+                                echo $json . ",\n";
+                            }
+                        }
+                        $records = $records + 1;
+                        if ($servername !== null) {
+                            $response = array('records' => $records);
+                            $json = json_encode($response);
+                            echo $json . ",\n";
                         }
                     } else {
                         $oldalbumid = $row["AlbumId"];
                         $olddiscno = $row["DiscNo"];
                         $oldtrack = $row["Track"];
                         if ($row["AlbumId"] != $albumid or $row["DiscNo"] != $discno or $row["Track"] != $track or
-                                $row["Title"] != $tracktitle or $row["ArtistId"] != $artistid or $row["PlayingTime"] != $playingtime or
-                                $row["AudioBitrate"] != $bitrate or $row["AudioBitrateMode"] != $bitratemode) {
+                            $row["Title"] != $tracktitle or $row["ArtistId"] != $artistid or $row["PlayingTime"] != $playingtime or
+                            $row["AudioBitrate"] != $bitrate or $row["AudioBitrateMode"] != $bitratemode) {
                             $sqlu = "update tracks set albumid = $albumid, discno = $discno, track = $track,
                                                        title = '$esctracktitle', artistid = $artistid, playingtime = $playingtime,
                                                        audiobitrate = $bitrate, audiobitratemode = '$bitratemode', lastmodified = $lastmodified
@@ -563,7 +572,7 @@ function read_files($dir) {
                             if ($servername === null) {
                                 echo $message . "\r\n";
                             } else {
-                                $response = array('message' => $message);
+                                $response = array('message' => htmlspecialchars($message));
                                 $json = json_encode($response);
                                 echo $json . ",\n";
                             }
@@ -572,11 +581,11 @@ function read_files($dir) {
                             $sqlu = "update tracks set filename = '$escfilename', lastmodified = $lastmodified
                                      where albumid = $albumid and discno = $discno and track = $track";
                             mysqli_query($link, $sqlu);
-                            $message = "update file $albumartist - $released - $albumtitle - $discno-$track - $tracktitle";
+                            $message = "update filename $albumartist - $released - $albumtitle - $discno-$track - $tracktitle";
                             if ($servername === null) {
                                 echo $message . "\r\n";
                             } else {
-                                $response = array('message' => $message);
+                                $response = array('message' => htmlspecialchars($message));
                                 $json = json_encode($response);
                                 echo $json . ",\n";
                             }
@@ -597,7 +606,7 @@ $link = mysqli_connect($server, $username, $password, $database);
 $getID3 = new getID3;
 
 $base = "";
-//$base = "/Populair/MNO/Of Montreal";
+//$base = "/Populair/GHI";
 
 $audiosource = str_ireplace("\\", "/", $audiosource);
 $base = str_ireplace("\\", "/", $base);
