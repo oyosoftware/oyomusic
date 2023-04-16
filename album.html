@@ -331,11 +331,11 @@
 
                 function htmlUnescape(str) {
                     return str
-                            .replace(/&quot;/g, '"')
-                            .replace(/&amp;/g, '&')
-                            .replace(/&apos;/g, "'")
-                            .replace(/&lt;/g, '<')
-                            .replace(/&gt;/g, '>');
+                        .replace(/&quot;/g, '"')
+                        .replace(/&amp;/g, '&')
+                        .replace(/&apos;/g, "'")
+                        .replace(/&lt;/g, '<')
+                        .replace(/&gt;/g, '>');
                 }
 
                 try {
@@ -504,7 +504,6 @@
                                 $(".albumplayingtime").html(playingtime);
 
                                 if (isboxset == false) {
-
                                     url = "scripts/getDiscs.php";
                                     $.ajax({
                                         url: url,
@@ -684,42 +683,42 @@
                         $(".albumimagemirror").animate({"height": "127px"}, 1000);
                         var transform;
                         $(".oyomirror").animate(
-                                {scale: 2, translateX: 125, translateY: 15.625},
-                                {step: function (value, fx) {
-                                        if (fx.prop === "scale") {
-                                            fx.start = 1;
-                                            transform = "scale(" + value + ")";
-                                        }
-                                        if (fx.prop === "translateX") {
-                                            transform += " translateX(" + value + "px)";
-                                        }
-                                        if (fx.prop === "translateY") {
-                                            transform += "translateY(" + value + "px)";
-                                            $(".oyomirror").css("transform", transform);
-                                        }
-                                    },
-                                    duration: 1000
-                                });
+                            {scale: 2, translateX: 125, translateY: 15.625},
+                            {step: function (value, fx) {
+                                    if (fx.prop === "scale") {
+                                        fx.start = 1;
+                                        transform = "scale(" + value + ")";
+                                    }
+                                    if (fx.prop === "translateX") {
+                                        transform += " translateX(" + value + "px)";
+                                    }
+                                    if (fx.prop === "translateY") {
+                                        transform += "translateY(" + value + "px)";
+                                        $(".oyomirror").css("transform", transform);
+                                    }
+                                },
+                                duration: 1000
+                            });
                     } else {
                         $(".image").animate({"width": "250px"}, 1000);
                         $(".albumimagemirror").animate({"height": "63.5px"}, 1000);
                         $(".oyomirror").animate(
-                                {scale: 1, translateX: 0, translateY: 0},
-                                {step: function (value, fx) {
-                                        if (fx.prop === "scale") {
-                                            fx.start = 2;
-                                            transform = "scale(" + value + ")";
-                                        }
-                                        if (fx.prop === "translateX") {
-                                            transform += " translateX(" + value + "px)";
-                                        }
-                                        if (fx.prop === "translateY") {
-                                            transform += " translateY(" + value + "px)";
-                                            $(".oyomirror").css("transform", transform);
-                                        }
-                                    },
-                                    duration: 1000
-                                });
+                            {scale: 1, translateX: 0, translateY: 0},
+                            {step: function (value, fx) {
+                                    if (fx.prop === "scale") {
+                                        fx.start = 2;
+                                        transform = "scale(" + value + ")";
+                                    }
+                                    if (fx.prop === "translateX") {
+                                        transform += " translateX(" + value + "px)";
+                                    }
+                                    if (fx.prop === "translateY") {
+                                        transform += " translateY(" + value + "px)";
+                                        $(".oyomirror").css("transform", transform);
+                                    }
+                                },
+                                duration: 1000
+                            });
                     }
                 });
 
