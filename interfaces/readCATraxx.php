@@ -278,8 +278,17 @@ function read_files($dir) {
                 }
                 $escboxsetartist = mysqli_real_escape_string($link, $boxsetartist);
                 $escboxsetartistletter = mysqli_real_escape_string($link, $boxsetartistletter);
-                $sql = "select * from artists where name = '$escboxsetartist'";
+                $sql = "select * from artists where name like '$escboxsetartist%'";
                 $result = mysqli_query($link, $sql);
+                while ($row2 = mysqli_fetch_assoc($result)) {
+                    $subboxsetartist = mb_substr($row2["Name"], 0, 100);
+                    if ($boxsetartist === $subboxsetartist) {
+                        $boxsetartistid = $row2["Id"];
+                        $compboxsetartist = mb_substr($row2["Name"], 0, 100);
+                        $compboxsetartistletter = $row2["Letter"];
+                        $compboxsetcountryid = $row2["CountryId"];
+                    }
+                }
                 if (mysqli_affected_rows($link) == 0) {
                     $sqli = "insert into artists (name, letter, countryid) values ('$escboxsetartist', '$escboxsetartistletter', $boxsetcountryid)";
                     mysqli_query($link, $sqli);
@@ -293,9 +302,7 @@ function read_files($dir) {
                         echo $json . ",\n";
                     }
                 } else {
-                    $row2 = mysqli_fetch_assoc($result);
-                    $boxsetartistid = $row2["Id"];
-                    if ($row2["Name"] != $boxsetartist or $row2["Letter"] != $boxsetartistletter or $row2["CountryId"] != $boxsetcountryid) {
+                    if ($compboxsetartist != $boxsetartist or $compboxsetartistletter != $boxsetartistletter or $compboxsetcountryid != $boxsetcountryid) {
                         $sqlu = "update artists set name = '$escboxsetartist', letter = '$escboxsetartistletter', countryid = $boxsetcountryid where id = $boxsetartistid";
                         mysqli_query($link, $sqlu);
                         $message = "update $boxsetartistletter - $boxsetartist - $boxsetcountry";
@@ -443,8 +450,17 @@ function read_files($dir) {
             }
             $escalbumartist = mysqli_real_escape_string($link, $albumartist);
             $escalbumartistletter = mysqli_real_escape_string($link, $albumartistletter);
-            $sql = "select * from artists where name = '$escalbumartist'";
+            $sql = "select * from artists where name like '$escalbumartist%'";
             $result = mysqli_query($link, $sql);
+            while ($row2 = mysqli_fetch_assoc($result)) {
+                $subalbumartist = mb_substr($row2["Name"], 0, 100);
+                if ($albumartist === $subalbumartist) {
+                    $albumartistid = $row2["Id"];
+                    $compalbumartist = mb_substr($row2["Name"], 0, 100);
+                    $compalbumartistletter = $row2["Letter"];
+                    $compcountryid = $row2["CountryId"];
+                }
+            }
             if (mysqli_affected_rows($link) == 0) {
                 $sqli = "insert into artists (name, letter, countryid) values ('$escalbumartist', '$escalbumartistletter', $countryid)";
                 mysqli_query($link, $sqli);
@@ -458,9 +474,7 @@ function read_files($dir) {
                     echo $json . ",\n";
                 }
             } else {
-                $row2 = mysqli_fetch_assoc($result);
-                $albumartistid = $row2["Id"];
-                if ($row2["Name"] != $albumartist or $row2["Letter"] != $albumartistletter or $row2["CountryId"] != $countryid) {
+                if ($compalbumartist != $albumartist or $compalbumartistletter != $albumartistletter or $compcountryid != $countryid) {
                     $sqlu = "update artists set name = '$escalbumartist', letter = '$escalbumartistletter', countryid = $countryid where id = $albumartistid";
                     mysqli_query($link, $sqlu);
                     $message = "update $albumartistletter - $albumartist - $country";
@@ -475,7 +489,7 @@ function read_files($dir) {
             }
         }
 
-        // formats
+        // format
 
         if ($folder != $folderprev) {
             $escformat = mysqli_real_escape_string($link, $format);
@@ -494,7 +508,7 @@ function read_files($dir) {
             }
         }
 
-        // genres
+        // genre
 
         if ($folder != $folderprev) {
             $escgenre = mysqli_real_escape_string($link, $genre);
@@ -513,7 +527,7 @@ function read_files($dir) {
             }
         }
 
-        // albums
+        // album
 
         if ($folder != $folderprev) {
             if ($servername !== null) {
@@ -598,7 +612,7 @@ function read_files($dir) {
             }
         }
 
-        // discs
+        // disc
 
         if ($folder != $folderprev or $discno != $discnoprev) {
             $escdisctitle = mysqli_real_escape_string($link, $disctitle);
@@ -624,21 +638,27 @@ function read_files($dir) {
             }
         }
 
-        // artists
+        // artist
 
         $escartist = mysqli_real_escape_string($link, $artist);
         $escartistletter = mysqli_real_escape_string($link, $artistletter);
         if ($artist <> '') {
-            $sql = "select * from artists where name = '$escartist'";
+            $sql = "select * from artists where name like '$escartist%'";
             $result = mysqli_query($link, $sql);
+            while ($row2 = mysqli_fetch_assoc($result)) {
+                $subartist = mb_substr($row2["Name"], 0, 100);
+                if ($artist === $subartist) {
+                    $artistid = $row2["Id"];
+                    $compartist = mb_substr($row2["Name"], 0, 100);
+                    $compartistletter = $row2["Letter"];
+                }
+            }
             if (mysqli_affected_rows($link) == 0) {
                 $sqli = "insert into artists (name, letter, countryid) values ('$escartist', '$escartistletter', -1)";
                 mysqli_query($link, $sqli);
                 $artistid = mysqli_insert_id($link);
             } else {
-                $row2 = mysqli_fetch_assoc($result);
-                $artistid = $row2["Id"];
-                if ($row2["Name"] != $artist or $row2["Letter"] != $artistletter) {
+                if ($compartist != $artist or $compartistletter != $artistletter) {
                     $sqlu = "update artists set name = '$escartist', letter = '$escartistletter' where id = $artistid";
                     mysqli_query($link, $sqlu);
                     $message = "update $artistletter - $artist";
@@ -655,7 +675,7 @@ function read_files($dir) {
             $artistid = -1;
         }
 
-        // tracks
+        // track
 
         if ($servername !== null) {
             $response = array('pathname' => "$folder/$filename");
@@ -723,12 +743,13 @@ $link = mysqli_connect($server, $username, $password, $database);
 $dsn = "odbc:driver={Microsoft Access Driver (*.mdb, *.accdb)};dbq=" . $catraxxdatabasepath . ";charset=utf16le";
 $pdolink = new PDO($dsn);
 
-$dir = $catraxxaudiosource;
-//$dir = $dir . "\Populair\WXYZ";
+$base = "";
+//$base = "\Populair\TUV";
+$path = $catraxxaudiosource . $base;
 
 $jobstart = time();
 
-$records = get_records($dir);
+$records = get_records($path);
 if ($servername !== null) {
     $response = array('records' => $records);
     $json = json_encode($response);
@@ -740,7 +761,7 @@ if ($servername === null) {
     echo "$message" . "\r\n";
 }
 
-$message = "job begins for audiosource $dir " . date('H:i:s');
+$message = "job begins for audiosource $path " . date('H:i:s');
 if ($servername === null) {
     echo "$message" . "\r\n";
 } else {
@@ -750,7 +771,7 @@ if ($servername === null) {
 }
 
 $counter = 0;
-read_files($dir);
+read_files($path);
 
 $message = "counter: $counter " . date('H:i:s');
 if ($servername === null) {
