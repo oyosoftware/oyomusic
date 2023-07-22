@@ -260,10 +260,6 @@
                 var songs = [];
                 var tags = [];
                 var playeralbum = "";
-                window.delay = 0;
-                window.now = 0;
-
-                albumsFrame = parent.parent.frames["albums"];
 
                 try {
                     artistindexFrame = parent.frames["artistindex"] || parent.parent.frames["artistindex"];
@@ -370,7 +366,7 @@
                             $(".downloading").css("display", "none");
                         }
                     });
-                })
+                });
 
                 url = "scripts/getSession.php";
                 $.ajax({
@@ -380,11 +376,7 @@
                     success: function (session) {
                         var username = session.username;
                         var expire = 1000 * session.expire;
-                        now = Date.now();
-                        if (username != "") {
-                            if (albumsFrame) {
-                                albumsFrame.delay = now - albumsFrame.now;
-                            }
+                        if (Boolean(username)) {
                             url = "scripts/hasFiles.php";
                             $.ajax({
                                 url: url,
@@ -394,12 +386,7 @@
                                         $(".download").css("display", "inline");
                                         setTimeout(timer, expire);
                                         function timer() {
-                                            if (delay > 0) {
-                                                setTimeout(timer, delay);
-                                                delay = 0;
-                                            } else {
-                                                $(".download").css("display", "none");
-                                            }
+                                            $(".download").css("display", "none");
                                         }
                                     }
                                 }
