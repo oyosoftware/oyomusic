@@ -181,7 +181,7 @@ function oyoPlayer() {
         function ended() {
             stateEnded = true;
             if (trackDuration !== Infinity) {
-                player.audio.src = "";
+                $(player.audio).attr("src", "");
                 player.skipNext();
             } else {
                 player.audio.load();
@@ -191,23 +191,14 @@ function oyoPlayer() {
 
         function error() {
             errors[counter] = true;
-            if ($(player.audio).attr("src") !== "") {
-                if (active) {
-                    player.skipNext();
-                } else {
-                    var errorcount = 0;
-                    for (var i = 1; i < errors.length; i++) {
-                        //if (errors[i] === true) {
-                        errorcount += 1;
-                        //}
-                    }
-                    if (errorcount < songs.length - 1) {
-                        player.skipNext();
-                    } else {
-                        counter = 1;
-                        $(player.audio).attr("src", "");
-                    }
+            var errorcount = 0;
+            for (var i = 1; i < errors.length; i++) {
+                if (errors[i] === true) {
+                    errorcount += 1;
                 }
+            }
+            if (errorcount < songs.length - 1) {
+                player.skipNext();
             }
         }
 
@@ -237,11 +228,11 @@ function oyoPlayer() {
 
         if (scroll) {
             var keyframes = "@keyframes keyframes" + playerIndex + " { \n  " +
-                    "0% { left: " + centerPosition + "px; }\n  " +
-                    "50% { left: " + -1 * tagWidth + "px; }\n  " +
-                    "50.001% { left: " + tagBoxWidth + "px; }\n  " +
-                    "100% { left: " + centerPosition + "px; }\n" +
-                    "}";
+                "0% { left: " + centerPosition + "px; }\n  " +
+                "50% { left: " + -1 * tagWidth + "px; }\n  " +
+                "50.001% { left: " + tagBoxWidth + "px; }\n  " +
+                "100% { left: " + centerPosition + "px; }\n" +
+                "}";
             var rules = style.sheet.rules;
             var index = playerIndex - 1;
             if (rules[index]) {
@@ -407,8 +398,8 @@ function oyoPlayer() {
 
             switch (true) {
                 case protocol === "file:" ||
-                        (protocol !== "file:" &&
-                                source.substring(0, 2) !== "//" && source.substring(1, 3) !== ":/" && source.substring(0, 7) !== "file://") :
+                    (protocol !== "file:" &&
+                        source.substring(0, 2) !== "//" && source.substring(1, 3) !== ":/" && source.substring(0, 7) !== "file://") :
                     $(player.audio).attr("src", source);
                     break;
                 default:
