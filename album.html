@@ -62,10 +62,14 @@
             td {
                 padding             : 3px 5px 3px 5px;
             }
+            .player {
+            }
             .back {
                 font-size           : 13.33px;
                 height              : 25px;
                 vertical-align      : top;
+            }
+            .backlink {
             }
             .wrapper {
                 padding-right       : 8px;
@@ -278,7 +282,7 @@
                 $(audio).on("error", error);
 
                 function startPlayer(event) {
-                    if (artistindexFrame && artistindexFrame.playeralbum != undefined && playeralbum != artistindexFrame.playeralbum) {
+                    if (artistindexFrame && artistindexFrame.playeralbum !== undefined && playeralbum !== artistindexFrame.playeralbum) {
                         audioPlayer.clearPlaylist();
                         for (i = 1; i < songs.length; i++) {
                             audioPlayer.addToPlaylist(songs[i], tags[i]);
@@ -299,7 +303,7 @@
                     var track = audioPlayer.getCurrentTrack();
                     var song = audioPlayer.getCurrentSong();
                     $(".title").css("font-weight", "normal");
-                    if (songs[track] == song) {
+                    if (songs[track] === song) {
                         var playpauseid = "#playpause" + track;
                         var playPause = $(playpauseid)[0];
                         playPause.changeState(1);
@@ -414,12 +418,12 @@
                         var isboxset = album.isboxset;
                         var boxsetid = album.boxsetid;
 
-                        if (isboxset == true) {
-                            $(".oyoplayer").css("display", "none");
+                        if (Boolean(isboxset)) {
+                            $(audioPlayer).css("display", "none");
                         }
 
                         if (pageno > 0) {
-                            if (boxsetid == -1) {
+                            if (boxsetid === -1) {
                                 var href = "albumlist.html?artistid=" + artistid + "&isboxset=0" + "&boxsetid=0" + "&pageno=" + pageno;
                             } else {
                                 var href = "albumlist.html?artistid=" + artistid + "&isboxset=1" + "&boxsetid=" + boxsetid + "&pageno=" + pageno;
@@ -464,18 +468,18 @@
                                 $(document).prop("title", headertitle);
                                 $(".headertitle").html(headertitle);
 
-                                if (isboxset == true) {
+                                if (Boolean(isboxset)) {
                                     $(".tracksdiv").css("display", "none");
                                 }
 
-                                if (isboxset == false) {
+                                if (!Boolean(isboxset)) {
                                     $(".boxsetalbums").css("display", "none");
                                 } else {
                                     var src = "albumlist.html?artistid=" + artistid + "&isboxset=" + isboxset + "&boxsetid=" + albumid + "&pageno=1";
                                     $(".boxsetalbums").attr("src", src);
                                 }
 
-                                if (boxsetid == -1) {
+                                if (boxsetid === -1) {
                                     var amazon = "http://www.amazon.co.uk/s/ref=nb_ss_gw/?url=search-alias%3Dmusic&field-keywords=" + encodeURIComponent(name) + "+" + encodeURIComponent(albumtitle) + "&tag=ca0cc-20/ca0cc-20";
                                     $(".amazon").prop("href", amazon);
                                     var allmusic = "http://www.allmusic.com/search/album/" + encodeURIComponent(albumtitle);
@@ -490,7 +494,7 @@
                                 $(".genre").html(genre);
                                 $(".albumplayingtime").html(playingtime);
 
-                                if (isboxset == false) {
+                                if (!Boolean(isboxset)) {
                                     url = "scripts/getDiscs.php";
                                     $.ajax({
                                         url: url,
@@ -586,7 +590,7 @@
                                                         $(row).append(cell);
                                                         if (audioPlayer.state.playing) {
                                                             var song = audioPlayer.getCurrentSong();
-                                                            if (songs[i + 1] == song) {
+                                                            if (songs[i + 1] === song) {
                                                                 $(cell).css("font-weight", "bold");
                                                             }
                                                         }
