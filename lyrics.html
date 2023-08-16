@@ -13,7 +13,6 @@
                 box-sizing          : border-box;
             }
             body {
-                display             : none;
                 font-family         : Arial, Verdana, Helvetica, sans-serif;
                 font-size           : 10pt;
                 margin              : 0px;
@@ -57,6 +56,7 @@
                 width               : 100%;
             }
             .header {
+                display:none;
                 background-color    : #B3CEB3;
                 border              : 1px solid black;
                 width               : 100%;
@@ -156,20 +156,20 @@
 
                 function htmlEscape(str) {
                     return str
-                            .replace(/"/g, '&quot')
-                            .replace(/&/g, '&amp')
-                            .replace(/'/g, '&apos')
-                            .replace(/</g, '&lt')
-                            .replace(/>/g, '&gt');
+                        .replace(/"/g, '&quot')
+                        .replace(/&/g, '&amp')
+                        .replace(/'/g, '&apos')
+                        .replace(/</g, '&lt')
+                        .replace(/>/g, '&gt');
                 }
 
                 function htmlUnescape(str) {
                     return str
-                            .replace(/&quot;/g, '"')
-                            .replace(/&amp;/g, '&')
-                            .replace(/&apos;/g, "'")
-                            .replace(/&lt;/g, '<')
-                            .replace(/&gt;/g, '>');
+                        .replace(/&quot;/g, '"')
+                        .replace(/&amp;/g, '&')
+                        .replace(/&apos;/g, "'")
+                        .replace(/&lt;/g, '<')
+                        .replace(/&gt;/g, '>');
                 }
 
 
@@ -196,7 +196,7 @@
                         dataType: "jsonp",
                         jsonpCallback: "getLyrics",
                         success: function (lyrics) {
-                            $("body").css("display", "block");
+                            $(".header").css("display", "block");
                             if (lyrics.found || lyrics.empty) {
                                 var artistsong = lyrics.artist;
                                 if (lyrics.artist && lyrics.song) {
