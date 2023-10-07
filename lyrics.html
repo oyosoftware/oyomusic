@@ -56,12 +56,11 @@
                 width               : 100%;
             }
             .header {
-                display:none;
+                display             : none;
                 background-color    : #B3CEB3;
                 border              : 1px solid black;
                 width               : 100%;
                 min-width           : 254px;
-                height              : 40px;
                 border-spacing      : 1px;
             }
             .headertitle {
@@ -156,11 +155,11 @@
 
                 function htmlEscape(str) {
                     return str
-                        .replace(/"/g, '&quot')
-                        .replace(/&/g, '&amp')
-                        .replace(/'/g, '&apos')
-                        .replace(/</g, '&lt')
-                        .replace(/>/g, '&gt');
+                        .replace(/"/g, '&quot;')
+                        .replace(/&/g, '&amp;')
+                        .replace(/'/g, '&apos;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;');
                 }
 
                 function htmlUnescape(str) {
