@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 
-<!--  oyomusic 2.1
+<!--  oyomusic 2.2
   tested with jQuery 3.4.0
   http://www.oyoweb.nl
 
-  © 2015-2022 oYoSoftware
+  © 2015-2024 oYoSoftware
   MIT License
 
   oyomusic is a library for showing your own musical content-->
@@ -265,13 +265,13 @@
                 var tags = [];
                 var playeralbum = "";
 
-                try {
-                    artistindexFrame = parent.frames["artistindex"] || parent.parent.frames["artistindex"];
-                    audioPlayer = artistindexFrame.audioPlayer;
-                } catch (error) {
-                    audioPlayer = new oyoPlayer("player");
+                var artistIndex = parent.frames["artistindex"] || parent.parent.frames["artistindex"];
+                audioPlayer = $(artistIndex).find(".oyoplayer")[0];
+
+				if (!Boolean(audioPlayer)) {
+					audioPlayer = new oyoPlayer("player");
                     $(".player").append(audioPlayer);
-                }
+				}
 
                 audio = audioPlayer.audio;
                 audioPlayer.setNotification("Push Play to start");
@@ -282,14 +282,14 @@
                 $(audio).on("error", error);
 
                 function startPlayer(event) {
-                    if (artistindexFrame && artistindexFrame.playeralbum !== undefined && playeralbum !== artistindexFrame.playeralbum) {
+                    if (artistIndex && artistIndex.playeralbum !== undefined && playeralbum !== artistIndex.playeralbum) {
                         audioPlayer.clearPlaylist();
                         for (i = 1; i < songs.length; i++) {
                             audioPlayer.addToPlaylist(songs[i], tags[i]);
                         }
                     }
-                    if (artistindexFrame) {
-                        artistindexFrame.playeralbum = playeralbum;
+                    if (artistIndex) {
+                        artistIndex.playeralbum = playeralbum;
                     }
 
                     var index = event.data.index;
@@ -339,9 +339,8 @@
                 }
 
                 try {
-                    var boxsetalbumsFrame = parent.frames["boxsetalbums"];
+					var boxsetalbumsFrame = parent.frames["boxsetalbums"];
                     if (boxsetalbumsFrame) {
-                        $("body").css("overflow-y", "hidden");
                         var documentObserver = new ResizeObserver(function () {
                             var height = boxsetalbumsFrame.document.body.scrollHeight + 10;
                             $(boxsetalbumsFrame.frameElement).height(height);
@@ -419,7 +418,10 @@
                         var boxsetid = album.boxsetid;
 
                         if (Boolean(isboxset)) {
-                            $(audioPlayer).css("display", "none");
+							audioPlayer = $(document).find(".oyoplayer")[0];
+							if (Boolean(audioPlayer)) {
+								$(audioPlayer).css("display", "none");
+							}
                         }
 
                         if (pageno > 0) {

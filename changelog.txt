@@ -1,4 +1,5 @@
 oYoMusic 2.1
+27-07-2024  Integration of index page with artist index page
 31-03-2023  Output for HTML special characters
 26-03-2023  JSON output for scripts
 18-03-2023  PHP 8.0 compatibilty

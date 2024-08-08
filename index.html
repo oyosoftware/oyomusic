@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 
-<!--  oyomusic 2.1
+<!--  oyomusic 2.2
   tested with jQuery 3.4.0
   http://www.oyoweb.nl
 
-  © 2015-2022 oYoSoftware
+  © 2015-2024 oYoSoftware
   MIT License
 
   oyomusic is a library for showing your own musical content-->
@@ -17,7 +17,11 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
+        <script src="include/oyoplayer.js"></script>
+        <link rel="stylesheet" href="include/oyoplayer.css">
+		<script src="include/oyographics.js"></script>
 
+		<!-- Style of main source -->
         <style>
             * {
                 box-sizing          : border-box;
@@ -43,26 +47,148 @@
                 border              : 2px solid black;
                 border-radius       : 5px;
             }
-            iframe {
+            iframe, .frame {
                 position            : fixed;
                 border              : 1px solid black;
                 margin              : 0px;
             }
             #artistindex {
                 width               : 100%;
-                height              : 120px;
+                height              : 110px;
                 top                 : 1px;
+				overflow			: auto;
+                padding             : 8px;
+                padding-bottom      : 0px;
             }
             #artists {
                 width               : 200px;
-                height              : calc(100% - 122px);
-                top                 : 121px;
+                height              : calc(100% - 102px);
+                top                 : 111px;
                 left                : 1px;
             }
             #albums {
                 width               : 100%;
-                height              : calc(100% - 122px);
-                top                 : 121px;
+                height              : calc(100% - 102px);
+                top                 : 111px;
+            }
+        </style>
+
+		<!-- Style of artist index -->
+        <style>
+            a:link {
+                text-decoration     : none;
+            }
+            a:visited {
+                text-decoration     : none;
+            }
+            a:hover {
+                text-decoration     : underline;
+            }
+            .wrapper {
+                width               : 100%;
+                white-space         : nowrap;
+            }
+            .player {
+                display             : inline-block;
+                height              : 90px;
+                min-width           : 500px;
+                max-width           : 500px;
+            }
+            .oyoplayer {
+                position            : relative;
+            }
+            img {
+                height              : 100%;
+                border-radius       : 8px;
+                box-shadow          : 8px 8px 16px black;
+                margin-bottom       : 8px;
+            }
+            .titlerecord {
+                display             : inline-block;
+                width               : calc(100% - 808px);
+                vertical-align      : top;
+                padding-left        : 16px;
+                padding-right       : 16px;
+            }
+            .title {
+                font-size           : 20pt;
+                font-weight         : bold;
+                text-align          : center;
+                white-space         : nowrap;
+            }
+            .record {
+                font-size           : 14pt;
+                font-weight         : bold;
+                text-align          : center;
+                white-space         : nowrap;
+            }
+            .maindiv {
+                width               : 100%;
+                background-color    : white;
+            }
+            .form {
+                width               : 100%;
+                padding             : 8px;
+                padding-left        : 8px;
+                margin              : 0px;
+                white-space         : nowrap;
+            }
+            .form * {
+                vertical-align      : middle;
+            }
+            .search {
+                width               : 50%;
+                height              : 20px;
+                min-width           : 200px;
+                margin-right        : 8px;
+                border              : 1px solid grey;
+                box-shadow          : 4px 4px 8px rgba(0, 0, 0, 0.5);
+            }
+            .search[data-changed="changed"] {
+                font-weight         : bold;
+            }
+            select {
+                margin-right        : 8px;
+                color               : grey;
+                height              : 20px;
+                box-shadow          : 4px 4px 8px rgba(0, 0, 0, 0.5);
+            }
+            select[data-changed="changed"] {
+                font-weight         : bold;
+                color               : black;
+            }
+            select option {
+                font-weight         : bold;
+                color               : black;
+            }
+            .country {
+                width               : 127px;
+            }
+            .year {
+                width               : 92px;
+            }
+            .genre {
+                width               : 137px;
+            }
+            a {
+                position            : relative;
+            }
+            .submit {
+                width               : 80px;
+                height              : 20px;
+                margin-left         : 32px;
+                font-size           : 10pt;
+                font-weight         : bold;
+                box-shadow          : 4px 4px 8px rgba(0, 0, 0, 0.5);
+            }
+            .version {
+                display             : inline-block;
+                font-size           : 8pt;
+                font-weight         : bold;
+                text-align          : right;
+                vertical-align      : top;
+                min-width           : 300px;
+                white-space         : nowrap;
             }
         </style>
 
@@ -91,6 +217,157 @@
                     success: function (settings) {
                         var pagetitle = settings.pagetitle;
                         $(document).prop("title", pagetitle);
+                        var headertitle = settings.headertitle;
+                        $(".title").html(headertitle);
+                    }
+                });
+
+                audioPlayer = new oyoPlayer("player");
+                $(".player").append(audioPlayer);
+                document.body.scrollLeft = 0;
+
+                var url = "scripts/getLetters.php";
+                $.ajax({
+                    url: url,
+                    dataType: "jsonp",
+                    jsonpCallback: "getLetters",
+                    success: function (letters) {
+                        for (var i = 0; i < letters.length; i++) {
+                            var letter = letters[i].letter;
+                            var uriletter = encodeURIComponent(letter);
+
+                            var a = document.createElement("a");
+                            var href = "artistlist.html?letter=" + uriletter;
+                            $(a).attr("href", href);
+                            $(a).attr("target", "artists");
+                            $(a).html(letter);
+
+                            var visited = window.localStorage.getItem(href);
+                            if (visited === 'visited') {
+                                $(a).css("color", "green");
+                            } else {
+                                $(a).css("color", "blue");
+                            }
+                            $(".record").append(a);
+                            $(".record").append(" ");
+                        }
+
+                        $(".record > a").click(function (event) {
+                            $(event.currentTarget).css("color", "green");
+                            var href = $(event.currentTarget).attr("href");
+                            window.localStorage.setItem(href, "visited");
+                        });
+						window.frames['artists'].location.href = $("a").attr("href");
+                    }
+                });
+
+                var note = new oyoNote();
+                note.changeFillColor("black");
+                $(note).css("position", "relative");
+                $(note).css("top", "-2px");
+                $(note).css("left", "-2px");
+                $(".submit").prepend(note);
+
+                $(".search").on("keyup", function (event) {
+                    if (event.target.value !== "") {
+                        $(".search").attr("data-changed", "changed");
+                    } else {
+                        $(".search").attr("data-changed", "");
+                    }
+                });
+
+                var url = "scripts/getCountries.php";
+                $.ajax({
+                    url: url,
+                    dataType: "jsonp",
+                    jsonpCallback: "getCountries",
+                    success: function (countries) {
+                        for (var i = 0; i < countries.length; i++) {
+                            var option = document.createElement("option");
+                            $(option).val(countries[i].country);
+                            $(option).html(countries[i].country);
+							var flag = "<img src='nl.svg'/>";
+							var test = "<div>" + flag + countries[i].country + "</div>";
+							$(option).html(test);
+                            $(".country").append(option);
+                        }
+
+                        $(".country").on("change", function () {
+                            $(".country").attr("data-changed", "changed");
+                        });
+                        $(".country").on("focus", function () {
+                            $(".country").val("");
+                            $(".country").attr("data-changed", "");
+                        });
+                    }
+                });
+
+                var url = "scripts/getYears.php";
+                $.ajax({
+                    url: url,
+                    dataType: "jsonp",
+                    jsonpCallback: "getYears",
+                    success: function (years) {
+                        for (var i = 0; i < years.length; i++) {
+                            var option = document.createElement("option");
+                            $(option).html(years[i].year);
+                            $(".year").append(option);
+                        }
+                        $(".year").on("change", function () {
+                            $(".year").attr("data-changed", "changed");
+                        });
+                        $(".year").on("focus", function () {
+                            $(".year").val("");
+                            $(".year").attr("data-changed", "");
+                        });
+                    }
+                });
+
+                var url = "scripts/getGenres.php";
+                $.ajax({
+                    url: url,
+                    dataType: "jsonp",
+                    jsonpCallback: "getGenres",
+                    success: function (genres) {
+                        for (var i = 0; i < genres.length; i++) {
+                            var option = document.createElement("option");
+                            $(option).html(genres[i].genre);
+                            $(".genre").append(option);
+                        }
+                        $(".genre").on("change", function () {
+                            $(".genre").attr("data-changed", "changed");
+                        });
+                        $(".genre").on("focus", function () {
+                            $(".genre").val("");
+                            $(".genre").attr("data-changed", "");
+                        });
+                    }
+                });
+
+                $(".link").on("click", function () {
+                    var search = encodeURIComponent($(".search").val());
+                    var country = "", year = "", genre = "";
+                    if ($(".country").val())
+                        country = encodeURIComponent($(".country").val());
+                    if ($(".year").val())
+                        year = encodeURIComponent($(".year").val());
+                    if ($(".genre").val())
+                        genre = encodeURIComponent($(".genre").val());
+                    var href = "albumsearch.html?search=" + search + "&country=" + country + "&year=" + year + "&genre=" + genre + "&pageno=1";
+                    $(this).attr("href", href);
+                    $(".search").focus();
+                });
+
+                $("input").on("keydown", function (event) {
+                    if (event.keyCode === 13) {
+                        event.preventDefault();
+                        return false;
+                    }
+                });
+
+                $("input").on("keyup", function (event) {
+                    if (event.keyCode === 13) {
+                        $(".submit").click();
                     }
                 });
 
@@ -108,12 +385,12 @@
                     if (!platformfound)
                     {
                         $({deg: 90}).animate({deg: 0},
-                                {
-                                    duration: 2000,
-                                    step: function (now) {
-                                        $("html").css("transform", "rotate(" + now + "deg)");
-                                    }
+                            {
+                                duration: 2000,
+                                step: function (now) {
+                                    $("html").css("transform", "rotate(" + now + "deg)");
                                 }
+                            }
                         );
                     }
                 };
@@ -123,7 +400,30 @@
             });
         </script>
 
-        <iframe name="artistindex"  id="artistindex" src="artistindex.html"></iframe>
+		<div id="artistindex" class="frame">
+			<div class="wrapper">
+				<div class="player"></div>
+				<div class="titlerecord">
+					<div>
+						<div class="title"></div>
+						<div class="record"></div>
+						<div class='maindiv'>
+							<form class="form">
+								<input class="search" type="search" autofocus="autofocus" placeholder="Search Artist, Title or Boxset" title="All words in Artist or in Title/Boxset"/>
+								<select class="country"><option value="" disabled selected hidden>Select Country</option></select>
+								<select class="year"><option value="" disabled selected hidden>Select Year</option></select>
+								<select class="genre"><option value="" disabled selected hidden>Select Genre</option></select>
+								<a class="link" href="#" target="albums">
+									<button class="submit" type="button">Search</button>
+								</a>
+							</form>
+						</div>
+					</div>
+				</div>
+				<div class="version">&#169; 2024 oYoMusic 2.2</div>
+			</div>
+		</div>
+
         <iframe name="artists"      id="artists">                           </iframe>
         <iframe name="albums"       id="albums">                            </iframe>
 

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 
-<!--  oyomusic 2.1
+<!--  oyomusic 2.2
   tested with jQuery 3.4.0
   http://www.oyoweb.nl
 
-  © 2015-2022 oYoSoftware
+  © 2015-2024 oYoSoftware
   MIT License
 
   oyomusic is a library for showing your own musical content-->
@@ -66,7 +66,7 @@
                 var title = "Artist List " + letter;
                 $(document).prop("title", title);
 
-                var artistIndexFrame = parent.frames["artistindex"];
+				var artistIndex = parent.frames["artistindex"];
 
                 url = "scripts/getArtists.php";
                 $.ajax({
@@ -100,7 +100,7 @@
                             window.localStorage.setItem(href, "visited");
                         });
 
-                        if (artistIndexFrame) {
+                        if (artistIndex) {
                             parent.frames["albums"].location.href = $("a").attr("href");
                         } else {
                             $("a").attr("target", "_self");
