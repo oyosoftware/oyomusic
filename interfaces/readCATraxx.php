@@ -675,10 +675,10 @@ function read_files($dir) {
         } else {
             $row2 = mysqli_fetch_assoc($result);
             if ($row2["AlbumId"] != $albumid or $row2["DiscNo"] != $discno or $row2["Track"] != $track or
-                $row2["Title"] != $tracktitle or $row2["ArtistId"] != $artistid or $row2["PlayingTime"] != $playingtime or
+                $row2["Title"] != $tracktitle or $row2["ArtistId"] != $artistid or
                 $row2["AudioBitrate"] != $bitrate or $row2["AudioBitrateMode"] != $bitratemode) {
                 $sqlu = "update tracks set albumid = $albumid, discno = $discno, track = $track,
-                                           title = '$esctracktitle', artistid = $artistid, playingtime = $playingtime,
+                                           title = '$esctracktitle', artistid = $artistid,
                                            audiobitrate = $bitrate, audiobitratemode = '$bitratemode'
                          where albumid = $albumid and discno = $discno and track = $track";
                 mysqli_query($link, $sqlu);
@@ -721,10 +721,11 @@ $servername = $argv[1];
 $documentroot = $argv[2];
 $link = mysqli_connect($server, $username, $password, $database);
 $dsn = "odbc:driver={Microsoft Access Driver (*.mdb, *.accdb)};dbq=" . $catraxxdatabasepath . ";charset=utf16le";
+
 $pdolink = new PDO($dsn);
 
 $base = "";
-//$base = "\Jazz\PQRS";
+//$base = "\Populair\ABC";
 $path = $catraxxaudiosource . $base;
 
 $jobstart = time();
