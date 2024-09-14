@@ -1,4 +1,6 @@
 oYoMusic 2.2
+14-09-2024  Rewritten padding box plugin
+14-09-2024  Removed unnecessary wrappers for album lists
 08-08-2024  Joomla login data script converted to joomla 4.4.6
 27-07-2024  Integration of index page with artist index page
 oYoMusic 2.1
