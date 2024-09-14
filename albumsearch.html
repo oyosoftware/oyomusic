@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 
-<!--  oyomusic 2.1
+<!--  oyomusic 2.2
   tested with jQuery 3.4.0
   http://www.oyoweb.nl
 
-  © 2015-2022 oYoSoftware
+  © 2015-2024 oYoSoftware
   MIT License
 
   oyomusic is a library for showing your own musical content-->
@@ -29,7 +29,7 @@
                 font-family         : Arial, Verdana, Helvetica, sans-serif;
                 font-size           : 10pt;
                 margin              : 0px;
-                padding             : 8px;
+                padding             : 10px;
                 padding-right       : 0px;
                 padding-top         : 0px;
             }
@@ -60,7 +60,7 @@
                 top                 : 0px;
                 left                : 0px;
                 padding             : 8px;
-                padding-bottom      : 0px;
+                padding-bottom      : 10px;
                 text-align          : center;
                 background-color    : white;
                 z-index             : 2;
@@ -71,40 +71,20 @@
                 padding             : 0px 8px;
                 white-space         : nowrap;
             }
-            .tableheaderwrapper {
-                display             : none;
-                width               : calc(100% - 10px);
-                position            : fixed;
-                top                 : 47px;
-                left                : 10px;
-                background-color    : white;
-                z-index             : 2;
-            }
-            .tableheaderpaddingbox {
-                display             : table;
-                width               : 100%;
-                padding-right       : 10px;
-            }
-            .tablewrapper {
-                display             : none;
-                width               : calc(100% - 2px);
-                position            : relative;
-                top                 : 47px;
-                left                : 2px;
-                z-index             : 1;
-            }
-            .tablepaddingbox {
-                display             : table;
-                width               : 100%;
-                padding-right       : 10px;
-                padding-bottom      : 10px;
+            .oyopaddingbox {
+                min-height          : 22px;
             }
             table {
                 font-size           : 10pt;
                 border-spacing      : 0px;
-                margin-left         : -1px;
             }
             .albumstable {
+				padding-right		: 10px;
+				padding-bottom		: 10px;
+                position            : relative;
+                top                 : 47px;
+                left                : 0px;
+                z-index             : 1;
             }
             .albumstableheader {
                 visibility          : hidden;
@@ -243,20 +223,18 @@
                     }
                 }
 
-                $(window).on("scroll", function () {
-                    $(".tableheaderwrapper").css("left", -1 * $(window).scrollLeft() + 10);
-                });
-
                 var tableHeader = new oyoTableHeader(".albumstable");
                 tableHeader.changeBorder("none");
-                $(".tableheaderwrapper").append(tableHeader);
+                $(tableHeader).css("z-index", 3);
+                $(tableHeader).css("padding-right", "10px");
+                $(tableHeader).insertBefore(".albumstable");
 
-                var tableHeaderBox = new oyoPaddingBox(".tableheaderwrapper");
-                tableHeaderBox.change("0px", "0px");
-                tableHeaderBox.changeInnerBorderWidth("0px 0px 0.5px");
-                $(tableHeaderBox).css("z-index", 999);
+                var tableHeaderBox = new oyoPaddingBox(tableHeader);
+                $(tableHeaderBox).css("z-index", 2);
+                $(tableHeaderBox).css("background-color", "white");
                 $("body").append(tableHeaderBox);
-                var tableBox = new oyoPaddingBox(".tablewrapper");
+
+                var tableBox = new oyoPaddingBox(".albumstable");
                 $("body").append(tableBox);
 
                 url = "scripts/getSettings.php";
@@ -296,8 +274,10 @@
                                     var navigator = new oyoNavigator(records, searchrecordspage, pagerange, baseUrl);
                                     $(".header").append(navigator);
                                     navigator.setPage(pageno);
-                                    $(".tableheaderwrapper").css("top", parseFloat($(".tableheaderwrapper").css("top")) + $(navigator).height());
-                                    $(".tablewrapper").css("top", parseFloat($(".tablewrapper").css("top")) + $(navigator).height());
+                                    $(tableHeader).css("top", parseFloat($(tableHeader).css("top")) + $(navigator).height());
+									tableHeaderBox.resize();
+                                    $(".albumstable").css("top", parseFloat($(".albumstable").css("top")) + $(navigator).height());
+									tableBox.resize();
                                 }
                             }
                         });
@@ -441,11 +421,6 @@
                                 $(cell).attr("class", "fieldvalue playingtime");
                                 $(cell).html(playingtime);
                                 $(row).append(cell);
-
-                                if (i === 0) {
-                                    $(".tableheaderwrapper").css("display", "inline-block");
-                                    $(".tablewrapper").css("display", "inline-block");
-                                }
                             } // end for loop
                             $("a").click(function (event) {
                                 var datalink = $(event.currentTarget).attr("data-link");
@@ -461,12 +436,6 @@
             <div class="results"></div>
         </div>
 
-        <div class="tableheaderwrapper">
-            <div class="tableheaderpaddingbox"></div>
-        </div>
-
-        <div class="tablewrapper">
-            <div class="tablepaddingbox">
                 <table class="albumstable">
                     <thead>
                         <tr class="albumstableheader">
@@ -483,8 +452,6 @@
                     </thead>
                     <tbody></tbody>
                 </table>
-            </div>
-        </div>
 
     </body>
 
