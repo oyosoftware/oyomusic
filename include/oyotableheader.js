@@ -27,6 +27,11 @@ function oyoTableHeader(refTable, height) {
         $(table).height(height);
         $(table).css("max-height", height);
     }
+    $(table).css("position", "fixed");
+    var top = $(refTable).offset().top;
+    var left = $(refTable).offset().left;
+    $(table).offset({top: top, left: left});
+
     var thead = document.createElement("thead");
     $(thead).attr("class", "oyotableheader");
     $(table).append(thead);
@@ -37,8 +42,8 @@ function oyoTableHeader(refTable, height) {
     observer.observe($(refTable)[0]);
 
     resizeTableHeader = function () {
-        $(table).outerWidth($(refTable).outerWidth());
-        var clone = $("thead", refTable).clone();
+        $(table).width($(refTable).width());
+        var clone = $("thead", refTable).clone(true);
         $(clone).attr("class", "oyotableheader");
 
         switch (true) {
@@ -69,6 +74,12 @@ function oyoTableHeader(refTable, height) {
         });
         $(".oyotableheader", table).replaceWith(clone);
     };
+
+    $(window).on("scroll", function () {
+        var offsetLeft = $(refTable).offset().left;
+        var left = -1 * $(window).scrollLeft() + offsetLeft;
+        $(table).css("left", left);
+    });
 
     table.changeBorder = function (borderType = "cell", border = intBorder) {
         intBorderType = borderType;

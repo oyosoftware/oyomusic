@@ -3,7 +3,7 @@
  * tested with jQuery 3.4.0
  * http://www.oyoweb.nl
  *
- * © 2022 oYoSoftware
+ * © 2024 oYoSoftware
  * MIT License
  *
  * oyopaddingbox is a tool to clip an object on it's padding box
@@ -18,9 +18,10 @@ function oyoPaddingBox(refObject) {
     var paddingBox = document.createElement("div");
     $(paddingBox).attr("class", "oyopaddingbox");
     $(paddingBox).css("box-sizing", "border-box");
-    $(paddingBox).css("position", "fixed");
     $(paddingBox).css("border", boxBorder);
     $(paddingBox).css("padding", boxPadding);
+    var position = $(refObject).css("position");
+    $(paddingBox).css("position", "fixed");
 
     var paddingBoxBorder = document.createElement("div");
     $(paddingBoxBorder).width("100%");
@@ -28,16 +29,25 @@ function oyoPaddingBox(refObject) {
     $(paddingBoxBorder).css("border", boxBorderBorder);
     $(paddingBox).append(paddingBoxBorder);
 
-    $(window).on("scroll", function () {
+    $(window).on("resize", function() {
         resizePaddingBox();
     });
 
-    var observer = new ResizeObserver(function () {
+    $(window).on("scroll", function() {
+        resizePaddingBox();
+    });
+
+    var observer = new ResizeObserver(function() {
         resizePaddingBox();
     });
     observer.observe($(refObject)[0]);
 
+    var fixedOffsetLeft = $(refObject).offset().left;
+    var fixedOffsetTop = $(refObject).offset().top;
+
     function resizePaddingBox() {
+        $(paddingBox).css("display", "block");
+
         var topBoxSpace = parseFloat($(paddingBox).css("border-top-width")) + parseFloat($(paddingBox).css("padding-top"));
         var leftBoxSpace = parseFloat($(paddingBox).css("border-left-width")) + parseFloat($(paddingBox).css("padding-left"));
         var rightBoxSpace = parseFloat($(paddingBox).css("border-right-width")) + parseFloat($(paddingBox).css("padding-right"));
@@ -53,48 +63,96 @@ function oyoPaddingBox(refObject) {
         var rightRefSpace = parseFloat($(refObject).css("border-right-width")) + parseFloat($(refObject).css("padding-right"));
         var bottomRefSpace = parseFloat($(refObject).css("border-bottom-width")) + parseFloat($(refObject).css("padding-bottom"));
 
-        var position = $(refObject).css("position");
-        var top, left;
+        // left, right and width
+        var offsetLeft = $(refObject).offset().left;
+        var scrollLeft = document.scrollingElement.scrollLeft;
+        var windowWidth = $(window).width();
+        var minLeft = (offsetLeft % windowWidth) + leftRefSpace - leftBoxSpace - leftBoxBorderSpace;
+        var refWidth = $(refObject).width();
+        var maxRight = windowWidth - rightRefSpace;
+
         if (position === "fixed") {
-            top = parseFloat($(refObject).css("top")) - topBoxSpace - topBoxBorderSpace + topRefSpace;
+            var left = fixedOffsetLeft + leftRefSpace - leftBoxSpace - leftBoxBorderSpace;
         } else {
-            top = parseFloat(($(refObject).offset().top - topBoxSpace - topBoxBorderSpace + topRefSpace).toFixed(3));
+            var left = offsetLeft + leftRefSpace - leftBoxSpace - leftBoxBorderSpace - scrollLeft;
+            if (left < minLeft) {
+                left = minLeft;
+            }
         }
-        $(paddingBox).css("top", top);
-        left = parseFloat(($(refObject).offset().left - leftBoxSpace - leftBoxBorderSpace + leftRefSpace).toFixed(3));
+
         $(paddingBox).css("left", left);
 
-        var padding = parseFloat($(refObject).find("*").css("padding-right"));
-        var width = $(refObject).width() + leftBoxSpace + leftBoxBorderSpace + rightBoxSpace + rightBoxBorderSpace - padding;
+        if (position === "fixed") {
+            var right = fixedOffsetLeft + leftRefSpace + refWidth + rightBoxSpace + rightBoxBorderSpace;
+        } else {
+            var right = offsetLeft + leftRefSpace + refWidth + rightBoxSpace + rightBoxBorderSpace;
+        }
+
+        if (right > maxRight) {
+            right = maxRight;
+        }
+
+        width = right - left;
         $(paddingBox).outerWidth(width);
 
+        // top, bottom and height
+        var offsetTop = $(refObject).offset().top;
+        var scrollTop = document.scrollingElement.scrollTop;
+        var windowHeight = $(window).height();
+        var minTop = (offsetTop % windowHeight) + topRefSpace - topBoxSpace - topBoxBorderSpace;
+        var refHeight = $(refObject).height();
+        var maxBottom = windowHeight - bottomRefSpace;
+
         if (position === "fixed") {
-            var height = document.documentElement.clientHeight - parseFloat($(refObject).css("top"));
+            var top = fixedOffsetTop + topRefSpace - topBoxSpace - topBoxBorderSpace;
         } else {
-            var height = document.documentElement.clientHeight - parseFloat($(refObject).offset().top.toFixed(3));
+            var top = offsetTop + topRefSpace - topBoxSpace - topBoxBorderSpace - scrollTop;
+            if (top < minTop) {
+                top = minTop;
+            }
         }
-        var padding = parseFloat($(refObject).find("*").css("padding-bottom"));
-        if (document.documentElement.scrollHeight <= document.documentElement.clientHeight || $(refObject).outerHeight() <= height) {
-            var height = $(refObject).outerHeight() + topBoxSpace + topBoxBorderSpace + bottomBoxSpace + bottomBoxBorderSpace - padding - 0.5;
-            $(paddingBox).outerHeight(height);
+
+        $(paddingBox).css("top", top);
+
+        if (position === "fixed") {
+            var bottom = fixedOffsetTop + topRefSpace + refHeight + bottomBoxSpace + bottomBoxBorderSpace;
         } else {
-            var height = document.documentElement.clientHeight - parseFloat($(refObject).offset().top.toFixed(3)) + topBoxSpace + topBoxBorderSpace + bottomBoxSpace + bottomBoxBorderSpace - padding - 0.5;
-            $(paddingBox).outerHeight(height);
+            var bottom = offsetTop + topRefSpace + refHeight + bottomBoxSpace + bottomBoxBorderSpace;
         }
+
+        if (bottom > maxBottom) {
+            bottom = maxBottom;
+        }
+
+        height = bottom - top;
+        $(paddingBox).outerHeight(height);
+
+        // Make clipping box
+        $(refObject).css("clip-path", "none");
 
         var width = $(paddingBoxBorder).width();
         var height = $(paddingBoxBorder).height();
+        var offsetLeftBox = $(paddingBox).offset().left;
+        var offsetTopBox = $(paddingBox).offset().top;
 
-        if (position === "fixed") {
-            var x1 = $(document.documentElement).scrollLeft() + leftRefSpace;
-            var y1 = 0;
-            var x2 = $(document.documentElement).scrollLeft() + width + leftRefSpace;
-            var y2 = height;
-        } else {
-            var x1 = $(document.documentElement).scrollLeft() + leftRefSpace;
-            var y1 = $(document.documentElement).scrollTop() + 0.5;
-            var x2 = $(document.documentElement).scrollLeft() + width + leftRefSpace;
-            var y2 = $(document.documentElement).scrollTop() + height;
+        var x1 = offsetLeftBox + leftBoxSpace + leftBoxBorderSpace - offsetLeft;
+        if (x1 < 0) {
+            x1 = 0;
+        }
+        var y1 = offsetTopBox + topBoxSpace + topBoxBorderSpace - offsetTop;
+        if (y1 < 0) {
+            y1 = 0;
+        }
+        var x2 = x1 + width;
+        if (x2 < 0) {
+            x2 = 0;
+        }
+        var y2 = y1 + height;
+        if (y2 < 0) {
+            y2 = 0;
+        }
+        if (x1 === 0 && x2 === 0) {
+            $(paddingBox).css("display", "none");
         }
 
         var p1 = x1 + "px " + y1 + "px, ";
@@ -106,7 +164,11 @@ function oyoPaddingBox(refObject) {
         $(refObject).css("clip-path", clipRect);
     }
 
-    paddingBox.resize = resizePaddingBox;
+    paddingBox.resize = function () {
+        fixedOffsetLeft = $(refObject).offset().left;
+        fixedOffsetTop = $(refObject).offset().top;
+        resizePaddingBox();
+    };
 
     paddingBox.change = function (outerBorder = boxBorder, padding = boxPadding, innerBorder = boxBorderBorder) {
         boxBorder = outerBorder;
@@ -122,6 +184,10 @@ function oyoPaddingBox(refObject) {
         $(paddingBox).css("border", boxBorder);
     };
 
+    paddingBox.changeOuterBorderWidth = function (outerBorderWidth) {
+        $(paddingBox).css("border-width", outerBorderWidth);
+    };
+
     paddingBox.changePadding = function (padding = boxPadding) {
         boxPadding = padding;
         $(paddingBox).css("padding", boxPadding);
@@ -130,10 +196,6 @@ function oyoPaddingBox(refObject) {
     paddingBox.changeInnerBorder = function (innerBorder = boxBorderBorder) {
         boxBorderBorder = innerBorder;
         $(paddingBoxBorder).css("border", boxBorderBorder);
-    };
-
-    paddingBox.changeOuterBorderWidth = function (outerBorderWidth) {
-        $(paddingBox).css("border-width", outerBorderWidth);
     };
 
     paddingBox.changeInnerBorderWidth = function (innerBorderWidth) {
