@@ -71,10 +71,15 @@ function collect_images($dir) {
                 $pathdate = date('YmdHis', filemtime($path));
 
                 $collectpath = "../" . $imagepathartists . "/" . $albumartist . ".jpg";
+                $collectoldpath = "../" . $imagepathartists . "/" . basename(realpath($collectpath));
                 if ($servername !== null) {
                     $response = array('pathname' => $collectpath);
                     $json = json_encode($response);
                     echo $json . ",\n";
+                }
+
+                if (file_exists($collectpath) && $collectpath !== $collectoldpath) {
+                    unlink($collectoldpath);
                 }
 
                 if (file_exists($collectpath)) {
@@ -137,10 +142,15 @@ function collect_images($dir) {
             $lastfolder = mb_substr(mb_strrchr($folder, '/'), 1);
 
             $collectpath = "../" . $imagepath . "/" . $albumartist . " - " . $lastfolder . ".jpg";
+            $collectoldpath = "../" . $imagepath . "/" . basename(realpath($collectpath));
             if ($servername !== null) {
                 $response = array('pathname' => $collectpath);
                 $json = json_encode($response);
                 echo $json . ",\n";
+            }
+
+            if (file_exists($collectpath) && $collectpath !== $collectoldpath) {
+                unlink($collectoldpath);
             }
 
             if (file_exists($collectpath)) {
@@ -188,6 +198,12 @@ function collect_images($dir) {
             // album thumb image
 
             $collectpath = "../" . $imagepaththumbs . "/" . $albumartist . " - " . $lastfolder . ".jpg";
+            $collectoldpath = "../" . $imagepaththumbs . "/" . basename(realpath($collectpath));
+
+            if (file_exists($collectpath) && $collectpath !== $collectoldpath) {
+                unlink($collectoldpath);
+            }
+
             if (file_exists($collectpath)) {
                 $collectpathdate = date('YmdHis', filemtime($collectpath));
             }
@@ -209,7 +225,7 @@ $documentroot = $argv[2];
 $link = mysqli_connect($server, $username, $password, $database);
 
 $base = "";
-//$base = "/Populair/DEF/David & David";
+//$base = "/Populair/ABC/Ansatz der Maschine";
 
 $audiosource = str_ireplace("\\", "/", $audiosource);
 $base = str_ireplace("\\", "/", $base);

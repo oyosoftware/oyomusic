@@ -66,7 +66,7 @@ function delete_removed_tracks($dir) {
             $dirlist = scandir($audiosource . $folder);
         }
 
-        if (!in_array($filename, $dirlist)) {
+        if (!$dirlist or !in_array($filename, $dirlist)) {
             $albumid = $row["albumid"];
             $discno = $row["discno"];
             $track = $row["track"];
@@ -361,7 +361,7 @@ $documentroot = $argv[2];
 $link = mysqli_connect($server, $username, $password, $database);
 
 $base = "";
-//$base = "/Populair/GHI/It Bites";
+//$base = "/Populair/WXYZ/Waterboys";
 
 $audiosource = str_ireplace("\\", "/", $audiosource);
 $base = str_ireplace("\\", "/", $base);
