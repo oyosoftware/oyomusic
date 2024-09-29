@@ -16,7 +16,7 @@ function oyoSpeaker() {
     var defaultFillColor = "#527FC3";
 
     var graphic = document.createElementNS(svgNS, "svg");
-    $(graphic).addClass("oyographic oyospeaker");
+    $(graphic).addClass("oyographic oyospeakericon");
     $(graphic).css("width", 15 + "px");
     $(graphic).css("height", 15 + "px");
     $(graphic).css("background-color", defaultBackgroundColor);
@@ -78,7 +78,7 @@ function oyoPlayPause() {
     var defaultFillColor = "#527FC3";
 
     var graphic = document.createElementNS(svgNS, "svg");
-    $(graphic).addClass("oyographic oyoplaypause");
+    $(graphic).addClass("oyographic oyoplaypauseicon");
     $(graphic).css("width", 15 + "px");
     $(graphic).css("height", 15 + "px");
     $(graphic).css("background-color", defaultBackgroundColor);
@@ -115,7 +115,7 @@ function oyoNote() {
     var defaultFillColor = "#527FC3";
 
     var graphic = document.createElementNS(svgNS, "svg");
-    $(graphic).addClass("oyographic oyonote");
+    $(graphic).addClass("oyographic oyonoteicon");
     $(graphic).css("width", 15 + "px");
     $(graphic).css("height", 15 + "px");
     $(graphic).css("background-color", defaultBackgroundColor);
