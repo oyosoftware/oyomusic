@@ -1,6 +1,6 @@
 # oyomusic
 <a href="http://oyoweb.nl/music" target="_blank">
-  <img src="http://oyoweb.nl/music/oyomusic3.jpg" alt="oyomusic">
+  <img src="http://oyoweb.nl/music/oyomusic30.jpg" alt="oyomusic">
 </a>
 <p>Music Library</p>
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;currency_code=EUR&amp;business=code@oyosoftware.nl&amp;item_name=donation%20for%20oyomusic" rel="nofollow">
