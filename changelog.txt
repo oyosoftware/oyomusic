@@ -1,5 +1,6 @@
-oYoMusic 2.2
+oYoMusic 3.0
 29-09-2024  Added the new player
+oYoMusic 2.2
 14-09-2024  Rewritten padding box plugin
 14-09-2024  Removed unnecessary wrappers for album lists
 08-08-2024  Joomla login data script converted to joomla 4.4.6
