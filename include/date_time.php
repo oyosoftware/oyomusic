@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Sets the real date based on the locale.
+ * After using the locale it reverts to the system locale.
+ *
+ * @param $format
+ * @param $timestamp
+ * @param $locale
+ * @return date
+ */
 function localdate(string $format, int $timestamp, string $locale) {
 
     $oldlocale = setlocale(LC_TIME, 0);
@@ -33,33 +42,30 @@ function localdate(string $format, int $timestamp, string $locale) {
     return $date;
 }
 
+/**
+ * Formats time as a duration and leaves out leading zeros.
+ * Format is H:i:s without redundant hours, minutes or seconds.
+ *
+ * @param $totalseconds
+ * @return string
+ */
 function formattime(int $totalseconds) {
-    $days = floor($totalseconds / 86400);
-    $hours = floor(($totalseconds - ($days * 86400)) / 3600);
-    $minutes = floor(($totalseconds - ($days * 86400) - ($hours * 3600)) / 60);
-    $seconds = $totalseconds - ($days * 86400) - ($hours * 3600) - ($minutes * 60);
+    $hours = floor($totalseconds / 3600);
+    $minutes = floor(($totalseconds - ($hours * 3600)) / 60);
+    $seconds = $totalseconds - ($hours * 3600) - ($minutes * 60);
 
-    if ($days > 0) {
-        $adays = $days . " ";
+    if ($hours > 0) {
         $ahours = $hours . ":";
         $aminutes = sprintf('%02d', $minutes) . ":";
         $aseconds = sprintf('%02d', $seconds);
     }
-    if ($days == 0) {
-        $adays = "";
-    }
-    if ($days == 0 and $hours > 0) {
-        $ahours = $hours . ":";
-        $aminutes = sprintf('%02d', $minutes) . ":";
-        $aseconds = sprintf('%02d', $seconds);
-    }
-    if ($days == 0 and $hours == 0) {
+    if ($hours == 0) {
         $ahours = "";
         $aminutes = $minutes . ":";
         $aseconds = sprintf('%02d', $seconds);
     }
 
-    $timestring = $adays . $ahours . $aminutes . $aseconds;
+    $timestring = $ahours . $aminutes . $aseconds;
     return $timestring;
 }
 
