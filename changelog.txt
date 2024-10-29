@@ -1,3 +1,7 @@
+oYoMusic 3.1
+26-10-2024  Added combo box plugin for selections
+26-10-2024  Optimized player and some othe components
+26-10-2024  Changed time formatting
 oYoMusic 3.0
 29-09-2024  Added the new player
 oYoMusic 2.2
