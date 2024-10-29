@@ -61,14 +61,14 @@
             td {
                 padding             : 3px 5px 3px 5px;
             }
-            .player {
-            }
-            .back {
+			.oyoplayer {
+				border-radius		: 16px;
+				box-shadow          : 4px 4px 8px rgba(0, 0, 0, 0.5);
+			}
+            #back {
                 font-size           : 13.33px;
                 height              : 25px;
                 vertical-align      : top;
-            }
-            .backlink {
             }
             .wrapper {
                 padding-right       : 8px;
@@ -263,20 +263,22 @@
                 var playeralbum = "";
 
                 var artistIndex = parent.frames["artistindex"] || parent.parent.frames["artistindex"];
-                audioPlayer = $(artistIndex).find(".oyoplayer")[0];
+                var audioPlayer = parent.audioPlayer || parent.parent.audioPlayer;
 
-				if (!Boolean(audioPlayer)) {
-					audioPlayer = new oyoPlayer("player");
-                    $(".player").append(audioPlayer);
+                if (!Boolean(audioPlayer)) {
+                    audioPlayer = new oyoPlayer();
+                    $("#player").append(audioPlayer);
+                }
+
+				if (audioPlayer.state.paused) {
+					audioPlayer.setNotification("Push Play to start");
 				}
 
-                audio = audioPlayer.audio;
-                audioPlayer.setNotification("Push Play to start");
-
-                $(audio).on("playing", playing);
-                $(audio).on("pause", paused);
-                $(audio).on("ended", ended);
-                $(audio).on("error", error);
+                $(audioPlayer.audio).on("playing", playing);
+                $(audioPlayer.audio).on("timeupdate", timeUpdate);
+                $(audioPlayer.audio).on("pause", paused);
+                $(audioPlayer.audio).on("ended", ended);
+                $(audioPlayer.audio).on("error", error);
 
                 function startPlayer(event) {
                     if (artistIndex && artistIndex.playeralbum !== undefined && playeralbum !== artistIndex.playeralbum) {
@@ -306,6 +308,13 @@
                         playPause.changeState(1);
                         var titleid = "#title" + track;
                         $(titleid).css("font-weight", "bold");
+                        $(titleid)[0].scrollIntoView(false);
+                    }
+                }
+
+                function timeUpdate() {
+                    if (audioPlayer.state.ended) {
+                        $(audioPlayer.audio).trigger("ended");
                     }
                 }
 
@@ -335,16 +344,16 @@
                         .replace(/&gt;/g, '>');
                 }
 
-                try {
-					var boxsetalbumsFrame = parent.frames["boxsetalbums"];
-                    if (boxsetalbumsFrame) {
-                        var documentObserver = new ResizeObserver(function () {
+                var boxsetalbumsFrame = parent.frames["boxsetalbums"];
+                if (boxsetalbumsFrame) {
+                    var documentObserver = new ResizeObserver(function () {
+                        try {
                             var height = boxsetalbumsFrame.document.body.scrollHeight + 10;
                             $(boxsetalbumsFrame.frameElement).height(height);
-                        });
-                        documentObserver.observe(document.documentElement);
-                    }
-                } catch (error) {
+                        } catch (error) {
+                        }
+                    });
+                    documentObserver.observe(document.documentElement);
                 }
 
                 $(".download").on("click", function () {
@@ -414,24 +423,21 @@
                         var isboxset = album.isboxset;
                         var boxsetid = album.boxsetid;
 
-                        if (Boolean(isboxset)) {
-							audioPlayer = $(document).find(".oyoplayer")[0];
-							if (Boolean(audioPlayer)) {
-								$(audioPlayer).css("display", "none");
-							}
+                        if (Boolean(!artistIndex) && Boolean(isboxset)) {
+                            $(audioPlayer).remove();
                         }
 
+                        var href;
                         if (pageno > 0) {
                             if (boxsetid === -1) {
-                                var href = "albumlist.html?artistid=" + artistid + "&isboxset=0" + "&boxsetid=0" + "&pageno=" + pageno;
+                                href = "albumlist.html?artistid=" + artistid + "&isboxset=0" + "&boxsetid=0" + "&pageno=" + pageno;
                             } else {
-                                var href = "albumlist.html?artistid=" + artistid + "&isboxset=1" + "&boxsetid=" + boxsetid + "&pageno=" + pageno;
+                                href = "albumlist.html?artistid=" + artistid + "&isboxset=1" + "&boxsetid=" + boxsetid + "&pageno=" + pageno;
                             }
                         } else {
-                            var href = "albumsearch?" + albumsearch;
+                            href = "albumsearch?" + albumsearch;
                         }
-
-                        $(".backlink").prop("href", href);
+                        $("#backlink").prop("href", href);
 
                         var audiosource = "";
                         url = "scripts/getSettings.php";
@@ -509,7 +515,7 @@
                                                 jsonpCallback: "getTracks",
                                                 success: function (tracks) {
                                                     var prevdiscno = 0;
-                                                    if (!audioPlayer.state.playing) {
+                                                    if (audioPlayer.state.paused) {
                                                         audioPlayer.clearPlaylist();
                                                     }
 
@@ -529,7 +535,7 @@
 
                                                         songs[i + 1] = audiosource + folder + "/" + filename;
                                                         tags[i + 1] = name2 + " - " + title + " (" + albumtitle + ")";
-                                                        if (!audioPlayer.state.playing) {
+                                                        if (audioPlayer.state.paused) {
                                                             audioPlayer.addToPlaylist(songs[i + 1], tags[i + 1]);
                                                         }
 
@@ -568,7 +574,7 @@
                                                         $(playPause).on("click", {index: i + 1}, startPlayer);
                                                         $(cell).append(playPause);
 
-                                                        if (audioPlayer.state.playing) {
+                                                        if (!audioPlayer.state.paused) {
                                                             var song = audioPlayer.getCurrentSong();
                                                             if (songs[i + 1] === song) {
                                                                 playPause.changeState(1);
@@ -587,7 +593,7 @@
                                                         $(cell).attr("class", "fieldvalue title");
                                                         $(cell).attr("id", "title" + (i + 1));
                                                         $(row).append(cell);
-                                                        if (audioPlayer.state.playing) {
+                                                        if (!audioPlayer.state.paused) {
                                                             var song = audioPlayer.getCurrentSong();
                                                             if (songs[i + 1] === song) {
                                                                 $(cell).css("font-weight", "bold");
@@ -653,7 +659,7 @@
                                                         $(".headertitle").html(headertitle);
                                                     }
 
-                                                    if (!audioPlayer.state.playing) {
+                                                    if (audioPlayer.state.paused) {
                                                         audioPlayer.setSourceIndex(1);
                                                     }
                                                 }
@@ -712,11 +718,19 @@
                     }
                 });
 
+                $(window).on("beforeunload", function () {
+                    Object.keys(audioPlayer.audio).forEach(function (key) {
+                        if (key !== audioPlayer.audioKey) {
+                            $(audioPlayer.audio).removeProp(key);
+                        }
+                    });
+                });
             });
+
         </script>
 
-        <div class="player"></div>
-        <div class="back"><a class="backlink">Back</a></div>
+        <div id="player"></div>
+        <div id="back"><a id="backlink">Back</a></div>
 
         <div class="wrapper">
             <div class="header">
@@ -727,16 +741,12 @@
         <br/>
 
         <div class="wrapper">
-
             <div class="maindiv">
-
                 <div  class="albumdiv">
-
                     <div class="albumimage">
                         <img class="image"/>
                     </div>
                     <div class="albumimagemirror"></div>
-
                     <table class="albumtable">
                         <tr>
                             <td class="fieldname">Released</td>
@@ -759,20 +769,15 @@
                             <td class="fieldvalue albumplayingtime"></td>
                         </tr>
                     </table>
-
                 </div>
-
                 <div  class="tracksdiv">
                     <table class="tracktable"></table>
                 </div>
-
             </div>
-
             <button class="download" type="button">
                 <img class="downloadimg" alt="downloading" src="images/download.png"/>
             </button>
             <img class="downloading" alt="downloading" src="images/spinner.gif"/>
-
         </div>
 
         <iframe name="boxsetalbums" class="boxsetalbums"></iframe>
