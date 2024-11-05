@@ -13,7 +13,12 @@ $pagerange = 9; // number of visible pages in the page navigator
 $audiosource = "audio"; // web project folder (this project)
 // or make a symbolic link for a drive or network path in your project folder
 // mklink /D "project folder" "audio source"
+// example: mklink /D "audio" "C:\Music"
 // example: mklink /D "audio" "\\Computername\Shared\Music"
+// for access to a network path : open gpedit.msc
+// go to Computer Configuration → Windows Settings → Security Settings → Local Policies → Securty Options
+// Network access: Let Everyone permissions apply to anonymous users – change to Enabled
+// Network access: Shares that can be accessed anonymously – enter name of share you created in the text field
 $imagepath = "images/albums";
 $imagepaththumbs = "images/albums/thumbs";
 $imagepathartists = "images/artists";
