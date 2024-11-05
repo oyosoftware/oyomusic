@@ -18,7 +18,7 @@ $audiosource = "audio"; // web project folder (this project)
 // for access to a network path : open gpedit.msc
 // go to Computer Configuration → Windows Settings → Security Settings → Local Policies → Securty Options
 // Network access: Let Everyone permissions apply to anonymous users – change to Enabled
-// Network access: Shares that can be accessed anonymously – enter name of share you created in the text field
+// Network access: Shares that can be accessed anonymously – enter name of share you created
 $imagepath = "images/albums";
 $imagepaththumbs = "images/albums/thumbs";
 $imagepathartists = "images/artists";
