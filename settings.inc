@@ -12,6 +12,7 @@ $pagerange = 9; // number of visible pages in the page navigator
 //$audiosource = "/audio"; // web root folder
 $audiosource = "audio"; // web project folder (this project)
 // or make a symbolic link for a drive or network path in your project folder
+// Mapped network drives are not allowed
 // mklink /D "project folder" "audio source"
 // example: mklink /D "audio" "C:\Music"
 // example: mklink /D "audio" "\\Computername\Shared\Music"
