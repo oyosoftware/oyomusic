@@ -82,16 +82,21 @@
                 width               : 100%;
                 text-align          : center;
             }
-            .oyopaddingbox {
-                min-height          : 22px;
-            }
             table {
                 font-size           : 10pt;
                 border-spacing      : 0px;
             }
+			.headertable {
+				padding-right		: 11px;
+				z-index             : 3;
+			}
+			.headertablepaddingbox {
+				background-color	: white;
+				z-index             : 2;
+			}
             .albumstable {
-				padding-right		: 10px;
-				padding-bottom		: 10px;
+				padding-right		: 11px;
+				padding-bottom		: 9px;
                 position            : relative;
                 top                 : 47px;
                 left                : 0px;
@@ -104,15 +109,24 @@
                 padding             : 3px 5px 3px 5px;
             }
             .fieldname {
-                border              : 0.5px solid black;
+                border              : 1px solid black;
             }
             .fieldvalue {
-                border              : 0.5px solid black;
+                border              : 1px solid black;
+            }
+            tr:first-child td {
+                border-top-width	: 0px;
+            }
+            tr:last-child td {
                 border-bottom-width : 0px;
-                border-right-width  : 0px;
+            }
+            td:first-child {
+                border-left-width	: 0px;
+            }
+            td:last-child {
+                border-right-width	: 0px;
             }
             .hcover {
-                min-width           : 53px;
                 text-align          : center;
             }
             .cover {
@@ -121,8 +135,10 @@
             }
             .image {
                 vertical-align      : middle;
+				width				: 47.7px;
             }
             .htitle {
+				text-align          : left;
             }
             .title {
                 position            : relative;
@@ -144,11 +160,13 @@
                 text-align          : right;
             }
             .hformat {
+				text-align          : left;
             }
             .format {
                 width               : 4%;
             }
             .hgenre {
+				text-align          : left;
             }
             .genre {
                 width               : 24%;
@@ -181,32 +199,30 @@
                 }
 
                 var tableHeader = new oyoTableHeader(".albumstable");
+				$(tableHeader).addClass("headertable");
                 tableHeader.changeBorder("none");
-                $(tableHeader).css("z-index", 3);
-                $(tableHeader).css("padding-right", "10px");
                 $(tableHeader).insertBefore(".albumstable");
 
                 var tableHeaderBox = new oyoPaddingBox(tableHeader);
-                $(tableHeaderBox).css("z-index", 2);
-				$(tableHeaderBox).css("background-color", "white");
+				$(tableHeaderBox).addClass("headertablepaddingbox");
                 $("body").append(tableHeaderBox);
 
                 var tableBox = new oyoPaddingBox(".albumstable");
                 $("body").append(tableBox);
 
-                try {
-                    var boxsetalbumsFrame = parent.frames["boxsetalbums"];
-                    if (boxsetalbumsFrame) {
-                        var documentObserver = new ResizeObserver(function () {
+                var boxsetalbumsFrame = parent.frames["boxsetalbums"];
+                if (boxsetalbumsFrame) {
+                    var documentObserver = new ResizeObserver(function () {
+                        try {
                             var height = boxsetalbumsFrame.document.body.scrollHeight + 10;
                             window.localStorage.setItem("boxsetalbumsheight", height);
                             setTimeout(function () {
                                 tableBox.resize();
                             }, 250);
-                        });
-                        documentObserver.observe(document.documentElement);
-                    }
-                } catch (error) {
+                        } catch (error) {
+                        }
+                    });
+                    documentObserver.observe(document.documentElement);
                 }
 
                 var recordspage = 10;
@@ -219,15 +235,14 @@
                     $(".header").append(navigator);
                     navigator.setPage(pageno);
                     $(tableHeader).css("top", parseFloat($(tableHeader).css("top")) + $(navigator).height());
-					tableHeaderBox.resize();
+                    tableHeaderBox.resize();
                     $(".albumstable").css("top", parseFloat($(".albumstable").css("top")) + $(navigator).height());
-					tableBox.resize();
+                    tableBox.resize();
                 }
                 var albums = album.albums;
                 addRecords(albums);
 
                 function addRecords(albums) {
-
                     var first = recordspage * pageno - recordspage;
                     var last = recordspage * pageno;
                     var pagealbums = Object.values(albums).slice(first, last);

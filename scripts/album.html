@@ -18,7 +18,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
         <script src="include/oyoplayer.js"></script>
-        <link rel="stylesheet" href="include/oyoplayer.css">
         <script src="include/oyographics.js"></script>
         <script src="include/oyomirror.js"></script>
 
@@ -62,6 +61,10 @@
             td {
                 padding             : 3px 5px 3px 5px;
             }
+			.oyoplayer {
+				border-radius		: 16px;
+				box-shadow          : 4px 4px 8px rgba(0, 0, 0, 0.5);
+			}
             .back {
                 font-size           : 13.33px;
                 height              : 25px;
@@ -203,13 +206,14 @@
                 var songs = [];
                 var tags = [];
 
-                audioPlayer = new oyoPlayer("player");
+                audioPlayer = new oyoPlayer(500);
                 $(".player").append(audioPlayer);
                 $(".player").append("<br>");
                 audio = audioPlayer.audio;
                 audioPlayer.setNotification("Push Play to start");
 
                 $(audio).on("playing", playing);
+                $(audio).on("timeupdate", timeUpdate);
                 $(audio).on("pause", paused);
                 $(audio).on("ended", ended);
                 $(audio).on("error", error);
@@ -220,29 +224,34 @@
                 }
 
                 function playing() {
-                    $(".oyoplaypause").each(function (index, playPause) {
+                    $(".oyoplaypauseicon").each(function (index, playPause) {
                         playPause.changeState(0);
                     });
                     var track = audioPlayer.getCurrentTrack();
                     var song = audioPlayer.getCurrentSong();
                     $(".title").css("font-weight", "normal");
                     if (songs[track] === song) {
-                        var playpauseid = "#playpause" + track;
-                        var playPause = $(playpauseid)[0];
+                        var playPause = $(".oyoplaypauseicon").get(track - 1);
                         playPause.changeState(1);
-                        var titleid = "#title" + track;
-                        $(titleid).css("font-weight", "bold");
+                        var title = $(".title").get(track - 1);
+                        $(title).css("font-weight", "bold");
+                    }
+                }
+
+                function timeUpdate() {
+                    if (audioPlayer.state.ended) {
+                        $(audioPlayer.audio).trigger("ended");
                     }
                 }
 
                 function paused() {
-                    $(".oyoplaypause").each(function (index, playPause) {
+                    $(".oyoplaypauseicon").each(function (index, playPause) {
                         playPause.changeState(0);
                     });
                 }
 
                 function ended() {
-                    $(".oyoplaypause").each(function (index, playPause) {
+                    $(".oyoplaypauseicon").each(function (index, playPause) {
                         playPause.changeState(0);
                     });
                     $(".title").css("font-weight", "normal");
@@ -262,17 +271,16 @@
                 }
 
                 if (boxsetindex) {
-                    try {
-                        var boxsetalbumsFrame = parent.frames["boxsetalbums"];
-                        if (boxsetalbumsFrame) {
-                            $("body").css("overflow-y", "hidden");
-                            var documentObserver = new ResizeObserver(function () {
+                    var boxsetalbumsFrame = parent.frames["boxsetalbums"];
+                    if (boxsetalbumsFrame) {
+                        var documentObserver = new ResizeObserver(function () {
+                            try {
                                 var height = boxsetalbumsFrame.document.body.scrollHeight;
                                 window.localStorage.setItem("boxsetalbumsheight", height);
-                            });
-                            documentObserver.observe(document.documentElement);
-                        }
-                    } catch (error) {
+                            } catch (error) {
+                            }
+                        });
+                        documentObserver.observe(document.documentElement);
                     }
                 }
 
@@ -383,6 +391,16 @@
                             }
                             var fileexists = track.fileexists;
 
+                            if (fileexists) {
+                                if (!Boolean(audioPlayer.firstTrack)) {
+                                    audioPlayer.firstTrack = i;
+                                }
+                            }
+
+                            if (fileexists) {
+                                audioPlayer.lastTrack = i;
+                            }
+
                             songs[i] = filename;
                             tags[i] = artist + " - " + title + " (" + albumtitle + ")";
                             audioPlayer.addToPlaylist(songs[i], tags[i]);
@@ -400,14 +418,12 @@
                             $(row).append(cell);
 
                             var playPause = new oyoPlayPause();
-                            playPause.scale(1);
                             playPause.changeBackgroundColor("lightgray");
                             $(playPause).css("display", "none");
-                            $(playPause).attr("id", "playpause" + (i));
                             $(playPause).on("click", {index: i}, startPlayer);
                             $(cell).append(playPause);
 
-                            if (audioPlayer.state.playing) {
+                            if (!audioPlayer.state.paused) {
                                 var song = audioPlayer.getCurrentSong();
                                 if (songs[i] === song) {
                                     playPause.changeState(1);
@@ -421,7 +437,6 @@
 
                             var cell = document.createElement("td");
                             $(cell).attr("class", "fieldvalue title");
-                            $(cell).attr("id", "title" + i);
                             $(cell).html(title);
                             $(row).append(cell);
 
@@ -465,7 +480,9 @@
                         $(".headertitle").html(headertitle);
                     }
 
-                    audioPlayer.setSourceIndex(1);
+                    if (audioPlayer.state.paused) {
+                        audioPlayer.setSourceIndex(1);
+                    }
 
                     $("a").on("click", function (event) {
                         var href = $(event.target).attr("href");
@@ -480,42 +497,42 @@
                         $(".albumimagemirror").animate({"height": "127px"}, 1000);
                         var transform;
                         $(".oyomirror").animate(
-                                {scale: 2, translateX: 125, translateY: 15.625},
-                                {step: function (value, fx) {
-                                        if (fx.prop === "scale") {
-                                            fx.start = 1;
-                                            transform = "scale(" + value + ")";
-                                        }
-                                        if (fx.prop === "translateX") {
-                                            transform += " translateX(" + value + "px)";
-                                        }
-                                        if (fx.prop === "translateY") {
-                                            transform += "translateY(" + value + "px)";
-                                            $(".oyomirror").css("transform", transform);
-                                        }
-                                    },
-                                    duration: 1000
-                                });
+                            {scale: 2, translateX: 125, translateY: 15.625},
+                            {step: function (value, fx) {
+                                    if (fx.prop === "scale") {
+                                        fx.start = 1;
+                                        transform = "scale(" + value + ")";
+                                    }
+                                    if (fx.prop === "translateX") {
+                                        transform += " translateX(" + value + "px)";
+                                    }
+                                    if (fx.prop === "translateY") {
+                                        transform += "translateY(" + value + "px)";
+                                        $(".oyomirror").css("transform", transform);
+                                    }
+                                },
+                                duration: 1000
+                            });
                     } else {
                         $(".image").animate({"width": "250px"}, 1000);
                         $(".albumimagemirror").animate({"height": "63.5px"}, 1000);
                         $(".oyomirror").animate(
-                                {scale: 1, translateX: 0, translateY: 0},
-                                {step: function (value, fx) {
-                                        if (fx.prop === "scale") {
-                                            fx.start = 2;
-                                            transform = "scale(" + value + ")";
-                                        }
-                                        if (fx.prop === "translateX") {
-                                            transform += " translateX(" + value + "px)";
-                                        }
-                                        if (fx.prop === "translateY") {
-                                            transform += " translateY(" + value + "px)";
-                                            $(".oyomirror").css("transform", transform);
-                                        }
-                                    },
-                                    duration: 1000
-                                });
+                            {scale: 1, translateX: 0, translateY: 0},
+                            {step: function (value, fx) {
+                                    if (fx.prop === "scale") {
+                                        fx.start = 2;
+                                        transform = "scale(" + value + ")";
+                                    }
+                                    if (fx.prop === "translateX") {
+                                        transform += " translateX(" + value + "px)";
+                                    }
+                                    if (fx.prop === "translateY") {
+                                        transform += " translateY(" + value + "px)";
+                                        $(".oyomirror").css("transform", transform);
+                                    }
+                                },
+                                duration: 1000
+                            });
                     }
                 });
 
