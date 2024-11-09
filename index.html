@@ -290,7 +290,7 @@
                     jsonpCallback: "getYears",
                     async: false,
                     success: function (years) {
-                        yearList = new oyoComboBox(125, 500);
+                        yearList = new oyoComboBox(120, 500);
                         yearList.changePlaceHolder("Select Year");
                         $(yearList).insertAfter(countryList);
                         for (var i = 0; i < years.length; i++) {

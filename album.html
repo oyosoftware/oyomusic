@@ -270,9 +270,9 @@
                     $("#player").append(audioPlayer);
                 }
 
-				if (audioPlayer.state.paused) {
-					audioPlayer.setNotification("Push Play to start");
-				}
+                if (audioPlayer.state.paused) {
+                    audioPlayer.setNotification("Push Play to start");
+                }
 
                 $(audioPlayer.audio).on("playing", playing);
                 $(audioPlayer.audio).on("timeupdate", timeUpdate);
@@ -303,12 +303,25 @@
                     var song = audioPlayer.getCurrentSong();
                     $(".title").css("font-weight", "normal");
                     if (songs[track] === song) {
-                        var playpauseid = "#playpause" + track;
-                        var playPause = $(playpauseid)[0];
+                        var playPause = $(".oyoplaypauseicon").get(track - 1);
                         playPause.changeState(1);
-                        var titleid = "#title" + track;
-                        $(titleid).css("font-weight", "bold");
-                        $(titleid)[0].scrollIntoView(false);
+                        var title = $(".title").get(track - 1);
+                        $(title).css("font-weight", "bold");
+                        if (!boxsetalbumsFrame) {
+                            var scrollTop = $(window).scrollTop();
+                            var scrollBottom = scrollTop + $(window).height();
+                            var titleTop = $(title).offset().top;
+                            var offsetTop = titleTop + 25;
+                        } else {
+                            var scrollTop = $(parent).scrollTop();
+                            var scrollBottom = scrollTop + $(parent).height();
+                            var boxsetTop = $(boxsetalbumsFrame.frameElement).offset().top;
+                            var titleTop = $(title).offset().top;
+                            var offsetTop = boxsetTop + titleTop + 25;
+                        }
+                        if (offsetTop < scrollTop || offsetTop > scrollBottom) {
+                            title.scrollIntoView();
+                        }
                     }
                 }
 
@@ -567,10 +580,8 @@
                                                         $(row).append(cell);
 
                                                         var playPause = new oyoPlayPause();
-                                                        playPause.scale(1);
                                                         playPause.changeBackgroundColor("lightgray");
                                                         $(playPause).css("display", "none");
-                                                        $(playPause).attr("id", "playpause" + (i + 1));
                                                         $(playPause).on("click", {index: i + 1}, startPlayer);
                                                         $(cell).append(playPause);
 
@@ -583,15 +594,11 @@
 
                                                         if (fileexists) {
                                                             $(playPause).css("display", "inline");
-                                                        }
-
-                                                        if (fileexists) {
                                                             filesExist = true;
                                                         }
 
                                                         var cell = document.createElement("td");
                                                         $(cell).attr("class", "fieldvalue title");
-                                                        $(cell).attr("id", "title" + (i + 1));
                                                         $(row).append(cell);
                                                         if (!audioPlayer.state.paused) {
                                                             var song = audioPlayer.getCurrentSong();

@@ -1,6 +1,9 @@
 oYoMusic 3.1
+08-11-2024  Refined layout for album lists
+08-11-2024  Updated Joomla functionality
+08-11-2024  Resolved player initialization error
 26-10-2024  Added combo box plugin for selections
-26-10-2024  Optimized player and some othe components
+26-10-2024  Optimized player and some other components
 26-10-2024  Changed time formatting
 oYoMusic 3.0
 29-09-2024  Added the new player

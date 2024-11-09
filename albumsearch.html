@@ -29,7 +29,7 @@
                 font-family         : Arial, Verdana, Helvetica, sans-serif;
                 font-size           : 10pt;
                 margin              : 0px;
-                padding             : 10px;
+                padding             : 11px;
                 padding-right       : 0px;
                 padding-top         : 0px;
             }
@@ -71,16 +71,21 @@
                 padding             : 0px 8px;
                 white-space         : nowrap;
             }
-            .oyopaddingbox {
-                min-height          : 22px;
-            }
             table {
                 font-size           : 10pt;
                 border-spacing      : 0px;
             }
+			.headertable {
+				padding-right		: 11px;
+				z-index             : 3;
+			}
+			.headertablepaddingbox {
+				background-color	: white;
+				z-index             : 2;
+			}
             .albumstable {
-				padding-right		: 10px;
-				padding-bottom		: 10px;
+				padding-right		: 11px;
+				padding-bottom		: 9px;
                 position            : relative;
                 top                 : 47px;
                 left                : 0px;
@@ -93,15 +98,24 @@
                 padding             : 3px 5px 3px 5px;
             }
             .fieldname {
-                border              : 0.5px solid black;
+                border              : 1px solid black;
             }
             .fieldvalue {
-                border              : 0.5px solid black;
+                border              : 1px solid black;
+            }
+            tr:first-child td {
+                border-top-width	: 0px;
+            }
+            tr:last-child td {
                 border-bottom-width : 0px;
-                border-right-width  : 0px;
+            }
+            td:first-child {
+                border-left-width	: 0px;
+            }
+            td:last-child {
+                border-right-width	: 0px;
             }
             .hcover {
-                min-width           : 53px;
                 text-align          : center;
             }
             .cover {
@@ -110,20 +124,24 @@
             }
             .image {
                 vertical-align      : middle;
+				width				: 47.7px;
             }
             .hcountry {
+				text-align          : left;
             }
             .country {
                 width               : 8%;
                 white-space         : nowrap;
             }
             .hartist {
+				text-align          : left;
             }
             .artist {
                 width               : 20%;
                 white-space         : nowrap;
             }
             .htitle {
+				text-align          : left;
             }
             .title {
                 position            : relative;
@@ -145,11 +163,13 @@
                 text-align          : right;
             }
             .hformat {
+				text-align          : left;
             }
             .format {
                 width               : 4%;
             }
             .hgenre {
+				text-align          : left;
             }
             .genre {
                 width               : 16%;
@@ -224,14 +244,12 @@
                 }
 
                 var tableHeader = new oyoTableHeader(".albumstable");
+                $(tableHeader).addClass("headertable");
                 tableHeader.changeBorder("none");
-                $(tableHeader).css("z-index", 3);
-                $(tableHeader).css("padding-right", "10px");
                 $(tableHeader).insertBefore(".albumstable");
 
                 var tableHeaderBox = new oyoPaddingBox(tableHeader);
-                $(tableHeaderBox).css("z-index", 2);
-                $(tableHeaderBox).css("background-color", "white");
+                $(tableHeaderBox).addClass("headertablepaddingbox");
                 $("body").append(tableHeaderBox);
 
                 var tableBox = new oyoPaddingBox(".albumstable");
@@ -275,9 +293,9 @@
                                     $(".header").append(navigator);
                                     navigator.setPage(pageno);
                                     $(tableHeader).css("top", parseFloat($(tableHeader).css("top")) + $(navigator).height());
-									tableHeaderBox.resize();
+                                    tableHeaderBox.resize();
                                     $(".albumstable").css("top", parseFloat($(".albumstable").css("top")) + $(navigator).height());
-									tableBox.resize();
+                                    tableBox.resize();
                                 }
                             }
                         });
@@ -436,22 +454,22 @@
             <div class="results"></div>
         </div>
 
-                <table class="albumstable">
-                    <thead>
-                        <tr class="albumstableheader">
-                            <th class="fieldname hcover">Cover</th>
-                            <th class="fieldname hcountry">Country</th>
-                            <th class="fieldname hartist">Artist</th>
-                            <th class="fieldname htitle">Title</th>
-                            <th class="fieldname hreleased">Released</th>
-                            <th class="fieldname hcount">Count</th>
-                            <th class="fieldname hformat">Format</th>
-                            <th class="fieldname hgenre">Genre</th>
-                            <th class="fieldname hplayingtime">Playing Time</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+		<table class="albumstable">
+			<thead>
+				<tr class="albumstableheader">
+					<th class="fieldname hcover">Cover</th>
+					<th class="fieldname hcountry">Country</th>
+					<th class="fieldname hartist">Artist</th>
+					<th class="fieldname htitle">Title</th>
+					<th class="fieldname hreleased">Released</th>
+					<th class="fieldname hcount">Count</th>
+					<th class="fieldname hformat">Format</th>
+					<th class="fieldname hgenre">Genre</th>
+					<th class="fieldname hplayingtime">Playing Time</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
 
     </body>
 
