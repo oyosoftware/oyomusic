@@ -162,7 +162,9 @@ function read_files($dir) {
                         }
 
                         $count = 0;
-                        $count = count($tags["id3v2"]["PRIV"]);
+                        if (is_countable($tags["id3v2"]["PRIV"])) {
+                            $count = count($tags["id3v2"]["PRIV"]);
+                        }
                         if ($count > 0) {
                             If ($firsttag == true) {
                                 $message = "$albumartist - $released - $albumtitle - $discno-$track - $tracktitle";
