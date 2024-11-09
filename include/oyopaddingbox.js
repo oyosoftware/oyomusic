@@ -11,9 +11,9 @@
 
 function oyoPaddingBox(refObject) {
 
-    var boxBorder = "0.5px solid black";
+    var boxBorder = "1px solid black";
     var boxPadding = "1px";
-    var boxBorderBorder = "0.5px solid black";
+    var boxBorderBorder = "1px solid black";
 
     var paddingBox = document.createElement("div");
     $(paddingBox).attr("class", "oyopaddingbox");
@@ -29,15 +29,15 @@ function oyoPaddingBox(refObject) {
     $(paddingBoxBorder).css("border", boxBorderBorder);
     $(paddingBox).append(paddingBoxBorder);
 
-    $(window).on("resize", function() {
+    $(window).on("resize", function () {
         resizePaddingBox();
     });
 
-    $(window).on("scroll", function() {
+    $(window).on("scroll", function () {
         resizePaddingBox();
     });
 
-    var observer = new ResizeObserver(function() {
+    var observer = new ResizeObserver(function () {
         resizePaddingBox();
     });
     observer.observe($(refObject)[0]);
@@ -69,7 +69,8 @@ function oyoPaddingBox(refObject) {
         var windowWidth = $(window).width();
         var minLeft = (offsetLeft % windowWidth) + leftRefSpace - leftBoxSpace - leftBoxBorderSpace;
         var refWidth = $(refObject).width();
-        var maxRight = windowWidth - rightRefSpace;
+        var maxRight = windowWidth - rightRefSpace + rightBoxSpace + rightBoxBorderSpace;
+        //var maxRight = windowWidth - rightRefSpace;
 
         if (position === "fixed") {
             var left = fixedOffsetLeft + leftRefSpace - leftBoxSpace - leftBoxBorderSpace;
@@ -101,7 +102,8 @@ function oyoPaddingBox(refObject) {
         var windowHeight = $(window).height();
         var minTop = (offsetTop % windowHeight) + topRefSpace - topBoxSpace - topBoxBorderSpace;
         var refHeight = $(refObject).height();
-        var maxBottom = windowHeight - bottomRefSpace;
+        var maxBottom = windowHeight - bottomRefSpace + bottomBoxSpace + bottomBoxBorderSpace;
+        //var maxBottom = windowHeight - bottomRefSpace;
 
         if (position === "fixed") {
             var top = fixedOffsetTop + topRefSpace - topBoxSpace - topBoxBorderSpace;
