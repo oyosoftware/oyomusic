@@ -391,16 +391,6 @@
                             }
                             var fileexists = track.fileexists;
 
-                            if (fileexists) {
-                                if (!Boolean(audioPlayer.firstTrack)) {
-                                    audioPlayer.firstTrack = i;
-                                }
-                            }
-
-                            if (fileexists) {
-                                audioPlayer.lastTrack = i;
-                            }
-
                             songs[i] = filename;
                             tags[i] = artist + " - " + title + " (" + albumtitle + ")";
                             audioPlayer.addToPlaylist(songs[i], tags[i]);
