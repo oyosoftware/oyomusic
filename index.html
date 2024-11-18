@@ -18,10 +18,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="https://code.jquery.com/jquery-3.4.0.min.js"></script>
         <script src="include/oyoplayer.js"></script>
-		<script src="include/oyographics.js"></script>
-		<script src="include/oyocombobox.js"></script>
+        <script src="include/oyographics.js"></script>
+        <script src="include/oyocombobox.js"></script>
 
-		<!-- Style of main source -->
+        <!-- Style of main source -->
         <style>
             * {
                 box-sizing          : border-box;
@@ -49,9 +49,9 @@
                 border-radius       : 5px;
             }
             #artistindex {
-				border              : 1px solid black;
+                border              : 1px solid black;
                 height              : 120px;
-				overflow			: auto;
+                overflow			: auto;
                 padding             : 8px;
                 padding-bottom      : 0px;
             }
@@ -73,7 +73,7 @@
             }
         </style>
 
-		<!-- Style of artist index -->
+        <!-- Style of artist index -->
         <style>
             a:link {
                 text-decoration     : none;
@@ -89,15 +89,15 @@
             }
             #player {
                 display             : inline-block;
-				padding-top			: 8px;
+                padding-top			: 8px;
             }
-			.oyoplayer {
-				border-radius		: 16px;
-				box-shadow          : 4px 4px 8px rgba(0, 0, 0, 0.5);
-			}
+            .oyoplayer {
+                border-radius		: 16px;
+                box-shadow          : 4px 4px 8px rgba(0, 0, 0, 0.5);
+            }
             #titlerecord {
                 display             : inline-block;
-				width				: 863px;
+                width				: 863px;
                 vertical-align      : top;
                 padding				: 0px 16px;
             }
@@ -117,48 +117,48 @@
                 padding             : 8px;
                 margin              : 0px;
                 white-space         : nowrap;
-				position			: fixed;
-				top					: 58px;
-				left				: 520px;
-				z-index				: 1;
-				width				: calc(100% - 535px);
+                position			: fixed;
+                top					: 58px;
+                left				: 520px;
+                z-index				: 1;
+                width				: calc(100% - 535px);
             }
             form * {
                 vertical-align      : middle;
             }
             #search {
-				display				: none;
-				width               : 205px;
+                display				: none;
+                width               : 205px;
                 height              : 29.225px;
                 margin-right        : 8px;
                 border              : 1px solid black;
                 box-shadow          : 4px 4px 8px rgba(0, 0, 0, 0.5);
-				font-weight         : bold;
-				padding				: 4px;
-				outline				: none;
+                font-weight         : bold;
+                padding				: 4px;
+                outline				: none;
             }
-			.oyocombobox {
-				display				: inline-block;
-				margin-right        : 8px;
-				font-weight			: bold;
-			}
-			.oyocomboboxheader {
-				box-shadow          : 4px 4px 8px rgba(0, 0, 0, 0.5);
-			}
-			#submitbox {
-				display				: none;
-				min-width			: 115px;
-				width				: calc(100% - 715px);
-				text-align			: right;
-			}
+            .oyocombobox {
+                display				: inline-block;
+                margin-right        : 8px;
+                font-weight			: bold;
+            }
+            .oyocomboboxheader {
+                box-shadow          : 4px 4px 8px rgba(0, 0, 0, 0.5);
+            }
+            #submitbox {
+                display				: none;
+                min-width			: 115px;
+                width				: calc(100% - 715px);
+                text-align			: right;
+            }
             #submit {
                 width               : 115px;
                 height              : 29.225px;
-				margin-left			: -4px;
+                margin-left			: -4px;
                 font-size           : 10pt;
                 font-weight         : bold;
                 box-shadow          : 4px 4px 8px rgba(0, 0, 0, 0.5);
-				outline				: none;
+                outline				: none;
             }
             #version {
                 display             : inline-block;
@@ -166,9 +166,9 @@
                 font-weight         : bold;
                 vertical-align      : top;
                 white-space         : nowrap;
-				position			: fixed;
-				top					: 2px;
-				right				: 4px;
+                position			: fixed;
+                top					: 2px;
+                right				: 4px;
             }
         </style>
 
@@ -372,23 +372,23 @@
             });
         </script>
 
-		<div id="artistindex">
-			<div id="titlebox">
-				<div id="player"></div>
-				<div id="titlerecord">
-					<div id="title"></div>
-					<div id="record"></div>
-				</div>
-				<div id="version">&#169; 2024 oYoMusic 3.1</div>
-			</div>
-		</div>
+        <div id="artistindex">
+            <div id="titlebox">
+                <div id="player"></div>
+                <div id="titlerecord">
+                    <div id="title"></div>
+                    <div id="record"></div>
+                </div>
+                <div id="version">&#169; 2024 oYoMusic 3.1</div>
+            </div>
+        </div>
 
-		<form>
-			<input id="search" type="search" autofocus="autofocus" placeholder="Search Artist, Title or Boxset" title="All words in Artist or in Title/Boxset"/>
-			<div id="submitbox">
-				<button id="submit" type="button">Search</button>
-			</div>
-		</form>
+        <form>
+            <input id="search" type="search" autofocus="autofocus" placeholder="Search Artist, Title or Boxset" title="All words in Artist or in Title/Boxset"/>
+            <div id="submitbox">
+                <button id="submit" type="button">Search</button>
+            </div>
+        </form>
 
         <iframe name="artists" id="artists"> </iframe>
         <iframe name="albums"  id="albums">  </iframe>
