@@ -255,7 +255,7 @@
                 note.changeFillColor("black");
                 $(note).css("position", "relative");
                 $(note).css("top", "-2px");
-                $(note).css("left", "-2px");
+                $(note).css("left", "-4px");
                 $("#submit").prepend(note);
 
                 var url = "scripts/getCountries.php";
@@ -290,7 +290,7 @@
                     jsonpCallback: "getYears",
                     async: false,
                     success: function (years) {
-                        yearList = new oyoComboBox(120, 500);
+                        yearList = new oyoComboBox(125, 500);
                         yearList.changePlaceHolder("Select Year");
                         $(yearList).insertAfter(countryList);
                         for (var i = 0; i < years.length; i++) {
@@ -307,7 +307,7 @@
                     jsonpCallback: "getGenres",
                     async: false,
                     success: function (genres) {
-                        genreList = new oyoComboBox(165, 500);
+                        genreList = new oyoComboBox(170, 500);
                         genreList.changePlaceHolder("Select Genre");
                         $(genreList).insertAfter(yearList);
                         for (var i = 0; i < genres.length; i++) {
@@ -323,9 +323,9 @@
                     var link = document.createElement("a");
                     $(link).attr("target", "albums");
                     var search = encodeURIComponent($("#search").val());
-                    var country = encodeURIComponent(countryList.text);
-                    var year = encodeURIComponent(yearList.text);
-                    var genre = encodeURIComponent(genreList.text);
+                    var country = encodeURIComponent(countryList.value);
+                    var year = encodeURIComponent(yearList.value);
+                    var genre = encodeURIComponent(genreList.value);
                     var href = "albumsearch.html?search=" + search + "&country=" + country + "&year=" + year + "&genre=" + genre + "&pageno=1";
                     $(link).attr("href", href);
                     link.click();
