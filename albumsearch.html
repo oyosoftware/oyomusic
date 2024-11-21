@@ -71,28 +71,33 @@
                 padding             : 0px 8px;
                 white-space         : nowrap;
             }
+            .oyopaddingbox {
+                visibility          : hidden;
+            }
             table {
                 font-size           : 10pt;
                 border-spacing      : 0px;
             }
-			.headertable {
-				padding-right		: 11px;
-				z-index             : 3;
-			}
 			.headertablepaddingbox {
 				background-color	: white;
 				z-index             : 2;
 			}
+			.headertable {
+                visibility          : hidden;
+				padding-right		: 11px;
+				z-index             : 3;
+			}
+            .albumstableheader {
+                visibility          : hidden;
+            }
             .albumstable {
+                visibility          : hidden;
 				padding-right		: 11px;
 				padding-bottom		: 9px;
                 position            : relative;
                 top                 : 47px;
                 left                : 0px;
                 z-index             : 1;
-            }
-            .albumstableheader {
-                visibility          : hidden;
             }
             th, td {
                 padding             : 3px 5px 3px 5px;
@@ -311,6 +316,11 @@
                         jsonpCallback: "getSearch",
                         data: {search: psearch, country: pcountry, year: pyear, genre: pgenre, pageno: pageno},
                         success: function (lines) {
+                            if (lines.length > 0) {
+                                $(".oyopaddingbox").css("visibility", "visible");
+                                $(".headertable").css("visibility", "visible");
+                                $(".albumstable").css("visibility", "visible");
+                            }
                             for (i = 0; i < lines.length; i++) {
                                 var artistid = lines[i].artistid;
                                 var albumid = lines[i].albumid;
