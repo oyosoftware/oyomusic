@@ -137,6 +137,17 @@
                 padding             : 4px;
                 outline             : none;
             }
+            #search::-webkit-input-placeholder {
+                color               : black;
+                opacity             : 0.75;
+            }
+            #search::-webkit-search-cancel-button {
+                appearance          : none;
+                height              : 15px;
+                width               : 15px;
+                background-image    : url("images/cancel.svg");
+                background-size     : 15px 15px;
+            }
             .oyocombobox {
                 display             : inline-block;
                 margin-right        : 8px;
@@ -384,7 +395,7 @@
         </div>
 
         <form>
-            <input id="search" type="search" autofocus="autofocus" placeholder="Search Artist, Title or Boxset" title="All words in Artist or in Title/Boxset"/>
+            <input id="search" type="search" autofocus="autofocus" placeholder="Search Artist or Title" title="All words in Artist or in Title"/>
             <div id="submitbox">
                 <button id="submit" type="button">Search</button>
             </div>
