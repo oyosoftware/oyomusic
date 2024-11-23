@@ -102,6 +102,7 @@
                                                 $('.pathname').html(json.pathname);
                                                 break;
                                             case json.message !== undefined:
+                                                json.message = json.message.replace("    ", "&emsp;");
                                                 $('.messages').append(json.message + "<br>");
                                                 var scrollHeight = $('.messages').prop("scrollHeight");
                                                 $('.messages').scrollTop(scrollHeight);

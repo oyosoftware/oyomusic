@@ -117,11 +117,10 @@ function read_files($dir) {
                                     }
                                     foreach ($tags["tags"]["id3v2"][$key] as $key2 => $value2) {
                                         $message = "$key" . "[$key2]: $value2";
+                                        $message = "    " . $message;
                                         if ($servername === null) {
-                                            $message = "    " . $message;
                                             echo $message . "\r\n";
                                         } else {
-                                            $message = "&nbsp;&nbsp;&nbsp;&nbsp;" . $message;
                                             $response = array('message' => htmlspecialchars($message));
                                             $json = json_encode($response, JSON_INVALID_UTF8_IGNORE);
                                             echo $json . ",\n";
@@ -150,7 +149,7 @@ function read_files($dir) {
                                                 $message = "    " . $message;
                                                 echo "$message" . "\r\n";
                                             } else {
-                                                $message = "&nbsp;&nbsp;&nbsp;&nbsp;" . $message;
+                                                $message = "    " . $message;
                                                 $response = array('message' => htmlspecialchars($message));
                                                 $json = json_encode($response, JSON_INVALID_UTF8_IGNORE);
                                                 echo $json . ",\n";
@@ -178,11 +177,10 @@ function read_files($dir) {
                                 $firsttag = false;
                             }
                             $message = "there are $count PRIV (private) frames";
+                            $message = "    " . $message;
                             if ($servername === null) {
-                                $message = "    " . $message;
                                 echo "$message" . "\r\n";
                             } else {
-                                $message = "&nbsp;&nbsp;&nbsp;&nbsp;" . $message;
                                 $response = array('message' => $message);
                                 $json = json_encode($response, JSON_INVALID_UTF8_IGNORE);
                                 echo $json . ",\n";
@@ -203,7 +201,7 @@ $getID3 = new getID3;
 $onlyPrivateFrames = false;
 
 $base = "";
-//$base = "/Populair/MNO/Of Montreal";
+//$base = "/World/JKL/Lafourcade, Natalia";
 
 $audiosource = str_ireplace("\\", "/", $audiosource);
 $base = str_ireplace("\\", "/", $base);
