@@ -261,7 +261,6 @@
 
                 var songs = [];
                 var tags = [];
-                var playeralbum = "";
 
                 var artistIndex = parent.frames["artistindex"] || parent.parent.frames["artistindex"];
                 var audioPlayer = parent.audioPlayer || parent.parent.audioPlayer;
@@ -282,14 +281,13 @@
                 $(audioPlayer.audio).on("error", error);
 
                 function startPlayer(event) {
-                    if (artistIndex && artistIndex.playeralbum !== undefined && playeralbum !== artistIndex.playeralbum) {
-                        audioPlayer.clearPlaylist();
-                        for (i = 1; i < songs.length; i++) {
-                            audioPlayer.addToPlaylist(songs[i], tags[i]);
+                    if (audioPlayer.state.playing) {
+                        if (artistIndex && albumid !== artistIndex.albumid) {
+                            audioPlayer.clearPlaylist();
+                            for (i = 1; i < songs.length; i++) {
+                                audioPlayer.addToPlaylist(songs[i], tags[i]);
+                            }
                         }
-                    }
-                    if (artistIndex) {
-                        artistIndex.playeralbum = playeralbum;
                     }
 
                     var index = event.data.index;
@@ -297,6 +295,9 @@
                 }
 
                 function playing() {
+                    if (artistIndex) {
+                        artistIndex.albumid = albumid;
+                    }
                     $(".oyoplaypauseicon").each(function (index, playPause) {
                         playPause.changeState(0);
                     });
@@ -481,8 +482,6 @@
                             jsonpCallback: "getArtist",
                             success: function (artist) {
                                 var name = artist.name;
-                                playeralbum = name + released + albumtitle;
-
                                 var headertitle = name + " - " + albumtitle;
                                 $(document).prop("title", headertitle);
                                 $(".headertitle").html(headertitle);
