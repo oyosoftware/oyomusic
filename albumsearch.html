@@ -71,25 +71,19 @@
                 padding             : 0px 8px;
                 white-space         : nowrap;
             }
-            .oyopaddingbox {
-                visibility          : hidden;
-            }
             table {
                 font-size           : 10pt;
                 border-spacing      : 0px;
             }
-			.headertablepaddingbox {
-				background-color	: white;
-				z-index             : 2;
-			}
-			.headertable {
+ 			.headertable {
                 visibility          : hidden;
 				padding-right		: 11px;
 				z-index             : 3;
 			}
-            .albumstableheader {
-                visibility          : hidden;
-            }
+			.headertablepaddingbox {
+				background-color	: white;
+				z-index             : 2;
+			}
             .albumstable {
                 visibility          : hidden;
 				padding-right		: 11px;
@@ -102,10 +96,19 @@
             th, td {
                 padding             : 3px 5px 3px 5px;
             }
-            .fieldname {
-                border              : 1px solid black;
+            tr:first-child th {
+                border-top          : 1px solid black;
             }
-            .fieldvalue {
+            tr:last-child th {
+                border-bottom       : 1px solid black;
+            }
+            th:first-child {
+                border-left         : 1px solid black;
+            }
+            th:last-child {
+                border-right        : 1px solid black;
+            }
+            .albumstable td {
                 border              : 1px solid black;
             }
             tr:first-child td {
@@ -124,7 +127,6 @@
                 text-align          : center;
             }
             .cover {
-                position            : relative;
                 padding             : 1px;
             }
             .image {
@@ -149,7 +151,6 @@
 				text-align          : left;
             }
             .title {
-                position            : relative;
                 width               : 40%;
                 white-space         : nowrap;
             }
@@ -250,15 +251,13 @@
 
                 var tableHeader = new oyoTableHeader(".albumstable");
                 $(tableHeader).addClass("headertable");
-                tableHeader.changeBorder("none");
-                $(tableHeader).insertBefore(".albumstable");
+                var headerTop = parseFloat($(".albumstable").css("top"));
+                tableHeader.changeMinTop(headerTop);
 
                 var tableHeaderBox = new oyoPaddingBox(tableHeader);
                 $(tableHeaderBox).addClass("headertablepaddingbox");
-                $("body").append(tableHeaderBox);
 
                 var tableBox = new oyoPaddingBox(".albumstable");
-                $("body").append(tableBox);
 
                 url = "scripts/getSettings.php";
                 $.ajax({
@@ -297,9 +296,10 @@
                                     var navigator = new oyoNavigator(records, searchrecordspage, pagerange, baseUrl);
                                     $(".header").append(navigator);
                                     navigator.setPage(pageno);
-                                    $(tableHeader).css("top", parseFloat($(tableHeader).css("top")) + $(navigator).height());
+                                    tableHeader.changeMinTop(headerTop + $(navigator).height());
                                     tableHeaderBox.resize();
-                                    $(".albumstable").css("top", parseFloat($(".albumstable").css("top")) + $(navigator).height());
+                                    var top = parseFloat($(".albumstable").css("top")) + $(navigator).height();
+                                    $(".albumstable").css("top", top);
                                     tableBox.resize();
                                 }
                             }
@@ -317,7 +317,6 @@
                         data: {search: psearch, country: pcountry, year: pyear, genre: pgenre, pageno: pageno},
                         success: function (lines) {
                             if (lines.length > 0) {
-                                $(".oyopaddingbox").css("visibility", "visible");
                                 $(".headertable").css("visibility", "visible");
                                 $(".albumstable").css("visibility", "visible");
                             }
@@ -338,7 +337,7 @@
                                 $("tbody").append(row);
 
                                 var cell = document.createElement("td");
-                                $(cell).attr("class", "fieldvalue cover");
+                                $(cell).attr("class", "cover");
                                 $(row).append(cell);
                                 var a = document.createElement("a");
                                 var href = "album.html?albumid=" + albumid + location.search.replace("?", "&");
@@ -351,7 +350,7 @@
                                 $(a).append(image);
 
                                 var cell = document.createElement("td");
-                                $(cell).attr("class", "fieldvalue country");
+                                $(cell).attr("class", "country");
                                 $(row).append(cell);
                                 var a = document.createElement("a");
                                 var href = "albumsearch.html?search=" + psearch + "&country=" + country + "&year=" + pyear + "&genre=" + pgenre + "&pageno=1";
@@ -368,7 +367,7 @@
                                 $(cell).append(a);
 
                                 var cell = document.createElement("td");
-                                $(cell).attr("class", "fieldvalue artist");
+                                $(cell).attr("class", "artist");
                                 $(row).append(cell);
                                 var a = document.createElement("a");
                                 var href = "albumlist.html?artistid=" + artistid + "&isboxset=0&boxsetid=0&pageno=1";
@@ -385,7 +384,7 @@
                                 $(cell).append(a);
 
                                 var cell = document.createElement("td");
-                                $(cell).attr("class", "fieldvalue title");
+                                $(cell).attr("class", "title");
                                 $(row).append(cell);
                                 var a = document.createElement("a");
                                 var href = "album.html?albumid=" + albumid + location.search.replace("?", "&");
@@ -402,7 +401,7 @@
                                 $(cell).append(a);
 
                                 var cell = document.createElement("td");
-                                $(cell).attr("class", "fieldvalue released");
+                                $(cell).attr("class", "released");
                                 $(row).append(cell);
                                 var a = document.createElement("a");
                                 var href = "albumsearch.html?search=" + psearch + "&country=" + pcountry + "&year=" + released + "&genre=" + pgenre + "&pageno=1";
@@ -419,17 +418,17 @@
                                 $(cell).append(a);
 
                                 var cell = document.createElement("td");
-                                $(cell).attr("class", "fieldvalue count");
+                                $(cell).attr("class", "count");
                                 $(cell).html(disccount);
                                 $(row).append(cell);
 
                                 var cell = document.createElement("td");
-                                $(cell).attr("class", "fieldvalue format");
+                                $(cell).attr("class", "format");
                                 $(cell).html(format);
                                 $(row).append(cell);
 
                                 var cell = document.createElement("td");
-                                $(cell).attr("class", "fieldvalue genre");
+                                $(cell).attr("class", "genre");
                                 $(row).append(cell);
                                 var a = document.createElement("a");
                                 var href = "albumsearch.html?search=" + psearch + "&country=" + pcountry + "&year=" + pyear + "&genre=" + genre + "&pageno=1";
@@ -446,7 +445,7 @@
                                 $(cell).append(a);
 
                                 var cell = document.createElement("td");
-                                $(cell).attr("class", "fieldvalue playingtime");
+                                $(cell).attr("class", "playingtime");
                                 $(cell).html(playingtime);
                                 $(row).append(cell);
                             } // end for loop
@@ -466,16 +465,16 @@
 
 		<table class="albumstable">
 			<thead>
-				<tr class="albumstableheader">
-					<th class="fieldname hcover">Cover</th>
-					<th class="fieldname hcountry">Country</th>
-					<th class="fieldname hartist">Artist</th>
-					<th class="fieldname htitle">Title</th>
-					<th class="fieldname hreleased">Released</th>
-					<th class="fieldname hcount">Count</th>
-					<th class="fieldname hformat">Format</th>
-					<th class="fieldname hgenre">Genre</th>
-					<th class="fieldname hplayingtime">Playing Time</th>
+				<tr>
+					<th class="hcover">Cover</th>
+					<th class="hcountry">Country</th>
+					<th class="hartist">Artist</th>
+					<th class="htitle">Title</th>
+					<th class="hreleased">Released</th>
+					<th class="hcount">Count</th>
+					<th class="hformat">Format</th>
+					<th class="hgenre">Genre</th>
+					<th class="hplayingtime">Playing Time</th>
 				</tr>
 			</thead>
 			<tbody></tbody>
