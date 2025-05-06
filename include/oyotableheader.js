@@ -1,40 +1,34 @@
 /*!
- * oyotableheader.js 1.0
+ * oyotableheader.js 2.0
  * tested with jQuery 3.4.0
  * http://www.oyoweb.nl
  *
- * © 2022 oYoSoftware
+ * © 2025 oYoSoftware
  * MIT License
  *
  * oyotableheader is a tool to give a table a fixed header
  */
 
-function oyoTableHeader(refTable, height) {
+function oyoTableHeader(refTable) {
 
     var defaultBackgroundColor = "#527FC3";
     var defaultTextColor = "white";
     var backgroundColor = defaultBackgroundColor;
     var textColor = defaultTextColor;
+    var minHeaderTop = 0;
 
-    var intBorderType = "cell";
-    var intBorder = "0.5px solid black";
+    var tableHeader = document.createElement("table");
+    $(tableHeader).attr("class", "oyotableheader");
+    $(tableHeader).css("background-color", defaultBackgroundColor);
+    $(tableHeader).css("color", defaultTextColor);
+    $(tableHeader).css("position", "fixed");
+    $(tableHeader).css("z-index", 999);
 
-    var table = document.createElement("table");
-    $(table).attr("class", "oyotable");
-    $(table).css("background-color", defaultBackgroundColor);
-    $(table).css("color", defaultTextColor);
-    if (height !== undefined) {
-        $(table).height(height);
-        $(table).css("max-height", height);
-    }
-    $(table).css("position", "fixed");
-    var top = $(refTable).offset().top;
-    var left = $(refTable).offset().left;
-    $(table).offset({top: top, left: left});
+    var tableHeaderHead = document.createElement("thead");
+    $(tableHeaderHead).attr("class", "oyotableheaderhead");
+    $(tableHeader).append(tableHeaderHead);
 
-    var thead = document.createElement("thead");
-    $(thead).attr("class", "oyotableheader");
-    $(table).append(thead);
+    $(tableHeader).insertBefore(refTable);
 
     var observer = new ResizeObserver(function () {
         resizeTableHeader();
@@ -42,51 +36,79 @@ function oyoTableHeader(refTable, height) {
     observer.observe($(refTable)[0]);
 
     resizeTableHeader = function () {
-        $(table).width($(refTable).width());
+        $(tableHeader).css("margin-left", $(refTable).css("margin-left"));
+        $(tableHeader).css("margin-right", $(refTable).css("margin-right"));
+        $(tableHeader).css("border-left", $(refTable).css("border-left"));
+        $(tableHeader).css("border-right", $(refTable).css("border-right"));
+        $(tableHeader).css("padding-left", $(refTable).css("padding-left"));
+        $(tableHeader).css("padding-right", $(refTable).css("padding-right"));
         var clone = $("thead", refTable).clone(true);
-        $(clone).attr("class", "oyotableheader");
-
-        switch (true) {
-            case intBorderType === "table":
-                $(table).css("border", intBorder);
-                $("tr", clone).css("border-width", "0px");
-                $("th", clone).css("border-width", "0px");
-                break;
-            case intBorderType === "cell":
-                $(table).css("border-width", "0px");
-                $("tr", clone).css("border-width", "0px");
-                $("th", clone).css("border", intBorder);
-                break;
-            case intBorderType === "none":
-                $(table).css("border-width", "0px");
-                $("tr", clone).css("border-width", "0px");
-                $("th", clone).css("border-width", "0px");
-                break;
-        }
-
+        $(clone).attr("class", "oyotableheaderhead");
+        $(".oyotableheaderhead", tableHeader).replaceWith(clone);
+        var topHeight = parseFloat($(refTable).css("border-top-width")) + parseFloat($(refTable).css("padding-top"));
         $(clone).find("tr").each(function (index, element) {
             $(element).attr("class", "oyotableheaderrow");
         });
         $(clone).find("th").each(function (index, element) {
+            $(element).css("box-sizing", "border-box");
             var cell = $("th", refTable).eq(index);
-            var width = parseFloat($(cell).outerWidth());
-            $(element).outerWidth(width);
+            $(element).outerWidth($(cell).outerWidth());
+            $(element).css("min-width", $(cell).outerWidth());
+            $(element).outerHeight($(cell).outerHeight() + topHeight);
+            $(element).css("min-height", $(cell).outerHeight() + topHeight);
         });
-        $(".oyotableheader", table).replaceWith(clone);
+        $(document).trigger("scroll");
     };
 
-    $(window).on("scroll", function () {
-        var offsetLeft = $(refTable).offset().left;
-        var left = -1 * $(window).scrollLeft() + offsetLeft;
-        $(table).css("left", left);
+    $(window).on("resize", function () {
+        $(document).trigger("scroll");
     });
 
-    table.changeBorder = function (borderType = "cell", border = intBorder) {
-        intBorderType = borderType;
-        intBorder = border;
-    };
+    $(window).on("scroll", function () {
+        var scrollLeft = document.scrollingElement.scrollLeft;
+        var translateX = "translateX(-" + scrollLeft + "px)";
+        $(tableHeader).css("transform", translateX);
 
-    table.changeBackgroundColor = function (color) {
+        var tableWidth = $(refTable).outerWidth();
+        var tableHeight = $(refTable).outerHeight();
+        var tableLeft = $(refTable).get(0).getBoundingClientRect().left;
+        var tableTop = $(refTable).get(0).getBoundingClientRect().top;
+        var tableRight = tableLeft + tableWidth;
+        var tableBottom = tableTop + tableHeight;
+
+        if (minHeaderTop < tableTop) {
+            $(tableHeader).css("top", tableTop);
+        } else {
+            $(tableHeader).css("top", minHeaderTop);
+        }
+
+        var headerWidth = $(tableHeader).outerWidth();
+        var headerHeight = $(tableHeader).outerHeight();
+        var headerLeft = $(tableHeader).get(0).getBoundingClientRect().left;
+        var headerTop = $(tableHeader).get(0).getBoundingClientRect().top;
+        var headerRight = headerLeft + headerWidth;
+        var headerBottom = headerTop + headerHeight;
+
+        if (headerTop < tableBottom && $("tbody tr", refTable).length > 0) {
+            $(tableHeader).css("visibility", "visible");
+        } else {
+            $(tableHeader).css("visibility", "hidden");
+        }
+        var difX = headerLeft - tableLeft;
+        var difY = headerTop - tableTop;
+        var x1 = difX;
+        var y1 = difY;
+        var x2 = tableWidth + 1;
+        var y2 = tableHeight + 1;
+        var p1 = x1 + "px " + y1 + "px, ";
+        var p2 = x2 + "px " + y1 + "px, ";
+        var p3 = x2 + "px " + y2 + "px, ";
+        var p4 = x1 + "px " + y2 + "px";
+        var clipRectTable = "polygon(" + p1 + p2 + p3 + p4 + ")";
+        $(refTable).css("clip-path", clipRectTable);
+    });
+
+    tableHeader.changeBackgroundColor = function (color) {
         if (color === textColor) {
             if (textColor === "white") {
                 color = "black";
@@ -95,10 +117,10 @@ function oyoTableHeader(refTable, height) {
             }
         }
         backgroundColor = color;
-        $(table).css("background-color", backgroundColor);
+        $(tableHeader).css("background-color", backgroundColor);
     };
 
-    table.changeTextColor = function (color) {
+    tableHeader.changeTextColor = function (color) {
         if (color === backgroundColor) {
             if (backgroundColor === "white") {
                 color = "black";
@@ -107,13 +129,17 @@ function oyoTableHeader(refTable, height) {
             }
         }
         textColor = color;
-        $(table).css("color", textColor);
+        $(tableHeader).css("color", textColor);
     };
 
-    table.resetColors = function () {
-        $(table).css("background-color", defaultBackgroundColor);
-        $(table).css("color", defaultTextColor);
+    tableHeader.resetColors = function () {
+        $(tableHeader).css("background-color", defaultBackgroundColor);
+        $(tableHeader).css("color", defaultTextColor);
     };
 
-    return table;
+    tableHeader.changeMinTop = function (minY) {
+        minHeaderTop = minY;
+    };
+
+    return tableHeader;
 }
