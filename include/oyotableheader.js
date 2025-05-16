@@ -15,11 +15,12 @@ function oyoTableHeader(refTable) {
     var defaultTextColor = "white";
     var backgroundColor = defaultBackgroundColor;
     var textColor = defaultTextColor;
-    var minHeaderTop = 0;
+    var minHeaderTop = 999;
 
     var tableHeader = document.createElement("table");
     $(tableHeader).attr("class", "oyotableheader");
     $(tableHeader).css("background-color", defaultBackgroundColor);
+    $(tableHeader).css("background-clip", "content-box");
     $(tableHeader).css("color", defaultTextColor);
     $(tableHeader).css("position", "fixed");
     $(tableHeader).css("z-index", 999);
@@ -65,10 +66,6 @@ function oyoTableHeader(refTable) {
     });
 
     $(window).on("scroll", function () {
-        var scrollLeft = document.scrollingElement.scrollLeft;
-        var translateX = "translateX(-" + scrollLeft + "px)";
-        $(tableHeader).css("transform", translateX);
-
         var tableWidth = $(refTable).outerWidth();
         var tableHeight = $(refTable).outerHeight();
         var tableLeft = $(refTable).get(0).getBoundingClientRect().left;
@@ -76,10 +73,17 @@ function oyoTableHeader(refTable) {
         var tableRight = tableLeft + tableWidth;
         var tableBottom = tableTop + tableHeight;
 
-        if (minHeaderTop < tableTop) {
-            $(tableHeader).css("top", tableTop);
+        $(tableHeader).css("left", tableLeft);
+
+        if (minHeaderTop === 999) {
+            var positionTop = $(refTable).position().top;
+            $(tableHeader).css("top", positionTop);
         } else {
-            $(tableHeader).css("top", minHeaderTop);
+            if (minHeaderTop < tableTop) {
+                $(tableHeader).css("top", tableTop);
+            } else {
+                $(tableHeader).css("top", minHeaderTop);
+            }
         }
 
         var headerWidth = $(tableHeader).outerWidth();
