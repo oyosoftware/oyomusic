@@ -79,6 +79,7 @@
                 visibility          : hidden;
 				padding-right		: 11px;
 				z-index             : 3;
+                transform           : translateY(-3px);
 			}
 			.headertablepaddingbox {
 				background-color	: white;
@@ -251,8 +252,6 @@
 
                 var tableHeader = new oyoTableHeader(".albumstable");
                 $(tableHeader).addClass("headertable");
-                var headerTop = parseFloat($(".albumstable").css("top"));
-                tableHeader.changeMinTop(headerTop);
 
                 var tableHeaderBox = new oyoPaddingBox(tableHeader);
                 $(tableHeaderBox).addClass("headertablepaddingbox");
@@ -296,7 +295,6 @@
                                     var navigator = new oyoNavigator(records, searchrecordspage, pagerange, baseUrl);
                                     $(".header").append(navigator);
                                     navigator.setPage(pageno);
-                                    tableHeader.changeMinTop(headerTop + $(navigator).height());
                                     tableHeaderBox.resize();
                                     var top = parseFloat($(".albumstable").css("top")) + $(navigator).height();
                                     $(".albumstable").css("top", top);

@@ -7,7 +7,7 @@
   © 2015-2024 oYoSoftware
   MIT License
 
-  oyomusic is a library for showing your own musical content-->
+  oyomusic is a library for showing your own musical content -->
 
 <html>
 
@@ -87,12 +87,14 @@
 			.headertable {
 				padding-right		: 11px;
 				z-index             : 3;
+                transform           : translateY(-3px);
 			}
 			.headertablepaddingbox {
 				background-color	: white;
 				z-index             : 2;
 			}
             .albumstable {
+                background-color	: white;
 				padding-right		: 11px;
 				padding-bottom		: 9px;
                 position            : relative;
@@ -203,8 +205,6 @@
 
                 var tableHeader = new oyoTableHeader(".albumstable");
                 $(tableHeader).addClass("headertable");
-                var headerTop = parseFloat($(".albumstable").css("top"));
-                tableHeader.changeMinTop(headerTop);
 
                 var tableHeaderBox = new oyoPaddingBox(tableHeader);
                 $(tableHeaderBox).addClass("headertablepaddingbox");
@@ -298,7 +298,6 @@
                                         var navigator = new oyoNavigator(albumcount, recordspage, pagerange, baseUrl);
                                         $(".header").append(navigator);
                                         navigator.setPage(pageno);
-                                        tableHeader.changeMinTop(headerTop + $(navigator).height());
                                         tableHeaderBox.resize();
                                         var top = parseFloat($(".albumstable").css("top")) + $(navigator).height();
                                         $(".albumstable").css("top", top);
@@ -318,7 +317,6 @@
                                                 var navigator = new oyoNavigator(disccount, recordspage, pagerange, baseUrl);
                                                 $(".header").append(navigator);
                                                 navigator.setPage(pageno);
-                                                tableHeader.changeMinTop(headerTop + $(navigator).height());
                                                 tableHeaderBox.resize();
                                                 var top = parseFloat($(".albumstable").css("top")) + $(navigator).height();
                                                 $(".albumstable").css("top", top);
