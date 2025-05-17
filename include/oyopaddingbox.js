@@ -80,9 +80,15 @@ function oyoPaddingBox(refObject) {
         var bottomRefSpace = parseFloat($(refObject).css("border-bottom-width")) + parseFloat($(refObject).css("padding-bottom"));
 
         // left, right and width
-        $(paddingBox).css("left", 0);
         var boundingLeft = $(refObject).get(0).getBoundingClientRect().left;
         var scrollLeft = document.scrollingElement.scrollLeft;
+        if (position === "fixed") {
+            var prevLeft = Math.round(parseFloat($(paddingBox).css("left")));
+            var nextLeft = Math.round(boundingLeft + leftRefSpace - leftSpace);
+            if (prevLeft === nextLeft) {
+                scrollLeft = 0;
+            }
+        }
         var left = boundingLeft + scrollLeft + leftRefSpace - leftSpace;
         $(paddingBox).css("left", left);
         var refWidth = $(refObject).outerWidth() - leftRefSpace - rightRefSpace;
@@ -101,7 +107,11 @@ function oyoPaddingBox(refObject) {
         var boundingTop = $(refObject).get(0).getBoundingClientRect().top;
         var scrollTop = document.scrollingElement.scrollTop;
         if (position === "fixed") {
-            scrollTop = 0;
+            var prevTop = Math.round(parseFloat($(paddingBox).css("top")));
+            var nextTop = Math.round(boundingTop + topRefSpace - topSpace);
+            if (prevTop === nextTop) {
+                scrollTop = 0;
+            }
         }
         var top = boundingTop + scrollTop + topRefSpace - topSpace;
         $(paddingBox).css("top", top);

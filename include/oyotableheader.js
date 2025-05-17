@@ -51,18 +51,18 @@ function oyoTableHeader(refTable) {
             $(element).attr("class", "oyotableheaderrow");
         });
         $(clone).find("th").each(function (index, element) {
-            $(element).css("box-sizing", "border-box");
             var cell = $("th", refTable).eq(index);
+            $(element).css("box-sizing", $(cell).css("box-sizing"));
             $(element).outerWidth($(cell).outerWidth());
             $(element).css("min-width", $(cell).outerWidth());
             $(element).outerHeight($(cell).outerHeight() + topHeight);
             $(element).css("min-height", $(cell).outerHeight() + topHeight);
         });
-        $(document).trigger("scroll");
+        $(window).trigger("scroll");
     };
 
     $(window).on("resize", function () {
-        $(document).trigger("scroll");
+        $(window).trigger("scroll");
     });
 
     $(window).on("scroll", function () {
