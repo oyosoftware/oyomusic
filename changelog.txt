@@ -1,4 +1,6 @@
 oYoMusic 3.1
+17-01-2026  Added interface cleanImages
+16-05-2025  Changed layout album list due to changed components
 12-04-2025  Rectified player communication flaw
 08-11-2024  Refined layout for album lists
 08-11-2024  Updated Joomla functionality
