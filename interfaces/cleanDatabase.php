@@ -133,6 +133,17 @@ function clean_files() {
     while ($row = mysqli_fetch_assoc($result)) {
         $counter++;
 
+        if (($counter % 10000) == 0) {
+            $message = "disc counter: $counter " . date('H:i:s');
+            if ($servername === null) {
+                echo $message . "\r\n";
+            } else {
+                $response = array('message' => $message);
+                $json = json_encode($response);
+                echo $json . ",\n";
+            }
+        }
+
         if ($servername !== null) {
             $response = array('counter' => $counter);
             $json = json_encode($response);
@@ -185,6 +196,17 @@ function clean_files() {
 
     while ($row = mysqli_fetch_assoc($result)) {
         $counter++;
+
+        if (($counter % 10000) == 0) {
+            $message = "album counter: $counter " . date('H:i:s');
+            if ($servername === null) {
+                echo $message . "\r\n";
+            } else {
+                $response = array('message' => $message);
+                $json = json_encode($response);
+                echo $json . ",\n";
+            }
+        }
 
         if ($servername !== null) {
             $response = array('counter' => $counter);
@@ -251,6 +273,17 @@ function clean_files() {
     while ($row = mysqli_fetch_assoc($result)) {
         $counter++;
 
+        if (($counter % 10000) == 0) {
+            $message = "boxset counter: $counter " . date('H:i:s');
+            if ($servername === null) {
+                echo $message . "\r\n";
+            } else {
+                $response = array('message' => $message);
+                $json = json_encode($response);
+                echo $json . ",\n";
+            }
+        }
+
         if ($servername !== null) {
             $response = array('counter' => $counter);
             $json = json_encode($response);
@@ -315,6 +348,17 @@ function clean_files() {
 
     while ($row = mysqli_fetch_assoc($result)) {
         $counter++;
+
+        if (($counter % 10000) == 0) {
+            $message = "artist counter: $counter " . date('H:i:s');
+            if ($servername === null) {
+                echo $message . "\r\n";
+            } else {
+                $response = array('message' => $message);
+                $json = json_encode($response);
+                echo $json . ",\n";
+            }
+        }
 
         if ($servername !== null) {
             $response = array('counter' => $counter);
@@ -383,7 +427,14 @@ switch (true) {
 
 $path = $audiosource . $base;
 
-if (file_exists($path)) {
+if (is_link($path)) {
+    $target = readlink($path);
+    $fileexists = file_exists($target);
+} else {
+    $fileexists = file_exists($path);
+}
+
+if ($fileexists) {
     $jobstart = time();
 
     $message = "Clean Database";
@@ -416,7 +467,7 @@ if (file_exists($path)) {
         echo $json . ",\n";
     }
 } else {
-    $message = "Error: path $path doesn't exist";
+    $message = "Error: path $path doesn't exist or is not available";
     if ($servername === null) {
         echo "$message" . "\r\n";
     } else {

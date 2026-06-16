@@ -86,8 +86,6 @@ function read_files($dir) {
                     $itercounter++;
 
                     $pathname = $item->getPathname();
-
-                    $pathname = $item->getPathname();
                     $pathname = str_ireplace("\\", "/", $pathname);
                     if (mb_substr($pathname, 0, 7) === "file://") {
                         $pathname = mb_substr($pathname, 7);
@@ -606,7 +604,7 @@ $link = mysqli_connect($server, $username, $password, $database);
 $getID3 = new getID3;
 
 $base = "";
-//$base = "/Populair/GHI";
+//$base = "/DVD";
 
 $audiosource = str_ireplace("\\", "/", $audiosource);
 $base = str_ireplace("\\", "/", $base);
@@ -628,7 +626,15 @@ switch (true) {
 
 $path = $audiosource . $base;
 
-if (file_exists($path)) {
+if (is_link($path)) {
+    $target = readlink($path);
+    $fileexists = file_exists($target);
+} else {
+    $fileexists = file_exists($path);
+}
+
+
+if ($fileexists) {
     $jobstart = time();
 
     $records = get_records($base);
@@ -677,7 +683,7 @@ if (file_exists($path)) {
         echo $json . ",\n";
     }
 } else {
-    $message = "Error: path $path doesn't exist";
+    $message = "Error: path $path doesn't exist or is not available";
     if ($servername === null) {
         echo "$message" . "\r\n";
     } else {

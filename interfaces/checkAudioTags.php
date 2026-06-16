@@ -201,7 +201,7 @@ $getID3 = new getID3;
 $onlyPrivateFrames = false;
 
 $base = "";
-//$base = "/World/JKL/Lafourcade, Natalia";
+//$base = "/Populair/TUV/U2";
 
 $audiosource = str_ireplace("\\", "/", $audiosource);
 $base = str_ireplace("\\", "/", $base);
@@ -223,7 +223,14 @@ switch (true) {
 
 $path = $audiosource . $base;
 
-if (file_exists($path)) {
+if (is_link($path)) {
+    $target = readlink($path);
+    $fileexists = file_exists($target);
+} else {
+    $fileexists = file_exists($path);
+}
+
+if ($fileexists) {
     $jobstart = time();
 
     $records = get_records($base);
@@ -238,7 +245,7 @@ if (file_exists($path)) {
         echo "$message" . "\r\n";
     }
 
-    $message = "job begins for audiosource $path " . date('H:i:s');
+    $message = "job begins for audiosource $fileexists " . date('H:i:s');
     if ($servername === null) {
         echo "$message" . "\r\n";
     } else {
@@ -272,7 +279,7 @@ if (file_exists($path)) {
         echo $json . ",\n";
     }
 } else {
-    $message = "error: path $path doesn't exist";
+    $message = "error: path $path doesn't exist or is not available";
     if ($servername === null) {
         echo "$message" . "\r\n";
     } else {

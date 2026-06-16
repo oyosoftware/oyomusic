@@ -28,7 +28,7 @@ function collect_images($dir) {
 
     while ($row = mysqli_fetch_assoc($result)) {
         $counter++;
-        if (($counter % 10000) == 0) {
+        if (($counter % 10000) === 0) {
             $message = "counter: $counter " . date('H:i:s');
             if ($servername === null) {
                 echo $message . "\r\n";
@@ -247,7 +247,14 @@ switch (true) {
 
 $path = $audiosource . $base;
 
-if (file_exists($path)) {
+if (is_link($path)) {
+    $target = readlink($path);
+    $fileexists = file_exists($target);
+} else {
+    $fileexists = file_exists($path);
+}
+
+if ($fileexists) {
     $jobstart = time();
 
     $records = get_records($base);
@@ -296,7 +303,7 @@ if (file_exists($path)) {
         echo $json . ",\n";
     }
 } else {
-    $message = "Error: path $path doesn't exist" . $dirlist[2];
+    $message = "Error: path $path doesn't exist or is not available";
     if ($servername === null) {
         echo "$message" . "\r\n";
     } else {
