@@ -293,7 +293,7 @@ function oyoComboBox(comboBoxWidth = "auto", comboBoxHeight = "auto") {
                 comboBoxInput.setSelectionRange(0, 0);
                 comboBoxInput.scrollLeft = 0;
             } else {
-                //hideListBox(this);
+                hideListBox(this);
                 var input = $(".oyocomboboxinput", this).get(0);
                 var border = input.borderWidth;
                 $(input).css("border-width", border);
